@@ -2,7 +2,83 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 2rem 1rem;
+  position: relative;
 }
+
+.cart-drawer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  min-width: 300px;
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.cart-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.cart-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.cart-close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.cart-item-emoji {
+  font-size: 1.5rem;
+}
+
+.cart-item-name {
+  font-size: 0.9rem;
+  color: #666;
+  flex: 1;
+}
+
 
 .container {
   max-width: 1200px;
@@ -46,9 +122,10 @@
 .vibe-form {
   display: flex;
   gap: 1rem;
-  max-width: 700px;
+  max-width: 900px;
   margin: 0 auto 3rem;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .vibe-input {
@@ -94,6 +171,31 @@
 }
 
 .vibe-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.surprise-button {
+  padding: 1.25rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: #ffd93d;
+  color: #333;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.surprise-button:hover:not(:disabled) {
+  background: #ffc500;
+  transform: translateY(-2px) rotate(-2deg);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.surprise-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }

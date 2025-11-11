@@ -16,12 +16,33 @@ const LOADING_MESSAGES = [
   "Summoning your spirit products...",
 ];
 
+const SURPRISE_VIBES = [
+  "villain era",
+  "hot girl autumn but broke",
+  "cottagecore ceo",
+  "chaotic good but make it fashion",
+  "divorced but thriving",
+  "post-apocalyptic brunch influencer",
+  "startup founder in denial",
+  "cyberpunk beach bum",
+  "main character energy with student loan debt",
+  "hot mess express",
+  "sad indie music protagonist",
+  "feral academic",
+  "girlboss gaslight gatekeep",
+  "dark academia dropout",
+  "cottage witch on antidepressants",
+];
+
 function App() {
   const [vibe, setVibe] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [loadingMessage, setLoadingMessage] = useState("");
+  const [cartCount, setCartCount] = useState(0);
+  const [showCartDrawer, setShowCartDrawer] = useState(false);
+  const [cartItems, setCartItems] = useState<Product[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,8 +79,53 @@ function App() {
     }
   };
 
+  const handleSurpriseMe = () => {
+    const randomVibe =
+      SURPRISE_VIBES[Math.floor(Math.random() * SURPRISE_VIBES.length)];
+    setVibe(randomVibe);
+    // Trigger form submission after a brief delay to show the vibe
+    setTimeout(() => {
+      const form = document.querySelector("form");
+      form?.requestSubmit();
+    }, 100);
+  };
+
+  const handleAddToCart = (product: Product) => {
+    setCartItems((prev) => [...prev, product]);
+    setCartCount((prev) => prev + 1);
+    setShowCartDrawer(true);
+    
+    // Auto-hide drawer after 3 seconds
+    setTimeout(() => {
+      setShowCartDrawer(false);
+    }, 3000);
+  };
+
   return (
     <div className="app">
+      {/* Cart Drawer */}
+      {showCartDrawer && (
+        <div className="cart-drawer">
+          <div className="cart-header">
+            <h3>🛒 Vibe Cart ({cartCount})</h3>
+            <button
+              className="cart-close"
+              onClick={() => setShowCartDrawer(false)}
+            >
+              ✕
+            </button>
+          </div>
+          <div className="cart-items">
+            {cartItems.slice(-3).map((item, index) => (
+              <div key={index} className="cart-item">
+                <span className="cart-item-emoji">{item.emoji}</span>
+                <span className="cart-item-name">{item.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="container">
         <header className="header">
           <h1 className="title">
@@ -87,6 +153,14 @@ function App() {
           >
             {loading ? "Vibing..." : "Get My Vibe"}
           </button>
+          <button
+            type="button"
+            className="surprise-button"
+            onClick={handleSurpriseMe}
+            disabled={loading}
+          >
+            🎲 Surprise Me
+          </button>
         </form>
 
         {loadingMessage && (
@@ -111,7 +185,12 @@ function App() {
                   <div className="product-emoji">{product.emoji}</div>
                   <h3 className="product-name">{product.name}</h3>
                   <p className="product-reason">{product.reason}</p>
-                  <button className="add-to-cart">Add to Vibe Cart</button>
+                  <button
+                    className="add-to-cart"
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    Add to Vibe Cart
+                  </button>
                 </div>
               ))}
             </div>
