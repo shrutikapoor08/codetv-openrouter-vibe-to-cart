@@ -1,6 +1,3 @@
-// agent.ts
-
-// IMPORTANT - Add your API keys here. Be careful not to publish them.
 import "dotenv/config";
 
 import { ChatOpenAI } from "@langchain/openai";
@@ -18,33 +15,56 @@ Tools - Tavily Search (web search - figuring out proximity), Parser Tool (DIY)
 */
 
 const webSearchAgent = async ({ description }) => {
-  const webTool = new TavilySearch({ maxResults: 3 })
+  try {
+    console.log("Initializing TavilySearch tool...");
+    const webTool = new TavilySearch({
+      maxResults: 3,
+      tavilyApiKey: process.env.TAVILY_API_KEY,
+    });
 
-//TODO: OPENROUTER INTEGRATION GOES HERE
-// const agentModel = //OPENROUTER INTEGRATION
-const agentModel = new ChatOpenAI({ temperature: 0, apiKey: process.env.OPENAI_API_KEY, maxRetries: 2 });
+    console.log("Initializing ChatOpenAI model...");
+    //TODO: OPENROUTER INTEGRATION GOES HERE
+    // const agentModel = //OPENROUTER INTEGRATION
+    const agentModel = new ChatOpenAI({
+      temperature: 0,
+      apiKey: process.env.OPENAI_API_KEY,
+      maxRetries: 2,
+    });
 
-const agentCheckpointer = new MemorySaver(); // Initialize memory to persist state between graph runs
+    const agentCheckpointer = new MemorySaver(); // Initialize memory to persist state between graph runs
 
-const agent = createReactAgent({
-  llm: agentModel,
-  tools: [webTool],
-  checkpointSaver: agentCheckpointer,
-});
+    console.log("Creating React agent...");
+    const agent = createReactAgent({
+      llm: agentModel,
+      tools: [webTool],
+      checkpointSaver: agentCheckpointer,
+    });
 
-const question = new HumanMessage(JSON.stringify(description) );
+    const question = new HumanMessage(JSON.stringify(description));
 
-const agentNextState = await agent.invoke(
-  { messages: [question] },
-  { configurable: { thread_id: 'vndfjkvnjkdf' } },
-);
-console.log(
-  agentNextState.messages[agentNextState.messages.length - 1].content,
-);
+    console.log("Invoking agent with question:", description);
+    const agentNextState = await agent.invoke(
+      { messages: [question] },
+      { configurable: { thread_id: "vndfjkvnjkdf" } }
+    );
 
-const result = agentNextState.messages[agentNextState.messages.length - 1].content;
+    console.log(
+      agentNextState.messages[agentNextState.messages.length - 1].content
+    );
 
-return result;
-}
+    const result =
+      agentNextState.messages[agentNextState.messages.length - 1].content;
+
+    return result;
+  } catch (error) {
+    console.error("Error in webSearchAgent:", error);
+    console.error("Error details:", {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    });
+    throw error;
+  }
+};
 
 export default webSearchAgent;
