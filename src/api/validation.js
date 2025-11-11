@@ -2,10 +2,17 @@
 
 /**
  * Validates that all required API keys are present in environment variables
+ * Skips validation if MOCK_MODE is enabled
  * Exits the process with error code 1 if any keys are missing
  */
 export function validateAPIKeys() {
-  const requiredKeys = ["OPENAI_API_KEY", "TAVILY_API_KEY"];
+  // Skip validation in mock mode
+  if (process.env.MOCK_MODE === "true") {
+    console.log("🎭 MOCK MODE: Skipping API key validation");
+    return;
+  }
+
+  const requiredKeys = ["OPENROUTER_API_KEY", "TAVILY_API_KEY"];
   const missingKeys = [];
 
   for (const key of requiredKeys) {
