@@ -1,54 +1,235 @@
 import "dotenv/config";
-
 import { ChatOpenAI } from "@langchain/openai";
 import { MemorySaver } from "@langchain/langgraph";
 import { HumanMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { TavilySearch } from "@langchain/tavily";
-import { kMaxLength } from "buffer";
 
-// Fix for self-signed certificate issues (development only)
-// Remove this in production or configure proper certificates
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-// AGENT
-/*
-Model - OpenAI GPT 4o
-Memory - Short Term, Long Term.
-Tools - Tavily Search (web search - figuring out proximity), Parser Tool (DIY)
-*/
-
-// Mock mode - set MOCK_MODE=true in .env.local to use mock responses
+// Configuration
 const MOCK_MODE = process.env.MOCK_MODE === "true";
 
-// Mock responses for testing
-const mockResponses = {
-  "Where is San Jose?":
-    "San Jose is a city located in Northern California, in the southern part of the San Francisco Bay Area. It is the largest city in Silicon Valley and the third-largest city in California. San Jose is the county seat of Santa Clara County.",
-  default:
-    "This is a mock response. The agent would normally search the web and provide an answer based on the query. To use real API calls, set MOCK_MODE=false in your .env.local file.",
+// Hackathon mode - allow self-signed certificates
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+// Mock vibe-based product recommendations for testing
+const MOCK_VIBES = {
+  "villain era": [
+    {
+      emoji: "🕶️",
+      name: "Sunglasses So Dark Your Emotions Can't Escape",
+      reason: "Because eye contact is for people who aren't plotting.",
+    },
+    {
+      emoji: "🖤",
+      name: "Black Hoodie (Oversized)",
+      reason: "For emotional support and mysterious exits.",
+    },
+    {
+      emoji: "💅",
+      name: "Therapy Journal (Never Opened)",
+      reason: "Journaling is self-care. Not opening it is self-preservation.",
+    },
+  ],
+  "hot girl autumn but broke": [
+    {
+      emoji: "🍂",
+      name: "Pumpkin Spice Candle from Target",
+      reason: "The aesthetic costs $7.99. Your credit card thanks you.",
+    },
+    {
+      emoji: "🧣",
+      name: "Thrifted Oversized Sweater",
+      reason: "Vintage = expensive. Secondhand = financially responsible icon.",
+    },
+    {
+      emoji: "☕",
+      name: "Home Coffee Maker",
+      reason: "$5 lattes are cute until rent is due.",
+    },
+  ],
+  "cottagecore ceo": [
+    {
+      emoji: "🌿",
+      name: "Linen Blazer in Sage Green",
+      reason: "Business meetings, but make it ethereal forest nymph.",
+    },
+    {
+      emoji: "📚",
+      name: "Leather-Bound Planner",
+      reason: "Schedule your empire between foraging and mindfulness.",
+    },
+    {
+      emoji: "🕯️",
+      name: "Beeswax Candles (Artisanal)",
+      reason: "Boardroom lighting should smell like a meadow.",
+    },
+  ],
+  "chaotic good but make it fashion": [
+    {
+      emoji: "✨",
+      name: "Sequined Jacket (Mismatched)",
+      reason: "Saving the world requires sparkle and zero coordination.",
+    },
+    {
+      emoji: "🎨",
+      name: "Paint-Splattered Combat Boots",
+      reason: "For kicking ass and attending art openings.",
+    },
+    {
+      emoji: "🌈",
+      name: "Rainbow Fanny Pack",
+      reason: "Practical chaos storage for your chaotic good adventures.",
+    },
+  ],
+  "divorced but thriving": [
+    {
+      emoji: "💃",
+      name: "Red Dress (Revenge Edition)",
+      reason: "You didn't lose a spouse, you gained a wardrobe upgrade.",
+    },
+    {
+      emoji: "🥂",
+      name: "Champagne Flutes (Set of One)",
+      reason: "Cheers to never sharing your prosecco again.",
+    },
+    {
+      emoji: "📱",
+      name: "Dating App Premium Subscription",
+      reason: "Their loss is someone else's gain.",
+    },
+  ],
+  "post-apocalyptic brunch influencer": [
+    {
+      emoji: "🥑",
+      name: "Avocado Toast in a Bunker",
+      reason: "The world may be ending, but your aesthetic isn't.",
+    },
+    {
+      emoji: "⚔️",
+      name: "Designer Machete",
+      reason: "For cutting through zombies and bad vibes.",
+    },
+    {
+      emoji: "📸",
+      name: "Solar-Powered Ring Light",
+      reason: "Document the apocalypse in golden hour lighting.",
+    },
+  ],
+  "startup founder in denial": [
+    {
+      emoji: "💡",
+      name: "Lightbulb Moment Sticky Notes",
+      reason: "All your pivots in one place.",
+    },
+    {
+      emoji: "☕",
+      name: "Espresso Machine (Industrial)",
+      reason: "Sleep is for companies with Series B funding.",
+    },
+    {
+      emoji: "🎢",
+      name: "Emotional Rollercoaster Season Pass",
+      reason: "It's not failure, it's learning. (It's failure.)",
+    },
+  ],
+  "cyberpunk beach bum": [
+    {
+      emoji: "🌊",
+      name: "Neon Surfboard",
+      reason: "Catch waves and hack the mainframe.",
+    },
+    {
+      emoji: "🕶️",
+      name: "AR Sunglasses",
+      reason: "See the ocean AND your cryptocurrency crash in real-time.",
+    },
+    {
+      emoji: "�️",
+      name: "Solar-Powered Hammock",
+      reason: "Off-grid beach naps with WiFi somehow.",
+    },
+  ],
 };
 
+const DEFAULT_VIBE = [
+  {
+    emoji: "🎲",
+    name: "Mystery Box of Chaos",
+    reason: "We don't understand your vibe, so here's a random product.",
+  },
+  {
+    emoji: "🤷",
+    name: "Existential Crisis Starter Kit",
+    reason: "When your vibe is too deep for our AI to comprehend.",
+  },
+  {
+    emoji: "🔮",
+    name: "Crystal Ball (Unclear Future)",
+    reason: "Even AI can't predict where your vibe is going.",
+  },
+];
+
+/**
+ * Get mock response for a given vibe
+ * @param {string} vibe - User's vibe description
+ * @returns {string} JSON stringified product array
+ */
+function getMockVibeResponse(vibe) {
+  const normalizedVibe = vibe.toLowerCase().trim();
+  const products = MOCK_VIBES[normalizedVibe] || DEFAULT_VIBE;
+  return JSON.stringify(products);
+}
+
+/**
+ * Creates the VibeBot prompt for product recommendations
+ * @param {string} vibe - User's vibe description
+ * @returns {string} Formatted prompt for the AI
+ */
+function createVibePrompt(vibe) {
+  return `You are VibeBot, a hilarious, over-the-top personal shopper with a sassy personality.
+
+The user will describe their vibe/mood/aesthetic. You must respond with 3-5 funny, dramatic, or oddly specific product recommendations that match that vibe.
+
+Each item MUST have:
+- emoji: single emoji that represents the product
+- name: creative, funny product name
+- reason: humorous one-liner justification (be witty, sarcastic, or dramatic)
+
+You MUST respond ONLY as a valid JSON array in this exact format:
+[
+  {"emoji":"🕶️", "name":"Product Name Here", "reason":"Funny reason here"},
+  {"emoji":"🖤", "name":"Another Product", "reason":"Another witty justification"}
+]
+
+DO NOT include any other text, explanations, or markdown formatting. ONLY the JSON array.
+
+User vibe: ${vibe}`;
+}
+
+/**
+ * Main agent function - processes user vibes and returns product recommendations
+ * @param {Object} params
+ * @param {string} params.description - User's vibe description
+ * @returns {Promise<string>} JSON string of product recommendations
+ */
 const webSearchAgent = async ({ description }) => {
   // Mock mode - return mock response without API calls
   if (MOCK_MODE) {
-    console.log("🎭 MOCK MODE: Returning mock response without API calls");
     await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
-    return mockResponses[description] || mockResponses.default;
+    return getMockVibeResponse(description);
   }
 
   try {
-    console.log("Initializing TavilySearch tool...");
+    // Initialize tools
     const webTool = new TavilySearch({
       maxResults: 3,
       tavilyApiKey: process.env.TAVILY_API_KEY,
     });
 
-    console.log("Initializing OpenRouter model...");
-    // OpenRouter integration using ChatOpenAI with custom configuration
+    // Initialize OpenRouter model
     const agentModel = new ChatOpenAI({
-      model: "openai/gpt-4o-mini", // You can change this to other models available on OpenRouter
-      temperature: 0,
+      model: "openai/gpt-4o-mini",
+      temperature: 0.7, // Increased for more creative responses
       apiKey: process.env.OPENROUTER_API_KEY,
       maxRetries: 2,
       configuration: {
@@ -61,25 +242,23 @@ const webSearchAgent = async ({ description }) => {
       },
     });
 
-    const agentCheckpointer = new MemorySaver(); // Initialize memory to persist state between graph runs
+    // Initialize memory for conversation persistence
+    const agentCheckpointer = new MemorySaver();
 
-    console.log("Creating React agent...");
+    // Create ReAct agent
     const agent = createReactAgent({
       llm: agentModel,
       tools: [webTool],
       checkpointSaver: agentCheckpointer,
     });
 
-    const question = new HumanMessage(JSON.stringify(description));
+    // Create the prompt and invoke agent
+    const vibePrompt = createVibePrompt(description);
+    const question = new HumanMessage(vibePrompt);
 
-    console.log("Invoking agent with question:", description);
     const agentNextState = await agent.invoke(
       { messages: [question] },
-      { configurable: { thread_id: "vndfjkvnjkdf" } }
-    );
-
-    console.log(
-      agentNextState.messages[agentNextState.messages.length - 1].content
+      { configurable: { thread_id: "vibe-session" } }
     );
 
     const result =
@@ -87,12 +266,7 @@ const webSearchAgent = async ({ description }) => {
 
     return result;
   } catch (error) {
-    console.error("Error in webSearchAgent:", error);
-    console.error("Error details:", {
-      message: error.message,
-      name: error.name,
-      stack: error.stack,
-    });
+    console.error("❌ Error in webSearchAgent:", error.message);
     throw error;
   }
 };

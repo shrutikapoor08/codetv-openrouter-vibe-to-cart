@@ -22,43 +22,37 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.get("/agent", async (req, res) => {
+app.get("/api/vibe", async (req, res) => {
   try {
-    // Accept query from query parameter or request body
-    const description =
-      req.query.query || req.body.query || "Where is San Jose?";
+    const vibe = req.query.query || req.query.vibe;
 
-    if (!description || description.trim() === "") {
+    if (!vibe || vibe.trim() === "") {
       return res.status(400).json({
-        error: "Query parameter is required. Use ?query=your-question",
+        error: "Vibe parameter is required. Use ?query=your-vibe or ?vibe=your-vibe",
       });
     }
 
-    console.log("Starting agent with description:", description);
-
-    const response = await webSearchAgent({ description });
-    console.log("Agent response:", response);
-
+    const response = await webSearchAgent({ description: vibe });
     res.send(response);
   } catch (error) {
-    console.error("Agent error:", error);
-    console.error("Error stack:", error.stack);
+    console.error("❌ Vibe processing error:", error.message);
 
     res.status(500).json({
       error: error.message,
       type: error.constructor.name,
-      details: error.toString(),
     });
   }
 });
 
 app.get("/", (req, res) => {
-  console.log("Server returned /");
-
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // Start server
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`✅ Server running on port ${port}`);
+  console.log(`   http://localhost:${port}`);
+  if (process.env.MOCK_MODE === "true") {
+    console.log("   🎭 MOCK MODE enabled");
+  }
 });
