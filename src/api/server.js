@@ -18,6 +18,8 @@ const __dirname = path.resolve(path.dirname(""));
 app.use(express.json({ strict: false }));
 app.use((req, res, next) => {
   res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
 
@@ -28,12 +30,16 @@ app.get("/api/vibe", async (req, res) => {
 
     if (!vibe || vibe.trim() === "") {
       return res.status(400).json({
-        error: "Vibe parameter is required. Use ?query=your-vibe or ?vibe=your-vibe",
+        error:
+          "Vibe parameter is required. Use ?query=your-vibe or ?vibe=your-vibe",
       });
     }
 
     const response = await webSearchAgent({ description: vibe });
-    res.send(response);
+    
+    // Parse the JSON string response and send as proper JSON
+    const products = JSON.parse(response);
+    res.json(products);
   } catch (error) {
     console.error("❌ Vibe processing error:", error.message);
 

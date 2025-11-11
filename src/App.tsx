@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
 
 interface Product {
-  emoji: string
-  name: string
-  reason: string
+  emoji: string;
+  name: string;
+  reason: string;
 }
 
 const LOADING_MESSAGES = [
@@ -14,45 +14,49 @@ const LOADING_MESSAGES = [
   "Vibing with the universe...",
   "Analyzing your aesthetic...",
   "Summoning your spirit products...",
-]
+];
 
 function App() {
-  const [vibe, setVibe] = useState('')
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [loadingMessage, setLoadingMessage] = useState('')
+  const [vibe, setVibe] = useState("");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!vibe.trim()) return
+    e.preventDefault();
+    if (!vibe.trim()) return;
 
-    setLoading(true)
-    setError('')
-    setProducts([])
-    
+    setLoading(true);
+    setError("");
+    setProducts([]);
+
     // Rotate loading messages
     const messageInterval = setInterval(() => {
-      setLoadingMessage(LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)])
-    }, 1500)
+      setLoadingMessage(
+        LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)]
+      );
+    }, 1500);
 
     try {
-      const response = await fetch(`http://localhost:3001/api/vibe?query=${encodeURIComponent(vibe)}`)
-      
+      const response = await fetch(
+        `http://localhost:3001/api/vibe?query=${encodeURIComponent(vibe)}`
+      );
+
       if (!response.ok) {
-        throw new Error('Failed to fetch vibe recommendations')
+        throw new Error("Failed to fetch vibe recommendations");
       }
 
-      const data = await response.json()
-      setProducts(data)
+      const data = await response.json();
+      setProducts(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
-      clearInterval(messageInterval)
-      setLoading(false)
-      setLoadingMessage('')
+      clearInterval(messageInterval);
+      setLoading(false);
+      setLoadingMessage("");
     }
-  }
+  };
 
   return (
     <div className="app">
@@ -62,7 +66,9 @@ function App() {
             <span className="emoji">🛍️</span>
             Vibe to Cart
           </h1>
-          <p className="tagline">Tell us your vibe. We'll tell you what to buy.</p>
+          <p className="tagline">
+            Tell us your vibe. We'll tell you what to buy.
+          </p>
         </header>
 
         <form onSubmit={handleSubmit} className="vibe-form">
@@ -74,8 +80,12 @@ function App() {
             className="vibe-input"
             disabled={loading}
           />
-          <button type="submit" className="vibe-button" disabled={loading || !vibe.trim()}>
-            {loading ? 'Vibing...' : 'Get My Vibe'}
+          <button
+            type="submit"
+            className="vibe-button"
+            disabled={loading || !vibe.trim()}
+          >
+            {loading ? "Vibing..." : "Get My Vibe"}
           </button>
         </form>
 
@@ -109,7 +119,7 @@ function App() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
