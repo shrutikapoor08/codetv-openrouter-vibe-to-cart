@@ -126,11 +126,19 @@
   margin: 0 auto 3rem;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: flex-start;
+}
+
+.vibe-input-container {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .vibe-input {
-  flex: 1;
-  min-width: 300px;
+  width: 100%;
   padding: 1.25rem 1.5rem;
   font-size: 1.1rem;
   border: none;
@@ -428,21 +436,22 @@
 
 /* Easter Egg Message */
 .easter-egg {
-  max-width: 900px;
-  margin: 0 auto 2rem;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  animation: slideIn 0.5s ease-out;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-style: italic;
+  padding: 0.25rem 0.5rem;
+  animation: fadeIn 0.3s ease-out;
 }
 
-.easter-egg p {
-  margin: 0;
-  font-size: 1.1rem;
-  color: #667eea;
-  font-weight: 600;
-  text-align: center;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Vibe History */

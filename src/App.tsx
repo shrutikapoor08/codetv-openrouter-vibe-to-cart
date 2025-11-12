@@ -248,14 +248,20 @@ function App() {
         </header>
 
         <form onSubmit={handleSubmit} className="vibe-form">
-          <input
-            type="text"
-            value={vibe}
-            onChange={(e) => setVibe(e.target.value)}
-            placeholder="Tell us your vibe... (e.g., villain era, hot mess express)"
-            className="vibe-input"
-            disabled={loading}
-          />
+          <div className="vibe-input-container">
+            <input
+              type="text"
+              value={vibe}
+              onChange={(e) => setVibe(e.target.value)}
+              placeholder="Tell us your vibe... (e.g., villain era, hot mess express)"
+              className="vibe-input"
+              disabled={loading}
+            />
+            {/* Easter Egg Message - Inline below input */}
+            {easterEggMessage && (
+              <div className="easter-egg">{easterEggMessage}</div>
+            )}
+          </div>
           <button
             type="submit"
             className="vibe-button"
@@ -272,13 +278,6 @@ function App() {
             🎲 Surprise Me
           </button>
         </form>
-
-        {/* Easter Egg Message */}
-        {easterEggMessage && (
-          <div className="easter-egg">
-            <p>{easterEggMessage}</p>
-          </div>
-        )}
 
         {/* Vibe History */}
         {vibeHistory.length > 0 && (
