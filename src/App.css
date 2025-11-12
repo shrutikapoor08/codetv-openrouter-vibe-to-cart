@@ -1382,275 +1382,331 @@
    ROAST MODE THEME - Evil Color Palette
    ==================================== */
 
+/* Main header styling */
 .roast-mode-theme .title {
-  color: #ff3333;
-  text-shadow: 0 0 20px rgba(255, 51, 51, 0.8), 0 0 40px rgba(255, 0, 0, 0.5);
+  color: #ff0000 !important;
+  text-shadow: 0 0 20px rgba(255, 0, 0, 0.9), 
+               0 0 40px rgba(255, 0, 0, 0.6),
+               0 0 60px rgba(139, 0, 0, 0.4);
+  animation: fireGlow 2s ease-in-out infinite;
+}
+
+@keyframes fireGlow {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(255, 0, 0, 0.9), 
+                 0 0 40px rgba(255, 0, 0, 0.6),
+                 0 0 60px rgba(139, 0, 0, 0.4);
+  }
+  50% {
+    text-shadow: 0 0 30px rgba(255, 0, 0, 1), 
+                 0 0 60px rgba(255, 0, 0, 0.8),
+                 0 0 90px rgba(139, 0, 0, 0.6);
+  }
+}
+
+.roast-mode-theme .title .emoji {
+  filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.8));
 }
 
 .roast-mode-theme .tagline {
-  color: #ff6666;
+  color: #ff4444 !important;
+  text-shadow: 0 0 10px rgba(255, 68, 68, 0.6);
 }
 
+/* Form inputs */
 .roast-mode-theme .vibe-input {
-  background: rgba(20, 0, 0, 0.9);
-  border: 2px solid #8b0000;
-  color: #ff6666;
+  background: rgba(20, 0, 0, 0.95) !important;
+  border: 2px solid #cc0000 !important;
+  color: #ffcccc !important;
+  caret-color: #ff3333;
 }
 
 .roast-mode-theme .vibe-input::placeholder {
-  color: #994444;
+  color: #aa4444 !important;
 }
 
 .roast-mode-theme .vibe-input:focus {
-  border-color: #ff0000;
-  box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2), 0 0 20px rgba(255, 0, 0, 0.4);
+  border-color: #ff0000 !important;
+  box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.3), 0 0 20px rgba(255, 0, 0, 0.5) !important;
+  background: rgba(30, 0, 0, 0.95) !important;
 }
 
+/* Buttons */
 .roast-mode-theme .vibe-button {
-  background: linear-gradient(135deg, #8b0000 0%, #ff0000 100%);
-  border: 2px solid #ff0000;
-  color: white;
-  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+  background: linear-gradient(135deg, #990000 0%, #ff0000 100%) !important;
+  border: 2px solid #ff0000 !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .roast-mode-theme .vibe-button:hover {
-  background: linear-gradient(135deg, #a00000 0%, #ff3333 100%);
-  box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6);
+  background: linear-gradient(135deg, #cc0000 0%, #ff3333 100%) !important;
+  box-shadow: 0 6px 20px rgba(255, 0, 0, 0.7);
   transform: translateY(-2px);
 }
 
 .roast-mode-theme .surprise-button {
-  background: rgba(139, 0, 0, 0.3);
-  border: 2px solid #8b0000;
-  color: #ff6666;
+  background: rgba(139, 0, 0, 0.4) !important;
+  border: 2px solid #cc0000 !important;
+  color: #ff8888 !important;
 }
 
 .roast-mode-theme .surprise-button:hover {
-  background: rgba(139, 0, 0, 0.5);
-  border-color: #ff0000;
-  color: #ff3333;
+  background: rgba(139, 0, 0, 0.6) !important;
+  border-color: #ff0000 !important;
+  color: #ffcccc !important;
 }
 
+/* Products section */
 .roast-mode-theme .products-title {
-  color: #ff3333;
-  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  color: #ff0000 !important;
+  text-shadow: 0 0 15px rgba(255, 0, 0, 0.7), 0 0 30px rgba(255, 0, 0, 0.4);
 }
 
 .roast-mode-theme .product-card {
-  background: rgba(20, 0, 0, 0.8);
-  border: 2px solid #660000;
-  box-shadow: 0 8px 32px rgba(255, 0, 0, 0.2);
-}
-
-.roast-mode-theme .product-card:hover {
-  border-color: #ff0000;
-  box-shadow: 0 12px 40px rgba(255, 0, 0, 0.4);
-  transform: translateY(-8px);
-}
-
-.roast-mode-theme .product-name {
-  color: #ff6666;
-}
-
-.roast-mode-theme .product-reason {
-  color: #cc4444;
-}
-
-.roast-mode-theme .add-to-cart {
-  background: linear-gradient(135deg, #660000 0%, #8b0000 100%);
-  border: 2px solid #8b0000;
-  color: #ffcccc;
-}
-
-.roast-mode-theme .add-to-cart:hover {
-  background: linear-gradient(135deg, #8b0000 0%, #b30000 100%);
-  border-color: #ff0000;
-  color: white;
-  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
-}
-
-.roast-mode-theme .cart-drawer {
-  background: rgba(10, 0, 0, 0.95);
-  border: 2px solid #660000;
+  background: rgba(20, 0, 0, 0.9) !important;
+  border: 2px solid #880000 !important;
   box-shadow: 0 8px 32px rgba(255, 0, 0, 0.3);
 }
 
+.roast-mode-theme .product-card:hover {
+  border-color: #ff0000 !important;
+  box-shadow: 0 12px 40px rgba(255, 0, 0, 0.5);
+  transform: translateY(-8px);
+}
+
+.roast-mode-theme .product-emoji {
+  filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.6));
+}
+
+.roast-mode-theme .product-name {
+  color: #ff6666 !important;
+  font-weight: 700;
+}
+
+.roast-mode-theme .product-reason {
+  color: #dd5555 !important;
+}
+
+.roast-mode-theme .add-to-cart {
+  background: linear-gradient(135deg, #660000 0%, #990000 100%) !important;
+  border: 2px solid #aa0000 !important;
+  color: #ffdddd !important;
+}
+
+.roast-mode-theme .add-to-cart:hover {
+  background: linear-gradient(135deg, #880000 0%, #cc0000 100%) !important;
+  border-color: #ff0000 !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.6);
+}
+
+/* Cart drawer */
+.roast-mode-theme .cart-drawer {
+  background: rgba(10, 0, 0, 0.98) !important;
+  border: 3px solid #aa0000 !important;
+  box-shadow: 0 8px 32px rgba(255, 0, 0, 0.4);
+}
+
 .roast-mode-theme .cart-header {
-  border-bottom-color: #660000;
+  border-bottom-color: #880000 !important;
 }
 
 .roast-mode-theme .cart-header h3 {
-  color: #ff3333;
+  color: #ff3333 !important;
+  text-shadow: 0 0 10px rgba(255, 51, 51, 0.6);
 }
 
 .roast-mode-theme .cart-close {
-  color: #ff6666;
+  color: #ff6666 !important;
 }
 
 .roast-mode-theme .cart-close:hover {
-  background: rgba(139, 0, 0, 0.3);
-  color: #ff3333;
+  background: rgba(139, 0, 0, 0.4) !important;
+  color: #ff3333 !important;
 }
 
 .roast-mode-theme .cart-item {
-  background: rgba(30, 0, 0, 0.7);
-  border: 1px solid #660000;
+  background: rgba(30, 0, 0, 0.8) !important;
+  border: 1px solid #660000 !important;
 }
 
 .roast-mode-theme .cart-item-name {
-  color: #ff6666;
+  color: #ff8888 !important;
 }
 
 .roast-mode-theme .cart-item-remove {
-  background: #660000;
-  color: #ff6666;
+  background: #880000 !important;
+  color: #ffcccc !important;
 }
 
 .roast-mode-theme .cart-item-remove:hover {
-  background: #8b0000;
-  color: #ff3333;
+  background: #cc0000 !important;
+  color: white !important;
 }
 
+/* Vibe history */
 .roast-mode-theme .vibe-history {
-  background: rgba(20, 0, 0, 0.6);
-  border: 2px solid #660000;
+  background: rgba(20, 0, 0, 0.7) !important;
+  border: 2px solid #880000 !important;
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
 }
 
 .roast-mode-theme .vibe-history-title {
-  color: #ff6666;
+  color: #ff6666 !important;
+  text-shadow: 0 0 8px rgba(255, 102, 102, 0.5);
 }
 
 .roast-mode-theme .vibe-history-item {
-  background: rgba(30, 0, 0, 0.5);
-  border: 1px solid #660000;
-  color: #cc4444;
+  background: rgba(30, 0, 0, 0.6) !important;
+  border: 1px solid #660000 !important;
+  color: #dd6666 !important;
 }
 
-.roast-mode-theme .vibe-history-item:hover {
-  background: rgba(40, 0, 0, 0.7);
-  border-color: #8b0000;
-  color: #ff6666;
+.roast-mode-theme .vibe-history-item:hover:not(:disabled) {
+  background: rgba(139, 0, 0, 0.8) !important;
+  border-color: #aa0000 !important;
+  color: #ffcccc !important;
+  transform: translateY(-2px);
 }
 
+/* Loading states */
 .roast-mode-theme .loading-text {
-  color: #ff6666;
-  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  color: #ff6666 !important;
+  text-shadow: 0 0 10px rgba(255, 102, 102, 0.6);
 }
 
 .roast-mode-theme .loading-spinner {
-  border-color: rgba(139, 0, 0, 0.2);
-  border-top-color: #ff0000;
+  border-color: rgba(139, 0, 0, 0.3) !important;
+  border-top-color: #ff0000 !important;
 }
 
+/* Error messages */
 .roast-mode-theme .error {
-  background: rgba(139, 0, 0, 0.2);
-  border-left-color: #ff0000;
-  color: #ff6666;
+  background: rgba(139, 0, 0, 0.3) !important;
+  border-left-color: #ff0000 !important;
+  color: #ff8888 !important;
 }
 
+/* Easter egg */
 .roast-mode-theme .easter-egg {
-  background: rgba(139, 0, 0, 0.2);
-  border: 1px solid #660000;
-  color: #ff6666;
+  background: rgba(139, 0, 0, 0.3) !important;
+  border: 1px solid #660000 !important;
+  color: #ff8888 !important;
+  border-radius: 8px;
 }
 
+/* Clothing analysis section */
 .roast-mode-theme .clothing-analysis-section {
-  background: rgba(10, 0, 0, 0.95);
-  border: 2px solid #660000;
+  background: rgba(10, 0, 0, 0.95) !important;
+  border: 2px solid #880000 !important;
 }
 
 .roast-mode-theme .clothing-analysis-header h2 {
-  color: #ff3333;
+  color: #ff3333 !important;
+  text-shadow: 0 0 15px rgba(255, 51, 51, 0.6);
 }
 
 .roast-mode-theme .analysis-subtitle {
-  color: #cc4444;
+  color: #dd6666 !important;
 }
 
 .roast-mode-theme .close-button {
-  background: #660000;
-  color: #ff6666;
+  background: #880000 !important;
+  color: #ffcccc !important;
 }
 
 .roast-mode-theme .close-button:hover {
-  background: #8b0000;
-  color: #ff3333;
+  background: #cc0000 !important;
+  color: white !important;
 }
 
 .roast-mode-theme .clothing-item-card {
-  background: rgba(20, 0, 0, 0.8);
-  border: 2px solid #660000;
+  background: rgba(20, 0, 0, 0.85) !important;
+  border: 2px solid #880000 !important;
 }
 
 .roast-mode-theme .clothing-item-card:hover {
-  border-color: #8b0000;
-  box-shadow: 0 8px 30px rgba(255, 0, 0, 0.3);
+  border-color: #cc0000 !important;
+  box-shadow: 0 8px 30px rgba(255, 0, 0, 0.4);
 }
 
 .roast-mode-theme .item-type {
-  color: #ff6666;
+  color: #ff8888 !important;
 }
 
 .roast-mode-theme .detail-label {
-  color: #994444;
+  color: #aa5555 !important;
 }
 
 .roast-mode-theme .item-color,
 .roast-mode-theme .item-style {
-  color: #cc4444;
+  color: #dd6666 !important;
 }
 
 .roast-mode-theme .add-to-cart-item {
-  background: linear-gradient(135deg, #660000 0%, #8b0000 100%);
-  border-color: #8b0000;
+  background: linear-gradient(135deg, #660000 0%, #990000 100%) !important;
+  border-color: #aa0000 !important;
+  color: #ffdddd !important;
 }
 
 .roast-mode-theme .add-to-cart-item:hover {
-  background: linear-gradient(135deg, #8b0000 0%, #b30000 100%);
-  border-color: #ff0000;
-  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+  background: linear-gradient(135deg, #880000 0%, #cc0000 100%) !important;
+  border-color: #ff0000 !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.6);
 }
 
 .roast-mode-theme .clothing-summary {
-  background: rgba(30, 0, 0, 0.6);
-  border-left: 4px solid #ff0000;
-  color: #cc4444;
+  background: rgba(30, 0, 0, 0.7) !important;
+  border-left: 4px solid #ff0000 !important;
+  color: #dd6666 !important;
 }
 
 .roast-mode-theme .shopping-link {
-  background: rgba(30, 0, 0, 0.6);
-  border: 1px solid #660000;
-  color: #ff6666;
+  background: rgba(30, 0, 0, 0.7) !important;
+  border: 1px solid #880000 !important;
+  color: #ff8888 !important;
 }
 
 .roast-mode-theme .shopping-link:hover {
-  background: rgba(40, 0, 0, 0.8);
-  border-color: #8b0000;
-  color: #ff3333;
+  background: rgba(40, 0, 0, 0.9) !important;
+  border-color: #cc0000 !important;
+  color: #ffcccc !important;
+}
+
+.roast-mode-theme .link-title {
+  color: #ff6666 !important;
 }
 
 /* Vibe images in roast mode */
+.roast-mode-theme .vibe-images-title {
+  color: #ff3333 !important;
+  text-shadow: 0 0 15px rgba(255, 51, 51, 0.7);
+}
+
 .roast-mode-theme .vibe-image-card {
-  border-color: #660000;
-  box-shadow: 0 8px 32px rgba(255, 0, 0, 0.2);
+  border-color: #880000 !important;
+  box-shadow: 0 8px 32px rgba(255, 0, 0, 0.3);
 }
 
 .roast-mode-theme .vibe-image-card:hover {
-  border-color: #8b0000;
-  box-shadow: 0 12px 40px rgba(255, 0, 0, 0.4);
+  border-color: #cc0000 !important;
+  box-shadow: 0 12px 40px rgba(255, 0, 0, 0.5);
   transform: translateY(-8px);
 }
 
 .roast-mode-theme .choose-vibe-btn {
-  background: linear-gradient(135deg, #660000 0%, #8b0000 100%);
-  border-color: #8b0000;
-  color: #ffcccc;
+  background: linear-gradient(135deg, #660000 0%, #990000 100%) !important;
+  border-color: #aa0000 !important;
+  color: #ffdddd !important;
 }
 
 .roast-mode-theme .choose-vibe-btn:hover {
-  background: linear-gradient(135deg, #8b0000 0%, #b30000 100%);
-  border-color: #ff0000;
-  color: white;
+  background: linear-gradient(135deg, #880000 0%, #cc0000 100%) !important;
+  border-color: #ff0000 !important;
+  color: white !important;
 }
 
 /* Additional atmospheric effects for roast mode */
