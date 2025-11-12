@@ -65,6 +65,26 @@ export default function ClothingAnalysis({
                       <span className="item-style">{item.style}</span>
                     </div>
                   </div>
+
+                  {item.shoppingLinks && item.shoppingLinks.length > 0 && (
+                    <div className="shopping-links">
+                      <div className="shopping-links-header">🛍️ Shop this item:</div>
+                      <div className="shopping-links-list">
+                        {item.shoppingLinks.map((link, linkIndex) => (
+                          <a
+                            key={linkIndex}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="shopping-link"
+                          >
+                            <span className="link-icon">🔗</span>
+                            <span className="link-title">{link.title}</span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

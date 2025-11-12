@@ -15,6 +15,11 @@ export interface ClothingItem {
   type: string;
   color: string;
   style: string;
+  shoppingLinks?: {
+    title: string;
+    url: string;
+    snippet: string;
+  }[];
 }
 
 /**

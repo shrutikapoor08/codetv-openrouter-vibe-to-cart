@@ -1,6 +1,93 @@
 import { MOCK_MODE, OPENROUTER_API_KEY } from "../config/env.js";
 
 /**
+ * Search for shopping links for a clothing item using OpenRouter web search
+ * @param {Object} item - The clothing item to search for
+ * @returns {Promise<Array>} - Array of shopping links
+ */
+const searchClothingItem = async (item) => {
+  if (MOCK_MODE) {
+    return [
+      {
+        title: `Shop ${item.type}`,
+        url: "https://example.com",
+        snippet: `Find the perfect ${item.color} ${item.style} ${item.type}`,
+      },
+    ];
+  }
+
+  try {
+    // Create a search query from the item details
+    const searchQuery = `shop ${item.color} ${item.style} ${item.type} buy online`;
+
+    console.log(`🔍 Searching for: "${searchQuery}"`);
+
+    const requestConfig = {
+      model: "openai/gpt-4o-mini", // Fast model for web search
+      messages: [
+        {
+          role: "user",
+          content: `Find the best online shopping options for: ${item.color} ${item.style} ${item.type}. Return the top 3 most relevant shopping links.`,
+        },
+      ],
+      provider: {
+        order: ["Perplexity"], // Use Perplexity for web search
+        allow_fallbacks: false,
+      },
+      transforms: ["web_search"], // Enable web search
+      max_tokens: 500,
+      temperature: 0.3,
+    };
+
+    const fetchResponse = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer":
+            "https://github.com/shrutikapoor08/codetv-openrouter-vibe-to-cart",
+          "X-Title": "Vibe to Cart - Web Search",
+        },
+        body: JSON.stringify(requestConfig),
+      }
+    );
+
+    if (!fetchResponse.ok) {
+      console.error(`⚠️ Web search failed for ${item.type}`);
+      return [];
+    }
+
+    const response = await fetchResponse.json();
+
+    // Extract search results from the response
+    if (response.choices && response.choices[0]) {
+      const content = response.choices[0].message.content;
+
+      // Try to extract URLs from the content
+      const urlRegex = /https?:\/\/[^\s<>"{}|\\^`\[\]]+/g;
+      const urls = content.match(urlRegex) || [];
+
+      // Create shopping links from found URLs
+      const links = urls.slice(0, 3).map((url, index) => ({
+        title: `Shop ${item.type} - Option ${index + 1}`,
+        url: url,
+        snippet: `${item.color} ${item.style} ${item.type}`,
+      }));
+
+      console.log(`✅ Found ${links.length} shopping links for ${item.type}`);
+      return links;
+    }
+
+    return [];
+  } catch (error) {
+    console.error(`❌ Error searching for ${item.type}:`, error.message);
+    return [];
+  }
+};
+
+/**
  * Analyze an image to extract clothing details using AI vision
  * @param {string} imageUrl - The image URL (can be data URI or regular URL)
  * @returns {Promise<Object>} - Parsed clothing details
@@ -133,7 +220,24 @@ Return ONLY raw JSON (no markdown, no code blocks):
         console.log(`   ${i + 1}. ${item.type} - ${item.color} - ${item.style}`);
       });
 
-      return analysis;
+      // Search for shopping links for each item
+      console.log("🛍️  Searching for shopping links for each item...");
+      const itemsWithLinks = await Promise.all(
+        analysis.items.map(async (item) => {
+          const shoppingLinks = await searchClothingItem(item);
+          return {
+            ...item,
+            shoppingLinks,
+          };
+        })
+      );
+
+      console.log("✅ Added shopping links to all items");
+
+      return {
+        ...analysis,
+        items: itemsWithLinks,
+      };
     }
 
     throw new Error("Unexpected response format from OpenRouter");
