@@ -111,13 +111,13 @@ Mock mode returns pre-defined responses without making actual API calls. Perfect
 
 ## 🏗️ Tech Stack
 
-| Layer                | Technology                             | Purpose                           |
-| -------------------- | -------------------------------------- | --------------------------------- |
-| **Frontend**         | React + TypeScript + Vite              | UI framework & build tool         |
-| **Backend**          | Node.js + Express                      | HTTP server & API routing         |
-| **AI Orchestration** | LangChain + LangGraph                  | Agent workflow management         |
-| **AI Models**        | OpenRouter (GPT-4o-mini, Claude, etc.) | Multi-model LLM access            |
-| **Styling**          | TailwindCSS (planned)                  | Rapid UI development              |
+| Layer                | Technology                             | Purpose                   |
+| -------------------- | -------------------------------------- | ------------------------- |
+| **Frontend**         | React + TypeScript + Vite              | UI framework & build tool |
+| **Backend**          | Node.js + Express                      | HTTP server & API routing |
+| **AI Orchestration** | LangChain + LangGraph                  | Agent workflow management |
+| **AI Models**        | OpenRouter (GPT-4o-mini, Claude, etc.) | Multi-model LLM access    |
+| **Styling**          | TailwindCSS (planned)                  | Rapid UI development      |
 
 ---
 
