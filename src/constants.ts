@@ -93,5 +93,5 @@ export function getEasterEggMessage(vibe: string): string {
  */
 export const APP_GRADIENTS = {
   normal: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-  roast: "linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%)",
+  roast: "linear-gradient(135deg, #1a0000 0%, #3d0000 50%, #000000 100%)",
 } as const;

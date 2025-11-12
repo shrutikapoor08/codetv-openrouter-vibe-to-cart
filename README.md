@@ -25,6 +25,40 @@ Built for a 4-hour hackathon. Optimized for laughs.
 
 ---
 
+## 🧠 Tech Stack
+
+### Frontend
+- **React 19** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool & dev server
+- **Custom CSS** - Styling with dynamic theme switching (Normal/Roast modes)
+
+### Backend
+- **Node.js** - Runtime environment
+- **Express 5** - HTTP server & routing
+
+### AI & Models
+- **LangChain** - AI orchestration framework
+- **OpenRouter API** - Multi-model LLM access
+- **@openrouter/sdk** - Official OpenRouter SDK
+
+**Models Used:**
+- `openai/gpt-4o-mini` - Product recommendations & cart roasts
+- `openai/gpt-4o-mini:online` - Web-enabled search for product images
+- `google/gemini-2.5-flash-image` - Image generation & visual analysis
+
+### Features
+- 🎨 **Dual theme system** - Normal mode (purple/blue gradient) vs Roast mode (evil red/black with glowing effects)
+- 🔊 **Sound effects** - Evil laugh audio when activating Roast Mode
+- 📸 **AI image generation** - Outfit visualizations using Gemini Flash
+- 🔍 **AI image analysis** - Clothing item detection and description
+- 💬 **Cart roasting** - AI roasts your shopping choices in Roast Mode
+- 📦 **Smart caching** - Reduces API costs with vibe/image/analysis caching
+- 🎭 **Mock mode** - Full testing without API keys
+- 🎯 **Vibe history** - Quick access to recently searched vibes
+
+---
+
 ## 📚 Documentation
 
 - **[REQUIREMENTS.md](./REQUIREMENTS.md)** - Project requirements, features, timeline, and TODO list
@@ -217,7 +251,9 @@ Plain text response with AI-generated recommendations
 ### Current (MVP)
 
 ✅ AI-powered vibe processing via OpenRouter  
-✅ Web search integration with Tavily  
+✅ Multi-model AI (GPT-4o-mini, Gemini Flash)  
+✅ Image generation and analysis  
+✅ Roast Mode with evil theme  
 ✅ Mock mode for testing  
 ✅ Environment-based configuration  
 ✅ Error handling & validation
@@ -289,8 +325,7 @@ MIT License - See LICENSE file for details
 
 - Built for a 4-hour hackathon challenge
 - Powered by [OpenRouter](https://openrouter.ai/)
-- Web search by [Tavily](https://tavily.com/)
-- Orchestration by [LangChain](https://www.langchain.com/)
+- AI orchestration by [LangChain](https://www.langchain.com/)
 - Inspired by the chaos of modern e-commerce
 
 ---

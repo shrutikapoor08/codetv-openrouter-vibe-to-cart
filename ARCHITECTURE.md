@@ -9,25 +9,28 @@
 ```mermaid
 graph TD
     A[React UI<br/>Vite + TypeScript] -->|HTTP Request| B[Express API<br/>Node.js]
-    B --> D[LangGraph Agent]
+    B --> D[AI Agent Service]
     B --> G[Image Generation<br/>Service]
+    B --> I[Image Analysis<br/>Service]
     D --> E[OpenRouter API<br/>Text: GPT-4o-mini]
-    D --> F[Tavily Search<br/>Web search tool]
-    G --> H[OpenRouter API<br/>Images: Gemini-Flash-Image]
+    G --> H[OpenRouter API<br/>Images: Gemini-2.5-Flash-Image]
+    I --> J[OpenRouter API<br/>Vision: Gemini-2.5-Flash-Image]
     E -->|AI Response| D
-    F -->|Search Results| D
     D -->|Products JSON| B
     H -->|Generated Image| G
     G -->|Image URL| B
+    J -->|Clothing Analysis| I
+    I -->|Analysis JSON| B
     B -->|JSON/Images| A
 
     style A fill:#e1f5ff
     style B fill:#fff4e1
     style D fill:#f0e1ff
     style E fill:#ffe1e1
-    style F fill:#e1ffe1
     style G fill:#ffe8f0
     style H fill:#ffe1e1
+    style I fill:#e8f5e8
+    style J fill:#ffe1e1
 ```
 
 ---
@@ -36,12 +39,12 @@ graph TD
 
 ### Frontend
 
-| Technology      | Version   | Purpose                        |
-| --------------- | --------- | ------------------------------ |
-| **React**       | 19.2.0    | UI framework                   |
-| **TypeScript**  | Latest    | Type safety                    |
-| **Vite**        | Latest    | Build tool & dev server        |
-| **TailwindCSS** | (Planned) | Styling & rapid UI development |
+| Technology      | Version | Purpose                                    |
+| --------------- | ------- | ------------------------------------------ |
+| **React**       | 19.2.0  | UI framework                               |
+| **TypeScript**  | Latest  | Type safety                                |
+| **Vite**        | Latest  | Build tool & dev server                    |
+| **Custom CSS**  | -       | Styling with dynamic theme switching       |
 
 ### Backend
 
@@ -52,19 +55,30 @@ graph TD
 
 ### AI & Orchestration
 
-| Technology           | Version | Purpose                        |
-| -------------------- | ------- | ------------------------------ |
-| **LangChain Core**   | 1.0.4   | Message handling & primitives  |
-| **LangGraph**        | 1.0.2   | Agent workflow orchestration   |
-| **LangChain OpenAI** | 1.1.0   | OpenRouter/OpenAI integration  |
-| **LangChain Tavily** | 1.0.0   | Web search tool integration    |
-| **OpenRouter API**   | -       | Multi-model LLM & image access |
-| **Tavily API**       | -       | Web search service             |
+| Technology           | Version | Purpose                          |
+| -------------------- | ------- | -------------------------------- |
+| **LangChain Core**   | 1.0.4   | Message handling & primitives    |
+| **LangGraph**        | 1.0.2   | Agent workflow orchestration     |
+| **LangChain OpenAI** | 1.1.0   | OpenRouter/OpenAI integration    |
+| **OpenRouter SDK**   | 0.1.11  | Official OpenRouter SDK          |
+| **OpenRouter API**   | -       | Multi-model LLM & image access   |
 
 **OpenRouter Models Used:**
 
-- Text: `openai/gpt-4o-mini` (product recommendations)
-- Images: `google/gemini-2.5-flash-image` (product visuals)
+- **Text Generation:**
+  - `openai/gpt-4o-mini` - Product recommendations, cart roasts
+  - `openai/gpt-4o-mini:online` - Web-enabled product image search
+  
+- **Image Generation & Analysis:**
+  - `google/gemini-2.5-flash-image` - Outfit image generation, clothing analysis
+
+### Key Features
+
+- **Dual Theme System** - CSS-based theme switching (Normal/Roast modes)
+- **Sound Effects** - Web Audio API evil laugh on Roast Mode activation
+- **Multi-Model AI** - Different models for different tasks (text, images, vision)
+- **Smart Caching** - Three-tier caching: vibes, images, and analysis results
+- **Mock Mode** - Complete testing without API keys
 
 ---
 
@@ -91,8 +105,6 @@ sequenceDiagram
     alt Mock Mode Enabled
         Agent->>Express: Return mock response
     else Production Mode
-        Agent->>Tavily: Search web for context
-        Tavily-->>Agent: Search results
         Agent->>OpenRouter: Generate recommendations (gpt-4o-mini)
         OpenRouter-->>Agent: Products JSON
         Agent->>Express: Return products array
@@ -103,7 +115,7 @@ sequenceDiagram
     loop For each product
         Frontend->>Express: GET /api/product-image?name=<product>
         Express->>ImageGen: generateProductImage({productName})
-        ImageGen->>OpenRouter: Generate image (gemini-flash-image)
+        ImageGen->>OpenRouter: Generate image (gemini-2.5-flash-image)
         OpenRouter-->>ImageGen: PNG image data
         ImageGen->>ImageGen: Cache image to disk
         ImageGen->>Express: Return image URL
@@ -116,37 +128,196 @@ sequenceDiagram
 **Detailed Steps:**
 
 1. **User enters vibe** (e.g., "I'm in my villain era")
-2. **Frontend sends GET request** to `/agent?query=<vibe>`
+2. **Frontend sends GET request** to `/api/vibe?vibe=<vibe>&roastMode=<boolean>`
 3. **Express server validates** query parameter
-4. **Server calls** `webSearchAgent({ description })`
-5. **Agent orchestrates** AI + search tools
-6. **Response returns** as plain text or JSON
+4. **Server calls** `webSearchAgent({ description, roastMode })`
+5. **Agent calls** OpenRouter GPT-4o-mini for product recommendations
+6. **Response returns** as JSON array of products
 7. **Frontend displays** product recommendations
+8. **User clicks outfit** to trigger image generation and analysis
 
-### 2. API Endpoint Architecture
+### 2. Image Analysis Flow
 
-#### `GET /agent`
+**When user clicks "Analyze Outfit":**
 
-**Purpose:** Process user vibe and return AI-generated recommendations
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Express
+    participant ImageAnalysis
+    participant OpenRouter
+
+    User->>Frontend: Click "Analyze Outfit" on product card
+    Frontend->>Express: POST /api/analyze-image {imageUrl}
+    Express->>ImageAnalysis: analyzeImage(imageUrl)
+    ImageAnalysis->>OpenRouter: Vision API (gemini-2.5-flash-image)
+    OpenRouter-->>ImageAnalysis: Clothing items JSON
+    
+    loop For each clothing item
+        ImageAnalysis->>OpenRouter: Search for product image (gpt-4o-mini:online)
+        OpenRouter-->>ImageAnalysis: Product image URL
+    end
+    
+    ImageAnalysis->>Express: Return analysis + images
+    Express->>Frontend: Clothing items with images
+    Frontend->>User: Display analyzed outfit items
+```
+
+### 3. Cart Roast Flow
+
+**When Roast Mode is active and items are in cart:**
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Express
+    participant Agent
+    participant OpenRouter
+
+    User->>Frontend: Add items to cart (Roast Mode ON)
+    Frontend->>Express: POST /api/roast-cart {cartItems[]}
+    Express->>Agent: roastCart({cartItems})
+    Agent->>OpenRouter: Generate roast (gpt-4o-mini)
+    OpenRouter-->>Agent: Roast message
+    Agent->>Express: Return roast text
+    Express->>Frontend: Roast message
+    Frontend->>User: Display roast in modal
+```
+
+### 4. API Endpoint Architecture
+
+#### `GET /api/vibe`
+
+**Purpose:** Process user vibe and return AI-generated product recommendations
 
 **Request Format:**
 
 ```http
-GET /agent?query=your-vibe-here HTTP/1.1
+GET /api/vibe?vibe=villain+era&roastMode=false HTTP/1.1
 ```
 
 **Response Format:**
 
-```
-Plain text response with AI-generated product recommendations
+```json
+{
+  "products": [
+    {
+      "emoji": "🖤",
+      "name": "Oversized Black Hoodie",
+      "reason": "For mysterious exits and emotional support",
+      "imageUrl": "data:image/png;base64,..."
+    }
+  ]
+}
 ```
 
 **Error Handling:**
 
-- 400: Missing or empty query parameter
+- 400: Missing or invalid vibe parameter
 - 500: AI processing error (with detailed error info)
 
-**Code Location:** `src/api/server.js`
+**Code Location:** `src/api/routes/vibeRoutes.js`, `src/api/services/aiAgent.js`
+
+#### `POST /api/roast-cart`
+
+**Purpose:** Roast user's cart choices with AI humor
+
+**Request Format:**
+
+```json
+{
+  "cartItems": [
+    {
+      "name": "Oversized Black Hoodie",
+      "emoji": "🖤",
+      "reason": "For emotional support"
+    }
+  ]
+}
+```
+
+**Response Format:**
+
+```json
+{
+  "roast": "Oh honey, a black hoodie? How original. Let me guess, you're going through a phase?..."
+}
+```
+
+**Code Location:** `src/api/routes/vibeRoutes.js`
+
+#### `POST /api/product-image`
+
+**Purpose:** Generate AI image for a product
+
+**Request Format:**
+
+```json
+{
+  "productName": "Oversized Black Hoodie",
+  "vibe": "villain era"
+}
+```
+
+**Response Format:**
+
+```json
+{
+  "imageUrl": "data:image/png;base64,...",
+  "message": "Image generated successfully"
+}
+```
+
+**Code Location:** `src/api/routes/imageRoutes.js`, `src/api/services/imageGeneration.js`
+
+#### `POST /api/analyze-image`
+
+**Purpose:** Analyze outfit image and extract clothing items
+
+**Request Format:**
+
+```json
+{
+  "imageUrl": "https://example.com/outfit.jpg"
+}
+```
+
+**Response Format:**
+
+```json
+{
+  "items": [
+    {
+      "type": "jacket",
+      "color": "black",
+      "style": "leather bomber",
+      "imageUrl": "https://...",
+      "shoppingLinks": [
+        {
+          "store": "ASOS",
+          "url": "https://...",
+          "searchQuery": "black leather bomber jacket"
+        }
+      ]
+    }
+  ],
+  "summary": "A cohesive outfit featuring modern streetwear elements..."
+}
+```
+
+**Code Location:** `src/api/routes/imageAnalysisRoutes.js`, `src/api/services/imageAnalysis.js`
+
+#### Cache Management Endpoints
+
+- `GET /api/image-cache-stats` - Get product image cache statistics
+- `GET /api/vibe-cache-stats` - Get vibe recommendations cache statistics
+- `POST /api/clear-vibe-cache` - Clear vibe cache
+- `GET /api/vibe-image-cache-stats` - Get vibe image cache statistics
+- `POST /api/clear-vibe-image-cache` - Clear vibe image cache
+- `GET /api/image-analysis-cache-stats` - Get analysis cache statistics
+- `POST /api/clear-image-analysis-cache` - Clear analysis cache
 
 ---
 
@@ -154,37 +325,28 @@ Plain text response with AI-generated product recommendations
 
 ### Agent Components
 
-The `webSearchAgent` (located in `src/api/services/aiAgent.js`) is built using **LangGraph's ReAct Agent** pattern:
+The `webSearchAgent` (located in `src/api/services/aiAgent.js`) uses **direct OpenRouter model invocation** (no web search tools in current version):
 
 ```mermaid
 flowchart TD
-    Start([User Query]) --> MockCheck{MOCK_MODE?}
+    Start([User Query + Roast Mode]) --> MockCheck{MOCK_MODE?}
 
     MockCheck -->|Yes| MockResponse[Return Mock Response<br/>500ms delay]
-    MockCheck -->|No| InitTools[Initialize Tools]
+    MockCheck -->|No| CreatePrompt[Create Vibe Prompt]
 
-    InitTools --> TavilyTool[Tavily Search Tool<br/>maxResults: 3]
-    InitTools --> ModelInit[OpenRouter Model<br/>gpt-4o-mini]
-    InitTools --> MemoryInit[Memory Saver<br/>Conversation State]
+    CreatePrompt --> RoastCheck{Roast Mode?}
+    RoastCheck -->|Yes| RoastPrompt[Add Roast Instructions]
+    RoastCheck -->|No| NicePrompt[Add Recommendation Instructions]
 
-    TavilyTool --> CreateAgent[Create ReAct Agent]
-    ModelInit --> CreateAgent
-    MemoryInit --> CreateAgent
+    RoastPrompt --> ModelInit[OpenRouter Model<br/>gpt-4o-mini]
+    NicePrompt --> ModelInit
 
-    CreateAgent --> Question[Format as HumanMessage]
-    Question --> Invoke[Agent.invoke]
+    ModelInit --> Invoke[model.invoke]
 
-    Invoke --> ReAct{ReAct Loop}
-    ReAct -->|Reason| Analyze[Analyze Query]
-    Analyze -->|Act| Decide{Need Tools?}
+    Invoke --> ParseResponse[Parse JSON Response]
+    ParseResponse --> AddImages[Generate Product Images<br/>gemini-2.5-flash-image]
 
-    Decide -->|Yes| UseTavily[Search Web]
-    Decide -->|No| Generate[Generate Response]
-
-    UseTavily -->|Observe| ProcessResults[Process Search Results]
-    ProcessResults --> Generate
-
-    Generate --> Response[Final Response]
+    AddImages --> Response[Products with Images]
     MockResponse --> End([Return to User])
     Response --> End
 
@@ -218,24 +380,16 @@ flowchart TD
    });
    ```
 
-2. **Tools**
+2. **Direct Model Invocation**
 
    ```javascript
-   new TavilySearch({
-     maxResults: 3,
-     tavilyApiKey: process.env.TAVILY_API_KEY,
-   });
+   // No external tools - direct AI invocation
+   const response = await model.invoke([question]);
    ```
 
-3. **Memory**
-
+3. **Response Parsing**
    ```javascript
-   new MemorySaver(); // Persists conversation state
-   ```
-
-4. **Agent Creation**
-   ```javascript
-   createReactAgent({
+   const products = JSON.parse(response.content);
      llm: agentModel,
      tools: [webTool],
      checkpointSaver: agentCheckpointer,
@@ -244,18 +398,19 @@ flowchart TD
 
 ### ReAct Agent Pattern
 
-**ReAct** = **Rea**soning + **Act**ing
+**Direct AI Processing**
 
-The agent follows this loop:
+The agent uses a straightforward approach:
 
-1. **Reason:** Analyze the user's vibe/query
-2. **Act:** Decide if tools (Tavily search) are needed
-3. **Observe:** Process tool results
-4. **Respond:** Generate final recommendation
+1. **Receive:** Get user's vibe/query
+2. **Process:** Send to GPT-4o-mini with structured prompt
+3. **Parse:** Extract JSON product recommendations
+4. **Enhance:** Generate images for each product
+5. **Return:** Send complete response to frontend
 
 ---
 
-## � Backend Directory Structure
+## 📁 Backend Directory Structure
 
 The backend follows a **service-oriented architecture** for better separation of concerns and maintainability:
 
@@ -392,9 +547,6 @@ MOCK_MODE=true
 # OpenRouter API Key - Multi-model LLM access
 OPENROUTER_API_KEY=sk-or-v1-...
 
-# Tavily API Key - Web search functionality
-TAVILY_API_KEY=tvly-dev-...
-
 # Server Port (optional)
 PORT=3001
 ```
@@ -408,7 +560,7 @@ PORT=3001
 **Logic:**
 
 - If `MOCK_MODE=true`: Skip validation
-- If `MOCK_MODE=false`: Require `OPENROUTER_API_KEY` and `TAVILY_API_KEY`
+- If `MOCK_MODE=false`: Require `OPENROUTER_API_KEY`
 - Exit with error code 1 if keys missing
 
 **Benefits:**
@@ -561,25 +713,26 @@ configuration: {
 - `openai/dall-e-3`
 - `stability-ai/stable-diffusion-xl`
 
-### Tavily Search Integration
+### Vision & Analysis Models
 
-**Purpose:** Enable AI to search the web for real-time information
+**Purpose:** Enable AI to analyze images and extract clothing information
 
-**Configuration:**
+**Current Implementation:**
 
 ```javascript
-new TavilySearch({
-  maxResults: 3,
-  tavilyApiKey: process.env.TAVILY_API_KEY,
-});
+// Vision analysis using Gemini Flash
+model: "google/gemini-2.5-flash-image"
+
+// Product image search using web-enabled GPT
+model: "openai/gpt-4o-mini:online"
 ```
 
 **Use Cases:**
 
-- Product research
-- Real-time trends
-- Location-based queries
-- Price checking (future)
+- Outfit analysis
+- Clothing item detection
+- Style recommendations
+- Product image search
 
 ---
 
@@ -827,17 +980,19 @@ npm run server
 
 **For Judges:**
 
-> "We built a full-stack AI agent using LangGraph for orchestration and OpenRouter for multi-model access. The architecture supports both web search via Tavily and conversational memory for context-aware recommendations."
+> "We built a full-stack AI-powered e-commerce app using LangChain and OpenRouter for multi-model access. The architecture leverages three different AI models for text generation, image creation, and vision analysis."
 
 > "We implemented a mock mode toggle that lets us demo without live API dependency - perfect for reliability during presentations."
 
-> "The modular design makes it trivial to swap models or add new AI personalities - we can switch from GPT-4 to Claude in one line of code."
+> "The modular design makes it trivial to swap models or add new AI personalities - we can switch between different OpenRouter models in one line of code."
 
 **Technical Highlights:**
 
-- ✅ ReAct agent pattern with tools
-- ✅ Multi-model capability via OpenRouter
-- ✅ Conversation state management
+- ✅ Multi-model AI architecture (GPT-4o-mini, Gemini Flash)
+- ✅ Direct model invocation for fast responses
+- ✅ Image generation and vision analysis
+- ✅ Roast Mode with dynamic theme switching
+- ✅ Three-tier caching system
 - ✅ Environment-based configuration
 - ✅ Graceful error handling
 - ✅ Mock mode for development

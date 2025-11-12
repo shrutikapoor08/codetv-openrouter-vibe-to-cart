@@ -87,18 +87,19 @@ A web app where users describe their current vibe/mood/aesthetic, and get funny,
 
 | Layer        | Technology                            | Purpose                                     |
 | ------------ | ------------------------------------- | ------------------------------------------- |
-| Frontend     | React + Tailwind CSS                  | Simple UI for vibe input and product cards  |
+| Frontend     | React + Custom CSS                    | Simple UI for vibe input and product cards  |
 | Backend      | Node/Express                          | API endpoint to process vibes               |
-| AI           | OpenRouter (GPT-4.1 or Claude Sonnet) | Generate product recommendations + captions |
+| AI           | OpenRouter (GPT-4o-mini, Gemini)      | Generate recommendations, images, analysis  |
 | Product Data | Static JSON mock list                 | Fast, controllable, funnier than real data  |
 | Deployment   | Vercel/Netlify                        | Quick demo hosting                          |
 
 ### Why This Stack?
 
-- ✅ **LangChain (Light):** Clean orchestration, structured output parsing, looks technical for judges
-- ✅ **OpenRouter:** Multiple model options, creative outputs
-- ❌ **Skip Tavily:** Real product data adds complexity; fake data is faster and funnier
-- ❌ **Skip heavy frameworks:** 4 hours = speed over scalability
+- ✅ **LangChain:** Clean orchestration, structured output parsing
+- ✅ **OpenRouter:** Multiple model options, creative outputs, vision capabilities
+- ✅ **Multi-model:** Different models for different tasks (text, images, vision)
+- ❌ **Skip heavy frameworks:** Speed over scalability
+- ❌ **Skip real product APIs:** Fake data is faster and funnier
 
 ---
 

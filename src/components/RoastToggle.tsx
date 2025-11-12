@@ -13,12 +13,18 @@ export default function RoastToggle({ roastMode, onToggle }: RoastToggleProps) {
       // Roast mode activated - show dramatic effects
       setShake(true);
 
-      // Play fire sound effect if available
-      const audio = new Audio(
-        "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjGH0fPTgjMGHm7A7+OZURE="
-      );
-      audio.volume = 0.3;
-      audio.play().catch(() => {}); // Ignore errors if autoplay blocked
+      // Play evil laugh sound effect
+      try {
+        const audio = new Audio(
+          "https://www.myinstants.com/media/sounds/evil-laugh.mp3"
+        );
+        audio.volume = 0.4;
+        audio.play().catch(() => {
+          console.log("Audio playback blocked by browser");
+        });
+      } catch {
+        console.log("Audio playback not supported");
+      }
 
       // Remove shake effect after animation
       setTimeout(() => {
