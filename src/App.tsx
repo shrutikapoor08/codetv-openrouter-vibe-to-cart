@@ -235,18 +235,18 @@ function App() {
           onSelectVibe={handleVibeHistoryClick}
         />
 
-        {/* Status Display - Loading & Errors */}
-        <StatusDisplay
-          loading={imagesLoading || productsLoading}
-          loadingMessage={loadingMessage || productLoadingMessage}
-          error={imagesError || productsError}
-        />
-
         {/* Vibe Image Selection Grid */}
         <VibeImageGrid
           vibeImages={vibeImages}
           loading={imagesLoading}
           onSelectVibe={handleSelectVibe}
+        />
+
+        {/* Status Display - Loading & Errors */}
+        <StatusDisplay
+          loading={imagesLoading || productsLoading}
+          loadingMessage={loadingMessage || productLoadingMessage}
+          error={imagesError || productsError}
         />
 
         {/* Product Grid */}
