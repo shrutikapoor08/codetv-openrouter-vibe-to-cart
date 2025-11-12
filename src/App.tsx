@@ -223,17 +223,7 @@ function App() {
       )}
 
       <div className="container">
-        <header className="header">
-          <h1 className="title">
-            <span className="emoji">🛍️</span>
-            Vibe to Cart
-          </h1>
-          <p className="tagline">
-            Tell us your vibe. We'll tell you what to buy.
-          </p>
-        </header>
-
-        {/* Roast Mode Toggle */}
+        {/* Roast Mode Toggle - Top Right */}
         <div className="roast-toggle-container">
           <label className="roast-toggle">
             <input
@@ -246,6 +236,16 @@ function App() {
             </span>
           </label>
         </div>
+
+        <header className="header">
+          <h1 className="title">
+            <span className="emoji">🛍️</span>
+            Vibe to Cart
+          </h1>
+          <p className="tagline">
+            Tell us your vibe. We'll tell you what to buy.
+          </p>
+        </header>
 
         <form onSubmit={handleSubmit} className="vibe-form">
           <input
@@ -283,7 +283,7 @@ function App() {
         {/* Vibe History */}
         {vibeHistory.length > 0 && (
           <div className="vibe-history">
-            <h3 className="vibe-history-title">Recent Vibes:</h3>
+            <span className="vibe-history-title">Recent Vibes:</span>
             <div className="vibe-history-items">
               {vibeHistory.map((pastVibe, index) => (
                 <button

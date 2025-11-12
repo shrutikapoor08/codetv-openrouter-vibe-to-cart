@@ -364,10 +364,10 @@
 
 /* Roast Mode Toggle */
 .roast-toggle-container {
-  max-width: 900px;
-  margin: 0 auto 1.5rem;
-  display: flex;
-  justify-content: center;
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 100;
 }
 
 .roast-toggle {
@@ -451,21 +451,27 @@
   margin: 0 auto 2rem;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .vibe-history-title {
-  margin: 0 0 1rem 0;
-  font-size: 1.1rem;
+  margin: 0;
+  font-size: 1rem;
   color: #333;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .vibe-history-items {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  flex: 1;
 }
 
 .vibe-history-item {
