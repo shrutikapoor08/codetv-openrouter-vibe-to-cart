@@ -47,11 +47,15 @@ export default function ClothingAnalysis({
           )}
 
           <div className="clothing-items">
-            <h3>🎨 Outfit Breakdown ({analysis.items.length} items)</h3>
+            <h3>
+              🎨 Outfit Breakdown (
+              {analysis.items.filter((item) => item.imageUrl).length} items)
+            </h3>
             <div className="clothing-items-grid">
-              {analysis.items.map((item, index) => (
-                <div key={index} className="clothing-item-card">
-                  {item.imageUrl && (
+              {analysis.items
+                .filter((item) => item.imageUrl)
+                .map((item, index) => (
+                  <div key={index} className="clothing-item-card">
                     <div className="item-image-container">
                       <img
                         src={item.imageUrl}
@@ -59,8 +63,7 @@ export default function ClothingAnalysis({
                         className="item-image"
                       />
                     </div>
-                  )}
-                  <div className="item-header">
+                    <div className="item-header">
                     <span className="item-number">#{index + 1}</span>
                     <span className="item-type">{item.type}</span>
                   </div>
@@ -94,8 +97,8 @@ export default function ClothingAnalysis({
                       </div>
                     </div>
                   )}
-                </div>
-              ))}
+                  </div>
+                ))}
             </div>
           </div>
 

@@ -17,20 +17,13 @@ const searchItemImage = async (item) => {
     console.log(`📸 Searching for image: "${searchQuery}"`);
 
     const requestConfig = {
-      model: "openai/gpt-4o-mini", // Fast model for web search
+      model: "openai/gpt-4o-mini:online", // Fast model for web search
       messages: [
         {
           role: "user",
           content: `Find a high-quality product image of a ${item.color} ${item.style} ${item.type}. Return the direct image URL. Look for professional product photography.`,
         },
-      ],
-      provider: {
-        order: ["Perplexity"], // Use Perplexity for web search
-        allow_fallbacks: false,
-      },
-      transforms: ["web_search"], // Enable web search
-      max_tokens: 300,
-      temperature: 0.3,
+      ]
     };
 
     const fetchResponse = await fetch(
