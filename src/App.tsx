@@ -9,6 +9,7 @@ import { useVibeSubmit } from "./hooks/useVibeSubmit";
 import type { Product, VibeImage, ImageAnalysis } from "./types";
 import CartDrawer from "./components/CartDrawer";
 import RoastToggle from "./components/RoastToggle";
+import RoastModal from "./components/RoastModal";
 import VibeForm from "./components/VibeForm";
 import VibeHistory from "./components/VibeHistory";
 import VibeImageGrid from "./components/VibeImageGrid";
@@ -27,6 +28,7 @@ function App() {
     useState<ImageAnalysis | null>(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [productLoadingMessage, setProductLoadingMessage] = useState("");
+  const [showRoastModal, setShowRoastModal] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const { getInstance, fireConfetti } = useConfetti();
@@ -189,10 +191,20 @@ function App() {
         roastMode={roastMode}
       />
 
+      {/* Roast Modal */}
+      <RoastModal
+        show={showRoastModal}
+        cartItems={cartItems}
+        onClose={() => setShowRoastModal(false)}
+      />
+
       <div className="container">
-        {/* Roast Mode Toggle - Top Right */}
+        {/* Roast Me Button - Top Right */}
         <div className="toggle-controls">
-          <RoastToggle roastMode={roastMode} onToggle={setRoastMode} />
+          <RoastToggle
+            onRoastClick={() => setShowRoastModal(true)}
+            disabled={cartItems.length === 0}
+          />
 
           {/* Skip Images Toggle */}
           {/* <div className="roast-toggle-container">
