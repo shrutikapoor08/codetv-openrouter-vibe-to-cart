@@ -5,10 +5,7 @@ interface RoastToggleProps {
   onToggle: (checked: boolean) => void;
 }
 
-export default function RoastToggle({
-  roastMode,
-  onToggle,
-}: RoastToggleProps) {
+export default function RoastToggle({ roastMode, onToggle }: RoastToggleProps) {
   const [shake, setShake] = useState(false);
 
   const handleToggle = (checked: boolean) => {
@@ -47,4 +44,3 @@ export default function RoastToggle({
     </div>
   );
 }
-
