@@ -7,3 +7,13 @@ export interface Product {
   reason: string;
   image?: string; // Optional product image path
 }
+
+/**
+ * Vibe image option interface
+ */
+export interface VibeImage {
+  id: number;
+  url: string;
+  prompt: string;
+  vibe: string;
+}

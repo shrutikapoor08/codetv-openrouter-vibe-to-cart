@@ -7,6 +7,44 @@ import {
 import { getCachedVibe, cacheVibe } from "../services/vibeService.js";
 
 /**
+ * GET /api/vibe-images
+ * Generate 3 vibe image options for the user to choose from
+ */
+export const getVibeImages = async (req, res) => {
+  const vibe = req.validatedVibe; // Set by validateVibeInput middleware
+
+  console.log(`🖼️  Generating 3 vibe images for: "${vibe}"`);
+
+  try {
+    // Generate 3 different image variants for this vibe
+    const imageResults = await generate4ImageVariants(vibe, {
+      aspectRatio: "1:1",
+    });
+
+    // Take only first 3 images
+    const vibeImages = imageResults.slice(0, 3).map((result, index) => ({
+      id: index + 1,
+      url: result.imageUrl,
+      prompt: result.prompt,
+      vibe: vibe,
+    }));
+
+    console.log(`✅ Generated ${vibeImages.length} vibe images successfully`);
+
+    return res.json({
+      images: vibeImages,
+      originalVibe: vibe,
+    });
+  } catch (error) {
+    console.error(`❌ Failed to generate vibe images:`, error.message);
+    return res.status(500).json({
+      error: "Failed to generate vibe images",
+      message: error.message,
+    });
+  }
+};
+
+/**
  * GET /api/vibe
  * Main endpoint for vibe-based product recommendations with optional image generation
  */
@@ -31,37 +69,6 @@ export const getVibeProducts = async (req, res) => {
 
     // Cache the products for next time
     cacheVibe(vibe, roastMode, products);
-  }
-
-  // Generate 4 images for the vibe if requested
-  if (generateImages && Array.isArray(products)) {
-    console.log(`🖼️  Generating 4 images for vibe: "${vibe}"`);
-
-    try {
-      // Generate 4 different image variants for this vibe
-      const imageResults = await generate4ImageVariants(vibe, {
-        aspectRatio: "1:1",
-      });
-
-      console.log(`✅ Generated ${imageResults.length} images successfully`);
-
-      // Attach all images to the response
-      const response = {
-        products,
-        images: imageResults.map((result, index) => ({
-          id: index + 1,
-          url: result.imageUrl,
-          prompt: result.prompt,
-        })),
-        vibe,
-      };
-
-      return res.json(response);
-    } catch (error) {
-      console.error(`❌ Failed to generate images for vibe:`, error.message);
-      // Return products without images on error
-      return res.json({ products, images: [], vibe });
-    }
   }
 
   res.json(products);
