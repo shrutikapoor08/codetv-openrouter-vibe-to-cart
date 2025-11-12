@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, "../../public")));
 app.use(corsMiddleware);
 
 // Routes
-app.get("/api/vibe", validateVibeInput("query"), asyncHandler(getVibeProducts));
+app.get("/api/vibe", validateVibeInput("vibe"), asyncHandler(getVibeProducts));
 
 app.post(
   "/api/product-image",
