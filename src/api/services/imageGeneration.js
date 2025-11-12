@@ -65,41 +65,47 @@ CRITICAL:
     console.log("Aspect Ratio:", aspectRatio);
 
     // Prepare the request configuration
-    const requestConfig = {
-      model: "google/gemini-2.5-flash-image", // Nano Banana model
+    const requestBody = {
+      model: "google/gemini-2.5-flash-image",
       messages: [
         {
           role: "user",
           content: enhancedPrompt,
         },
       ],
-      modalities: ["image", "text"], // Required for image generation
-      max_tokens: 1000,
     };
 
     // Add aspect ratio configuration if specified
     if (aspectRatio !== "1:1") {
-      requestConfig.image_config = {
+      requestBody.image_config = {
         aspect_ratio: aspectRatio,
       };
     }
 
-    // Make the API request using OpenRouter SDK
-    const openRouterClient = getClient();
-    if (!openRouterClient) {
-      throw new Error("OpenRouter client not initialized - API key may be missing");
-    }
-    const response = await openRouterClient.chat.send(requestConfig);
+    // Make direct API call (SDK doesn't properly support image generation yet)
+    const data = await response.json();
 
     console.log("✅ Image generation response received");
+    console.log("Response structure:", JSON.stringify({
+      hasChoices: !!data.choices,
+      choicesLength: data.choices?.length,
+      firstChoice: data.choices?.[0] ? {
+        hasMessage: !!data.choices[0].message,
+        messageKeys: Object.keys(data.choices[0].message || {}),
+        hasImages: !!data.choices[0].message?.images,
+        imagesLength: data.choices[0].message?.images?.length,
+        hasContent: !!data.choices[0].message?.content,
+        contentPreview: data.choices[0].message?.content?.substring(0, 100)
+      } : null
+    }, null, 2));
 
     // Extract the image from the response
     if (
-      response.choices &&
-      response.choices[0] &&
-      response.choices[0].message
+      data.choices &&
+      data.choices[0] &&
+      data.choices[0].message
     ) {
-      const message = response.choices[0].message;
+      const message = data.choices[0].message;
 
       // Check for images in the response
       if (message.images && message.images.length > 0) {
