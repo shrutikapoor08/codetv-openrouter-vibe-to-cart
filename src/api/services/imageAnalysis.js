@@ -22,32 +22,39 @@ export const analyzeImageForClothing = async (imageUrl) => {
   }
 
   try {
-    console.log("🔍 Analyzing image for clothing details...");
+    console.log("🔍 Analyzing image with Nano Banana for clothing details...");
 
     const requestConfig = {
-      model: "openai/gpt-4o-mini", // Vision-capable model
+      model: "google/gemini-2.5-flash-image", // Nano Banana - Google's fast vision model
       messages: [
         {
           role: "user",
           content: [
             {
               type: "text",
-              text: `Analyze this fashion/clothing image and identify all clothing items and accessories visible.
+              text: `You are a fashion expert analyzing clothing and outfit images. Carefully examine this image and identify ALL visible clothing items and accessories.
 
-For each item, provide:
-- type: The type of clothing (e.g., jacket, dress, pants, shirt, shoes, bag, sunglasses, hat, etc.)
-- color: The primary color
-- style: A brief style description (e.g., leather, denim, formal, casual, etc.)
+For EACH clothing item you see, provide:
+- type: Specific clothing type (jacket, dress, pants, shirt, t-shirt, sweater, coat, shoes, boots, sneakers, bag, purse, sunglasses, hat, scarf, belt, jewelry, watch, etc.)
+- color: The primary color (be specific: navy blue, charcoal gray, cream, burgundy, etc.)
+- style: Detailed style description (leather biker, vintage denim, minimalist, oversized, fitted, distressed, etc.)
 
-Also provide a brief summary sentence describing the overall outfit/items.
+Guidelines:
+- List items from top to bottom (headwear → upper body → lower body → footwear → accessories)
+- Be specific and detailed in your descriptions
+- If you see patterns (stripes, plaid, floral), mention them in the style
+- Include material types if visible (cotton, wool, leather, silk, etc.)
 
-Respond ONLY with valid JSON in this exact format:
+Provide a brief 1-2 sentence summary describing the overall outfit aesthetic.
+
+Output ONLY valid JSON in this EXACT format (no markdown, no code blocks, just raw JSON):
 {
   "items": [
-    {"type": "jacket", "color": "black", "style": "leather"},
-    {"type": "pants", "color": "blue", "style": "denim"}
+    {"type": "leather jacket", "color": "black", "style": "classic biker with silver zippers"},
+    {"type": "jeans", "color": "dark indigo", "style": "slim-fit distressed denim"},
+    {"type": "sneakers", "color": "white", "style": "minimalist low-top canvas"}
   ],
-  "summary": "A brief description of the outfit"
+  "summary": "A classic edgy street style look combining rugged leather with casual denim."
 }`,
             },
             {
@@ -59,8 +66,9 @@ Respond ONLY with valid JSON in this exact format:
           ],
         },
       ],
-      max_tokens: 500,
-      temperature: 0.3, // Lower temperature for more consistent parsing
+      modalities: ["image", "text"], // Required for Nano Banana image processing
+      max_tokens: 1000, // Increased for more detailed analysis
+      temperature: 0.2, // Lower temperature for more consistent parsing
     };
 
     const fetchResponse = await fetch(
@@ -91,7 +99,7 @@ Respond ONLY with valid JSON in this exact format:
     }
 
     const response = await fetchResponse.json();
-    console.log("✅ Image analysis response received");
+    console.log("✅ Nano Banana analysis response received");
 
     // Extract the analysis from the response
     if (
@@ -99,12 +107,18 @@ Respond ONLY with valid JSON in this exact format:
       response.choices[0] &&
       response.choices[0].message
     ) {
-      const content = response.choices[0].message.content;
+      let content = response.choices[0].message.content;
+
+      // Clean up the response - remove markdown code blocks if present
+      content = content.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+
+      console.log("📝 Parsing response:", content.substring(0, 200) + "...");
 
       // Parse the JSON response
       const analysis = JSON.parse(content);
 
       console.log("👔 Clothing items identified:", analysis.items.length);
+      console.log("   Items:", analysis.items.map(i => i.type).join(", "));
 
       return analysis;
     }

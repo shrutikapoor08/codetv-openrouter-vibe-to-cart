@@ -43,8 +43,8 @@ export const generateVibeImage = async (vibeDescription, options = {}) => {
   try {
     const { aspectRatio = "1:1" } = options;
 
-    // Create a clothing/fashion-focused prompt (single image per request)
-    const enhancedPrompt = `Create a professional product photo of a stylish clothing item or fashion accessory that matches this vibe: "${vibeDescription}". Show a clear, well-lit clothing product like a dress, jacket, shoes, bag, sunglasses, or fashion accessory. Make it look like a high-quality e-commerce product photo with the item centered against a clean or complementary background. The clothing/accessory should be the main focus and easily identifiable.`;
+    // Create a clothing/fashion-focused prompt with unique variation
+    const enhancedPrompt = `Create a vibrant, visually striking image that captures the essence of this vibe: "${vibeDescription}". Make it bold, creative, and fun with saturated colors and dynamic composition. Ensure this image is unique and different from others.`;
 
     console.log("🎨 Generating image with Nano Banana...");
     console.log("Prompt:", enhancedPrompt);

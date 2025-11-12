@@ -33,23 +33,32 @@ export const getVibeProducts = async (req, res) => {
     cacheVibe(vibe, roastMode, products);
   }
 
-  // Generate 1 image for the vibe if requested (much faster!)
+  // Generate unique images for each product
   if (generateImages && Array.isArray(products)) {
-    console.log(`🖼️  Generating 1 image for vibe: "${vibe}"`);
+    console.log(`🖼️  Generating ${products.length} unique images for vibe: "${vibe}"`);
 
     try {
-      // Generate just ONE image for speed - all products will share it
-      const imageResult = await generateVibeImage(vibe, {
-        aspectRatio: "1:1",
+      // Generate one unique image for each product
+      const imagePromises = products.map((product, index) => {
+        // Create a unique prompt for each product
+        const productPrompt = `${vibe} - ${product.name}: ${product.reason}`;
+        console.log(`   Generating image ${index + 1}/${products.length} for: ${product.name}`);
+
+        return generateVibeImage(productPrompt, {
+          aspectRatio: "1:1",
+        });
       });
 
-      console.log(`✅ Generated image successfully`);
+      // Generate all images in parallel
+      const imageResults = await Promise.all(imagePromises);
 
-      // Create multiple references to the same image (one per product)
-      const images = products.map((_, index) => ({
+      console.log(`✅ Generated ${imageResults.length} unique images successfully`);
+
+      // Map each image to its corresponding product
+      const images = imageResults.map((result, index) => ({
         id: index + 1,
-        url: imageResult.imageUrl,
-        prompt: imageResult.prompt,
+        url: result.imageUrl,
+        prompt: result.prompt,
       }));
 
       // Attach all images to the response
@@ -61,7 +70,7 @@ export const getVibeProducts = async (req, res) => {
 
       return res.json(response);
     } catch (error) {
-      console.error(`❌ Failed to generate image for vibe:`, error.message);
+      console.error(`❌ Failed to generate images for vibe:`, error.message);
       // Return products without images on error
       return res.json({ products, images: [], vibe });
     }

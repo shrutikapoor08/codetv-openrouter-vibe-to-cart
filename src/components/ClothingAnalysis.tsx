@@ -31,24 +31,38 @@ export default function ClothingAnalysis({
 
       {analysis && !loading && (
         <div className="clothing-analysis-content">
-          <p className="clothing-summary">{analysis.summary}</p>
-
           <div className="clothing-items">
-            <h3>Identified Items:</h3>
-            <ul>
+            <h3>🎨 Outfit Breakdown ({analysis.items.length} items)</h3>
+            <div className="clothing-items-grid">
               {analysis.items.map((item, index) => (
-                <li key={index} className="clothing-item-detail">
-                  <span className="item-type">{item.type}</span>
-                  <span className="item-color">{item.color}</span>
-                  <span className="item-style">{item.style}</span>
-                </li>
+                <div key={index} className="clothing-item-card">
+                  <div className="item-header">
+                    <span className="item-number">#{index + 1}</span>
+                    <span className="item-type">{item.type}</span>
+                  </div>
+                  <div className="item-details">
+                    <div className="detail-row">
+                      <span className="detail-label">Color:</span>
+                      <span className="item-color">{item.color}</span>
+                    </div>
+                    <div className="detail-row">
+                      <span className="detail-label">Style:</span>
+                      <span className="item-style">{item.style}</span>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
+          </div>
+
+          <div className="outfit-summary">
+            <h4>✨ Overall Aesthetic</h4>
+            <p className="clothing-summary">{analysis.summary}</p>
           </div>
 
           {analysis.error && (
             <p className="analysis-error">
-              Note: {analysis.error}
+              ⚠️ {analysis.error}
             </p>
           )}
         </div>
