@@ -20,8 +20,8 @@ export default function ClothingAnalysis({
   // Convert ClothingItem to Product format for cart
   const convertToProduct = (item: ClothingItem): Product => ({
     emoji: getEmojiForItem(item.type),
-    name: `${item.color} ${item.style} ${item.type}`,
-    reason: `Perfect addition to your outfit!`,
+    name: `${item.color} ${item.type}`,
+    reason: `${item.style}`,
     image: item.imageUrl,
   });
 
@@ -139,12 +139,8 @@ export default function ClothingAnalysis({
             </div>
           </div>
 
-
-
           {analysis.error && (
-            <p className="analysis-error">
-              ⚠️ {analysis.error}
-            </p>
+            <p className="analysis-error">⚠️ {analysis.error}</p>
           )}
         </div>
       )}
