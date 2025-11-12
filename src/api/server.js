@@ -1,6 +1,11 @@
 import express from "express";
 import path from "path";
+import dotenv from "dotenv";
 import { getDirname } from "./utils/paths.js";
+
+// Load environment variables from .env file
+dotenv.config();
+
 import { PORT } from "./config/env.js";
 import { validateAPIKeys } from "./config/apiKeyValidation.js";
 
