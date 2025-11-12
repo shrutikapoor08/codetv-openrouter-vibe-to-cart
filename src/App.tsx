@@ -26,6 +26,7 @@ function App() {
   const [clothingAnalysis, setClothingAnalysis] =
     useState<ImageAnalysis | null>(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [productLoadingMessage, setProductLoadingMessage] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
 
   const { getInstance, fireConfetti } = useConfetti();
@@ -68,8 +69,10 @@ function App() {
 
   const handleSelectVibe = async (vibeImage: VibeImage) => {
     setSelectedVibe(vibeImage);
+    setProductLoadingMessage("Finding your vibe products...");
     // Fetch products for the selected vibe
     await fetchVibeProducts(vibeImage.vibe);
+    setProductLoadingMessage("");
   };
 
   const handleSurpriseMe = () => {
@@ -235,7 +238,7 @@ function App() {
         {/* Status Display - Loading & Errors */}
         <StatusDisplay
           loading={imagesLoading || productsLoading}
-          loadingMessage={loadingMessage}
+          loadingMessage={loadingMessage || productLoadingMessage}
           error={imagesError || productsError}
         />
 
