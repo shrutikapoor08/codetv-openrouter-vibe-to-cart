@@ -96,11 +96,19 @@ function App() {
   }, []);
 
   // Close roast modal when roast mode is turned off
+  // Show roast modal when roast mode is turned on and cart has items
   useEffect(() => {
     if (!roastMode) {
       setShowRoastModal(false);
+    } else if (roastMode && cartItems.length > 0) {
+      // Roast mode activated with items in cart - show modal after 1 second
+      const timer = setTimeout(() => {
+        setShowRoastModal(true);
+      }, 1000);
+
+      return () => clearTimeout(timer);
     }
-  }, [roastMode]);
+  }, [roastMode, cartItems.length]);
 
   const handleVibeHistoryClick = (pastVibe: string) => {
     setVibe(pastVibe);

@@ -17,6 +17,20 @@ export default function RoastModal({
   const [loading, setLoading] = useState(false);
   const [shake, setShake] = useState(false);
 
+  // Play scary sound effect when modal shows
+  useEffect(() => {
+    if (show) {
+      // Create an audio element with a scary/evil sound
+      const audio = new Audio(
+        "https://assets.mixkit.co/active_storage/sfx/2462/2462-preview.mp3"
+      );
+      audio.volume = 0.5;
+      audio.play().catch((error) => {
+        console.log("Audio play failed:", error);
+      });
+    }
+  }, [show]);
+
   useEffect(() => {
     if (!show || cartItems.length === 0) {
       return;
