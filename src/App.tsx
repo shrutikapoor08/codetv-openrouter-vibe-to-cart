@@ -1,14 +1,14 @@
-import { useState, useCallback, useRef } from "react";
+import { useState } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
-import type { CreateTypes } from "canvas-confetti";
 import { LOADING_MESSAGES, SURPRISE_VIBES, getEasterEggMessage } from "./constants";
+import { useConfetti } from "./hooks/useConfetti";
+import type { Product } from "./types";
+import CartDrawer from "./components/CartDrawer";
+import RoastToggle from "./components/RoastToggle";
+import VibeForm from "./components/VibeForm";
+import VibeHistory from "./components/VibeHistory";
+import ProductGrid from "./components/ProductGrid";
 import "./App.css";
-
-interface Product {
-  emoji: string;
-  name: string;
-  reason: string;
-}
 
 function App() {
   const [vibe, setVibe] = useState("");
@@ -22,49 +22,8 @@ function App() {
   const [roastMode, setRoastMode] = useState(false);
   const [vibeHistory, setVibeHistory] = useState<string[]>([]);
   const [easterEggMessage, setEasterEggMessage] = useState("");
-  
-  const refAnimationInstance = useRef<CreateTypes | null>(null);
 
-  const getInstance = useCallback((instance: { confetti: CreateTypes }) => {
-    refAnimationInstance.current = instance.confetti;
-  }, []);
-
-  const makeShot = useCallback((particleRatio: number, opts: object) => {
-    refAnimationInstance.current?.({
-      ...opts,
-      origin: { y: 0.7 },
-      particleCount: Math.floor(200 * particleRatio),
-    });
-  }, []);
-
-  const fireConfetti = useCallback(() => {
-    makeShot(0.25, {
-      spread: 26,
-      startVelocity: 55,
-    });
-
-    makeShot(0.2, {
-      spread: 60,
-    });
-
-    makeShot(0.35, {
-      spread: 100,
-      decay: 0.91,
-      scalar: 0.8,
-    });
-
-    makeShot(0.1, {
-      spread: 120,
-      startVelocity: 25,
-      decay: 0.92,
-      scalar: 1.2,
-    });
-
-    makeShot(0.1, {
-      spread: 120,
-      startVelocity: 45,
-    });
-  }, [makeShot]);
+  const { getInstance, fireConfetti } = useConfetti();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +98,14 @@ function App() {
     }, 3000);
   };
 
+  const handleVibeHistoryClick = (pastVibe: string) => {
+    setVibe(pastVibe);
+    setTimeout(() => {
+      const form = document.querySelector("form");
+      form?.requestSubmit();
+    }, 100);
+  };
+
   return (
     <div className="app">
       {/* Confetti Canvas */}
@@ -156,42 +123,16 @@ function App() {
       />
 
       {/* Cart Drawer */}
-      {showCartDrawer && (
-        <div className="cart-drawer">
-          <div className="cart-header">
-            <h3>🛒 Vibe Cart ({cartCount})</h3>
-            <button
-              className="cart-close"
-              onClick={() => setShowCartDrawer(false)}
-            >
-              ✕
-            </button>
-          </div>
-          <div className="cart-items">
-            {cartItems.slice(-3).map((item, index) => (
-              <div key={index} className="cart-item">
-                <span className="cart-item-emoji">{item.emoji}</span>
-                <span className="cart-item-name">{item.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <CartDrawer
+        show={showCartDrawer}
+        cartCount={cartCount}
+        cartItems={cartItems}
+        onClose={() => setShowCartDrawer(false)}
+      />
 
       <div className="container">
         {/* Roast Mode Toggle - Top Right */}
-        <div className="roast-toggle-container">
-          <label className="roast-toggle">
-            <input
-              type="checkbox"
-              checked={roastMode}
-              onChange={(e) => setRoastMode(e.target.checked)}
-            />
-            <span className="roast-toggle-label">
-              {roastMode ? "🔥 Roast Mode" : "💝 Nice Mode"}
-            </span>
-          </label>
-        </div>
+        <RoastToggle roastMode={roastMode} onToggle={setRoastMode} />
 
         <header className="header">
           <h1 className="title">
@@ -203,62 +144,22 @@ function App() {
           </p>
         </header>
 
-        <form onSubmit={handleSubmit} className="vibe-form">
-          <div className="vibe-input-container">
-            <input
-              type="text"
-              value={vibe}
-              onChange={(e) => setVibe(e.target.value)}
-              placeholder="Tell us your vibe... (e.g., villain era, hot mess express)"
-              className="vibe-input"
-              disabled={loading}
-            />
-            {/* Easter Egg Message - Inline below input */}
-            {easterEggMessage && (
-              <div className="easter-egg">{easterEggMessage}</div>
-            )}
-          </div>
-          <button
-            type="submit"
-            className="vibe-button"
-            disabled={loading || !vibe.trim()}
-          >
-            {loading ? "Vibing..." : "Get My Vibe"}
-          </button>
-          <button
-            type="button"
-            className="surprise-button"
-            onClick={handleSurpriseMe}
-            disabled={loading}
-          >
-            🎲 Surprise Me
-          </button>
-        </form>
+        {/* Vibe Form */}
+        <VibeForm
+          vibe={vibe}
+          loading={loading}
+          easterEggMessage={easterEggMessage}
+          onVibeChange={setVibe}
+          onSubmit={handleSubmit}
+          onSurpriseMe={handleSurpriseMe}
+        />
 
         {/* Vibe History */}
-        {vibeHistory.length > 0 && (
-          <div className="vibe-history">
-            <span className="vibe-history-title">Recent Vibes:</span>
-            <div className="vibe-history-items">
-              {vibeHistory.map((pastVibe, index) => (
-                <button
-                  key={index}
-                  className="vibe-history-item"
-                  onClick={() => {
-                    setVibe(pastVibe);
-                    setTimeout(() => {
-                      const form = document.querySelector("form");
-                      form?.requestSubmit();
-                    }, 100);
-                  }}
-                  disabled={loading}
-                >
-                  {pastVibe}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        <VibeHistory
+          vibeHistory={vibeHistory}
+          loading={loading}
+          onSelectVibe={handleVibeHistoryClick}
+        />
 
         {loadingMessage && (
           <div className="loading">
@@ -273,26 +174,12 @@ function App() {
           </div>
         )}
 
-        {products.length > 0 && !loading && (
-          <div className="products">
-            <h2 className="products-title">Your Vibe Products</h2>
-            <div className="product-grid">
-              {products.map((product, index) => (
-                <div key={index} className="product-card">
-                  <div className="product-emoji">{product.emoji}</div>
-                  <h3 className="product-name">{product.name}</h3>
-                  <p className="product-reason">{product.reason}</p>
-                  <button
-                    className="add-to-cart"
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    Add to Vibe Cart
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Product Grid */}
+        <ProductGrid
+          products={products}
+          loading={loading}
+          onAddToCart={handleAddToCart}
+        />
       </div>
     </div>
   );
