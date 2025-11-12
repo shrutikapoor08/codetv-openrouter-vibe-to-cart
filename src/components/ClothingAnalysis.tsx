@@ -1,10 +1,11 @@
-import type { ImageAnalysis } from "../types";
+import type { ImageAnalysis, ClothingItem, Product } from "../types";
 
 interface ClothingAnalysisProps {
   analysis: ImageAnalysis | null;
   loading: boolean;
   imageUrl: string | null;
   onClose: () => void;
+  onAddToCart: (product: Product) => void;
 }
 
 export default function ClothingAnalysis({
@@ -12,8 +13,64 @@ export default function ClothingAnalysis({
   loading,
   imageUrl,
   onClose,
+  onAddToCart,
 }: ClothingAnalysisProps) {
   if (!analysis && !loading) return null;
+
+  // Convert ClothingItem to Product format for cart
+  const convertToProduct = (item: ClothingItem): Product => ({
+    emoji: getEmojiForItem(item.type),
+    name: `${item.color} ${item.style} ${item.type}`,
+    reason: `Perfect addition to your outfit!`,
+    image: item.imageUrl,
+  });
+
+  // Get appropriate emoji for item type
+  const getEmojiForItem = (type: string): string => {
+    const typeMap: Record<string, string> = {
+      dress: "👗",
+      top: "👚",
+      shirt: "👔",
+      blouse: "👚",
+      sweater: "🧥",
+      jacket: "🧥",
+      coat: "🧥",
+      pants: "👖",
+      jeans: "👖",
+      shorts: "🩳",
+      skirt: "👗",
+      shoes: "👞",
+      boots: "👢",
+      sneakers: "👟",
+      heels: "👠",
+      sandals: "👡",
+      bag: "👜",
+      purse: "👛",
+      handbag: "👜",
+      clutch: "👝",
+      backpack: "🎒",
+      hat: "🎩",
+      cap: "🧢",
+      scarf: "🧣",
+      gloves: "🧤",
+      belt: "👔",
+      sunglasses: "🕶️",
+      glasses: "👓",
+      necklace: "📿",
+      bracelet: "📿",
+      earrings: "💍",
+      ring: "💍",
+      watch: "⌚",
+    };
+
+    const lowerType = type.toLowerCase();
+    for (const [key, emoji] of Object.entries(typeMap)) {
+      if (lowerType.includes(key)) {
+        return emoji;
+      }
+    }
+    return "👕"; // Default emoji
+  };
 
   return (
     <div className="clothing-analysis-section">
@@ -76,6 +133,15 @@ export default function ClothingAnalysis({
                         <span className="detail-label">Style:</span>
                         <span className="item-style">{item.style}</span>
                       </div>
+                    </div>
+
+                    <div className="item-actions">
+                      <button
+                        className="add-to-cart-item"
+                        onClick={() => onAddToCart(convertToProduct(item))}
+                      >
+                        Add to Vibe Cart
+                      </button>
                     </div>
 
                     {item.shoppingLinks && item.shoppingLinks.length > 0 && (

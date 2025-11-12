@@ -276,6 +276,7 @@ function App() {
           loading={analysisLoading}
           imageUrl={backgroundImage}
           onClose={handleCloseAnalysis}
+          onAddToCart={handleAddToCart}
         />
       </div>
     </div>
