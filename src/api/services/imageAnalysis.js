@@ -22,7 +22,7 @@ export const analyzeImageForClothing = async (imageUrl) => {
   }
 
   try {
-    console.log("🔍 Analyzing image with Nano Banana for clothing details...");
+    console.log("🍌 Analyzing image with Nano Banana (google/gemini-2.5-flash-image) for clothing details...");
 
     const requestConfig = {
       model: "google/gemini-2.5-flash-image", // Nano Banana - Google's fast vision model
@@ -32,29 +32,39 @@ export const analyzeImageForClothing = async (imageUrl) => {
           content: [
             {
               type: "text",
-              text: `You are a fashion expert analyzing clothing and outfit images. Carefully examine this image and identify ALL visible clothing items and accessories.
+              text: `You are an expert fashion stylist analyzing clothing and outfit images. Carefully examine this image and identify EVERY SINGLE visible clothing item and accessory.
 
-For EACH clothing item you see, provide:
-- type: Specific clothing type (jacket, dress, pants, shirt, t-shirt, sweater, coat, shoes, boots, sneakers, bag, purse, sunglasses, hat, scarf, belt, jewelry, watch, etc.)
-- color: The primary color (be specific: navy blue, charcoal gray, cream, burgundy, etc.)
-- style: Detailed style description (leather biker, vintage denim, minimalist, oversized, fitted, distressed, etc.)
+CLOTHING ITEMS TO LOOK FOR:
+- Headwear: hat, cap, beanie, tiara, crown, headband, turban
+- Upper body: dress, top, shirt, blouse, t-shirt, tank top, sweater, cardigan, jacket, blazer, coat, hoodie, vest
+- Lower body: pants, jeans, shorts, skirt, leggings, tights
+- Footwear: shoes, boots, sneakers, heels, sandals, flats, slippers, socks
+- Accessories: purse, bag, handbag, clutch, backpack, tote, belt, scarf, necklace, earrings, bracelet, ring, watch, sunglasses, glasses, gloves
 
-Guidelines:
-- List items from top to bottom (headwear → upper body → lower body → footwear → accessories)
-- Be specific and detailed in your descriptions
-- If you see patterns (stripes, plaid, floral), mention them in the style
-- Include material types if visible (cotton, wool, leather, silk, etc.)
+For EACH item you identify, provide:
+- type: Exact clothing type (be specific: "maxi dress" not just "dress", "ankle boots" not just "boots")
+- color: Precise color description (burgundy, navy blue, emerald green, rose gold, etc.)
+- style: Detailed style with materials and patterns (sequined, embroidered, silk, velvet, floral print, geometric pattern, etc.)
 
-Provide a brief 1-2 sentence summary describing the overall outfit aesthetic.
+IMPORTANT INSTRUCTIONS:
+1. List ALL items visible in the image, no matter how small
+2. Order: headwear → upper body → lower body → footwear → accessories
+3. Be extremely detailed and specific
+4. If you see jewelry, identify the type (necklace, earrings, bracelet, ring)
+5. If you see bags, specify the type (purse, handbag, clutch, tote, backpack)
+6. Include all visible accessories like belts, scarves, hats, tiaras
 
-Output ONLY valid JSON in this EXACT format (no markdown, no code blocks, just raw JSON):
+Provide a 1-2 sentence summary of the overall outfit aesthetic.
+
+Return ONLY raw JSON (no markdown, no code blocks):
 {
   "items": [
-    {"type": "leather jacket", "color": "black", "style": "classic biker with silver zippers"},
-    {"type": "jeans", "color": "dark indigo", "style": "slim-fit distressed denim"},
-    {"type": "sneakers", "color": "white", "style": "minimalist low-top canvas"}
+    {"type": "tiara", "color": "silver", "style": "crystal-encrusted royal crown"},
+    {"type": "maxi dress", "color": "emerald green", "style": "flowing silk evening gown with sequins"},
+    {"type": "clutch purse", "color": "gold", "style": "metallic evening bag with chain strap"},
+    {"type": "heels", "color": "nude", "style": "strappy stiletto sandals"}
   ],
-  "summary": "A classic edgy street style look combining rugged leather with casual denim."
+  "summary": "An elegant royal-inspired evening look with luxurious fabrics and sparkling accessories."
 }`,
             },
             {
@@ -112,13 +122,16 @@ Output ONLY valid JSON in this EXACT format (no markdown, no code blocks, just r
       // Clean up the response - remove markdown code blocks if present
       content = content.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
 
-      console.log("📝 Parsing response:", content.substring(0, 200) + "...");
+      console.log("📝 Raw Nano Banana response:", content.substring(0, 300) + "...");
 
       // Parse the JSON response
       const analysis = JSON.parse(content);
 
-      console.log("👔 Clothing items identified:", analysis.items.length);
-      console.log("   Items:", analysis.items.map(i => i.type).join(", "));
+      console.log("👔 Clothing items identified by Nano Banana:", analysis.items.length);
+      console.log("   Detailed items:");
+      analysis.items.forEach((item, i) => {
+        console.log(`   ${i + 1}. ${item.type} - ${item.color} - ${item.style}`);
+      });
 
       return analysis;
     }
