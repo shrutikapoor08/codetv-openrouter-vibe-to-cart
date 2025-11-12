@@ -1,13 +1,9 @@
 import dotenv from "dotenv";
 import { ChatOpenAI } from "@langchain/openai";
-import { MemorySaver } from "@langchain/langgraph";
 import { HumanMessage } from "@langchain/core/messages";
-import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { TavilySearch } from "@langchain/tavily";
 import {
   MOCK_MODE,
   OPENROUTER_API_KEY,
-  TAVILY_API_KEY,
 } from "../config/env.js";
 import {
   MOCK_VIBES,
@@ -114,12 +110,6 @@ const webSearchAgent = async ({ description, roastMode = false }) => {
   }
 
   try {
-    // Initialize tools
-    const webTool = new TavilySearch({
-      maxResults: 3,
-      tavilyApiKey: TAVILY_API_KEY,
-    });
-
     // Initialize OpenRouter model
     const agentModel = new ChatOpenAI({
       model: "openai/gpt-4o-mini",
@@ -136,29 +126,13 @@ const webSearchAgent = async ({ description, roastMode = false }) => {
       },
     });
 
-    // Initialize memory for conversation persistence
-    const agentCheckpointer = new MemorySaver();
-
-    // Create ReAct agent
-    const agent = createReactAgent({
-      llm: agentModel,
-      tools: [webTool],
-      checkpointSaver: agentCheckpointer,
-    });
-
-    // Create the prompt and invoke agent
+    // Create the prompt and invoke model directly (no ReAct agent needed)
     const vibePrompt = createVibePrompt(description, roastMode);
     const question = new HumanMessage(vibePrompt);
 
-    const agentNextState = await agent.invoke(
-      { messages: [question] },
-      { configurable: { thread_id: "vibe-session" } }
-    );
+    const response = await agentModel.invoke([question]);
 
-    const result =
-      agentNextState.messages[agentNextState.messages.length - 1].content;
-
-    return result;
+    return response.content;
   } catch (error) {
     console.error("❌ Error in webSearchAgent:", error.message);
     throw error;

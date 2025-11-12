@@ -19,7 +19,6 @@ if (process.env.NODE_ENV !== "production") {
 
 // API Keys (validated separately)
 export const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-export const TAVILY_API_KEY = process.env.TAVILY_API_KEY;
 
 // Server configuration
 export const PORT = process.env.PORT || 3001;
