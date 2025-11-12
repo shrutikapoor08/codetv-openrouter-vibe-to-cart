@@ -119,6 +119,7 @@ Roast Mode Active → POST /api/roast-cart
 ```
 
 **Models Used:**
+
 - `openai/gpt-4o-mini` - Product recommendations, cart roasts
 - `openai/gpt-4o-mini:online` - Web-enabled product image search
 - `google/gemini-2.5-flash-image` - Image generation and visual analysis
@@ -185,16 +186,19 @@ const response = await model.invoke([question]);
 The application uses different models for different tasks:
 
 1. **Product Recommendations** (`openai/gpt-4o-mini`)
+
    - Fast, cost-effective text generation
    - Vibe-to-product translation
    - Cart roasting humor
 
 2. **Image Generation** (`google/gemini-2.5-flash-image`)
+
    - Product outfit visualization
    - Fast image generation
    - Base64 PNG output
 
 3. **Image Analysis** (`google/gemini-2.5-flash-image`)
+
    - Vision API for clothing detection
    - Extracts type, color, style from outfit photos
    - Generates shopping recommendations
@@ -220,6 +224,7 @@ These are **required** by OpenRouter for tracking/analytics.
 ### Roast Mode Implementation
 
 When `roastMode=true`:
+
 - Prompt changes to sarcastic/roasting tone
 - Products get snarky descriptions
 - Cart roast endpoint activated

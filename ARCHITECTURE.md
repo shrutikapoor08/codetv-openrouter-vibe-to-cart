@@ -39,12 +39,12 @@ graph TD
 
 ### Frontend
 
-| Technology      | Version | Purpose                                    |
-| --------------- | ------- | ------------------------------------------ |
-| **React**       | 19.2.0  | UI framework                               |
-| **TypeScript**  | Latest  | Type safety                                |
-| **Vite**        | Latest  | Build tool & dev server                    |
-| **Custom CSS**  | -       | Styling with dynamic theme switching       |
+| Technology     | Version | Purpose                              |
+| -------------- | ------- | ------------------------------------ |
+| **React**      | 19.2.0  | UI framework                         |
+| **TypeScript** | Latest  | Type safety                          |
+| **Vite**       | Latest  | Build tool & dev server              |
+| **Custom CSS** | -       | Styling with dynamic theme switching |
 
 ### Backend
 
@@ -55,20 +55,19 @@ graph TD
 
 ### AI & Orchestration
 
-| Technology           | Version | Purpose                          |
-| -------------------- | ------- | -------------------------------- |
-| **LangChain Core**   | 1.0.4   | Message handling & primitives    |
-| **LangGraph**        | 1.0.2   | Agent workflow orchestration     |
-| **LangChain OpenAI** | 1.1.0   | OpenRouter/OpenAI integration    |
-| **OpenRouter SDK**   | 0.1.11  | Official OpenRouter SDK          |
-| **OpenRouter API**   | -       | Multi-model LLM & image access   |
+| Technology           | Version | Purpose                        |
+| -------------------- | ------- | ------------------------------ |
+| **LangChain Core**   | 1.0.4   | Message handling & primitives  |
+| **LangGraph**        | 1.0.2   | Agent workflow orchestration   |
+| **LangChain OpenAI** | 1.1.0   | OpenRouter/OpenAI integration  |
+| **OpenRouter SDK**   | 0.1.11  | Official OpenRouter SDK        |
+| **OpenRouter API**   | -       | Multi-model LLM & image access |
 
 **OpenRouter Models Used:**
 
 - **Text Generation:**
   - `openai/gpt-4o-mini` - Product recommendations, cart roasts
   - `openai/gpt-4o-mini:online` - Web-enabled product image search
-  
 - **Image Generation & Analysis:**
   - `google/gemini-2.5-flash-image` - Outfit image generation, clothing analysis
 
@@ -153,12 +152,12 @@ sequenceDiagram
     Express->>ImageAnalysis: analyzeImage(imageUrl)
     ImageAnalysis->>OpenRouter: Vision API (gemini-2.5-flash-image)
     OpenRouter-->>ImageAnalysis: Clothing items JSON
-    
+
     loop For each clothing item
         ImageAnalysis->>OpenRouter: Search for product image (gpt-4o-mini:online)
         OpenRouter-->>ImageAnalysis: Product image URL
     end
-    
+
     ImageAnalysis->>Express: Return analysis + images
     Express->>Frontend: Clothing items with images
     Frontend->>User: Display analyzed outfit items
@@ -721,10 +720,10 @@ configuration: {
 
 ```javascript
 // Vision analysis using Gemini Flash
-model: "google/gemini-2.5-flash-image"
+model: "google/gemini-2.5-flash-image";
 
 // Product image search using web-enabled GPT
-model: "openai/gpt-4o-mini:online"
+model: "openai/gpt-4o-mini:online";
 ```
 
 **Use Cases:**

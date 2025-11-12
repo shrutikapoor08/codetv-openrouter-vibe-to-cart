@@ -28,26 +28,31 @@ Built for a 4-hour hackathon. Optimized for laughs.
 ## 🧠 Tech Stack
 
 ### Frontend
+
 - **React 19** - UI framework
 - **TypeScript** - Type safety
 - **Vite** - Build tool & dev server
 - **Custom CSS** - Styling with dynamic theme switching (Normal/Roast modes)
 
 ### Backend
+
 - **Node.js** - Runtime environment
 - **Express 5** - HTTP server & routing
 
 ### AI & Models
+
 - **LangChain** - AI orchestration framework
 - **OpenRouter API** - Multi-model LLM access
 - **@openrouter/sdk** - Official OpenRouter SDK
 
 **Models Used:**
+
 - `openai/gpt-4o-mini` - Product recommendations & cart roasts
 - `openai/gpt-4o-mini:online` - Web-enabled search for product images
 - `google/gemini-2.5-flash-image` - Image generation & visual analysis
 
 ### Features
+
 - 🎨 **Dual theme system** - Normal mode (purple/blue gradient) vs Roast mode (evil red/black with glowing effects)
 - 🔊 **Sound effects** - Evil laugh audio when activating Roast Mode
 - 📸 **AI image generation** - Outfit visualizations using Gemini Flash

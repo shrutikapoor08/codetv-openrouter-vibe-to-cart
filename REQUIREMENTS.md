@@ -85,13 +85,13 @@ A web app where users describe their current vibe/mood/aesthetic, and get funny,
 
 ### Tech Stack
 
-| Layer        | Technology                            | Purpose                                     |
-| ------------ | ------------------------------------- | ------------------------------------------- |
-| Frontend     | React + Custom CSS                    | Simple UI for vibe input and product cards  |
-| Backend      | Node/Express                          | API endpoint to process vibes               |
-| AI           | OpenRouter (GPT-4o-mini, Gemini)      | Generate recommendations, images, analysis  |
-| Product Data | Static JSON mock list                 | Fast, controllable, funnier than real data  |
-| Deployment   | Vercel/Netlify                        | Quick demo hosting                          |
+| Layer        | Technology                       | Purpose                                    |
+| ------------ | -------------------------------- | ------------------------------------------ |
+| Frontend     | React + Custom CSS               | Simple UI for vibe input and product cards |
+| Backend      | Node/Express                     | API endpoint to process vibes              |
+| AI           | OpenRouter (GPT-4o-mini, Gemini) | Generate recommendations, images, analysis |
+| Product Data | Static JSON mock list            | Fast, controllable, funnier than real data |
+| Deployment   | Vercel/Netlify                   | Quick demo hosting                         |
 
 ### Why This Stack?
 
