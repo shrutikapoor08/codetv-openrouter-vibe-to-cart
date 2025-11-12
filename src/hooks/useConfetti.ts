@@ -1,10 +1,9 @@
 import { useCallback, useRef } from "react";
-import type { CreateTypes } from "canvas-confetti";
 
 export function useConfetti() {
-  const refAnimationInstance = useRef<CreateTypes | null>(null);
+  const refAnimationInstance = useRef<any | null>(null);
 
-  const getInstance = useCallback((instance: { confetti: CreateTypes }) => {
+  const getInstance = useCallback((instance: { confetti: any }) => {
     refAnimationInstance.current = instance.confetti;
   }, []);
 

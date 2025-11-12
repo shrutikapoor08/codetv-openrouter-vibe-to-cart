@@ -40,7 +40,6 @@ Built for a 4-hour hackathon. Optimized for laughs.
 - Node.js (v24+)
 - npm
 - OpenRouter API key ([Get one here](https://openrouter.ai/keys))
-- Tavily API key ([Get one here](https://tavily.com/))
 
 ### Installation
 
@@ -63,12 +62,11 @@ Built for a 4-hour hackathon. Optimized for laughs.
    cp .env.example .env
    ```
 
-   Edit `.env` and add your API keys:
+   Edit `.env` and add your API key:
 
    ```bash
    MOCK_MODE=false  # Set to true for testing without API calls
    OPENROUTER_API_KEY=your-key-here
-   TAVILY_API_KEY=your-key-here
    ```
 
    > **Note:** The backend server uses Node.js's native `--env-file` flag (Node 20.6+) to load environment variables from `.env`. The `npm run server` script handles this automatically.
@@ -113,14 +111,13 @@ Mock mode returns pre-defined responses without making actual API calls. Perfect
 
 ## 🏗️ Tech Stack
 
-| Layer                | Technology                             | Purpose                           |
-| -------------------- | -------------------------------------- | --------------------------------- |
-| **Frontend**         | React + TypeScript + Vite              | UI framework & build tool         |
-| **Backend**          | Node.js + Express                      | HTTP server & API routing         |
-| **AI Orchestration** | LangChain + LangGraph                  | Agent workflow management         |
-| **AI Models**        | OpenRouter (GPT-4o-mini, Claude, etc.) | Multi-model LLM access            |
-| **Web Search**       | Tavily API                             | Real-time web search capabilities |
-| **Styling**          | TailwindCSS (planned)                  | Rapid UI development              |
+| Layer                | Technology                             | Purpose                   |
+| -------------------- | -------------------------------------- | ------------------------- |
+| **Frontend**         | React + TypeScript + Vite              | UI framework & build tool |
+| **Backend**          | Node.js + Express                      | HTTP server & API routing |
+| **AI Orchestration** | LangChain + LangGraph                  | Agent workflow management |
+| **AI Models**        | OpenRouter (GPT-4o-mini, Claude, etc.) | Multi-model LLM access    |
+| **Styling**          | TailwindCSS (planned)                  | Rapid UI development      |
 
 ---
 

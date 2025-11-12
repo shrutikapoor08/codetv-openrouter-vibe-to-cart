@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { Product } from "../types";
 
 interface ProductGridProps {
@@ -14,10 +13,8 @@ export default function ProductGrid({
   onAddToCart,
   onImageClick,
 }: ProductGridProps) {
-  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
-
-  const handleImageError = (index: number) => {
-    setImageErrors((prev) => new Set(prev).add(index));
+  const handleImageError = (_index: number) => {
+    // Error handling could be implemented here
   };
 
   if (products.length === 0 || loading) return null;

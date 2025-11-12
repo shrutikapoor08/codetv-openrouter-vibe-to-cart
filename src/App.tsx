@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 // import ReactCanvasConfetti from "react-canvas-confetti";
 import { SURPRISE_VIBES, APP_GRADIENTS } from "./constants";
 import { useConfetti } from "./hooks/useConfetti";
@@ -8,6 +8,7 @@ import { useVibeSubmit } from "./hooks/useVibeSubmit";
 import type { Product, ImageAnalysis } from "./types";
 import CartDrawer from "./components/CartDrawer";
 import RoastToggle from "./components/RoastToggle";
+import RoastModal from "./components/RoastModal";
 import VibeForm from "./components/VibeForm";
 import VibeHistory from "./components/VibeHistory";
 import ProductGrid from "./components/ProductGrid";
@@ -18,15 +19,22 @@ import "./App.css";
 function App() {
   const [vibe, setVibe] = useState("");
   const [roastMode, setRoastMode] = useState(false);
-  const [skipImages, setSkipImages] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [clothingAnalysis, setClothingAnalysis] =
     useState<ImageAnalysis | null>(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [showRoastModal, setShowRoastModal] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const roastDebounceTimer = useRef<number | null>(null);
 
-  const { getInstance, fireConfetti } = useConfetti();
-  const { products, loading, error, fetchVibeProducts } = useVibeApi();
+  const { fireConfetti } = useConfetti();
+  const {
+    products,
+    loading: productsLoading,
+    error: productsError,
+    fetchVibeProducts,
+    clearProducts,
+  } = useVibeApi();
   const {
     cartItems,
     cartCount,
@@ -45,7 +53,10 @@ function App() {
 
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleSubmit(vibe, roastMode, skipImages);
+
+    // Clear previous results
+    clearProducts();
+    await handleSubmit(vibe, roastMode, false);
   };
 
   const handleSurpriseMe = () => {
@@ -60,7 +71,36 @@ function App() {
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);
+
+    // If roast mode is enabled, debounce the roast modal
+    if (roastMode) {
+      // Clear existing timer
+      if (roastDebounceTimer.current) {
+        clearTimeout(roastDebounceTimer.current);
+      }
+
+      // Set new timer to show roast modal after 2 seconds of no new additions
+      roastDebounceTimer.current = setTimeout(() => {
+        setShowRoastModal(true);
+      }, 2000);
+    }
   };
+
+  // Effect to clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (roastDebounceTimer.current) {
+        clearTimeout(roastDebounceTimer.current);
+      }
+    };
+  }, []);
+
+  // Close roast modal when roast mode is turned off
+  useEffect(() => {
+    if (!roastMode) {
+      setShowRoastModal(false);
+    }
+  }, [roastMode]);
 
   const handleVibeHistoryClick = (pastVibe: string) => {
     setVibe(pastVibe);
@@ -160,13 +200,20 @@ function App() {
         roastMode={roastMode}
       />
 
+      {/* Roast Modal */}
+      <RoastModal
+        show={showRoastModal}
+        cartItems={cartItems}
+        onClose={() => setShowRoastModal(false)}
+      />
+
       <div className="container">
         {/* Roast Mode Toggle - Top Right */}
         <div className="toggle-controls">
           <RoastToggle roastMode={roastMode} onToggle={setRoastMode} />
 
           {/* Skip Images Toggle */}
-          <div className="roast-toggle-container">
+          {/* <div className="roast-toggle-container">
             <label className="roast-toggle">
               <input
                 type="checkbox"
@@ -177,7 +224,7 @@ function App() {
                 ⚡ Fast Mode (No Images)
               </span>
             </label>
-          </div>
+          </div> */}
         </div>
 
         <header className="header">
@@ -194,7 +241,7 @@ function App() {
         <VibeForm
           ref={formRef}
           vibe={vibe}
-          // loading={imagesLoading}
+          loading={productsLoading}
           easterEggMessage={easterEggMessage}
           onVibeChange={setVibe}
           onSubmit={onFormSubmit}
@@ -204,21 +251,21 @@ function App() {
         {/* Vibe History */}
         <VibeHistory
           vibeHistory={vibeHistory}
-          loading={loading}
+          loading={productsLoading}
           onSelectVibe={handleVibeHistoryClick}
         />
 
         {/* Status Display - Loading & Errors */}
         <StatusDisplay
-          loading={loading}
+          loading={productsLoading}
           loadingMessage={loadingMessage}
-          error={error}
+          error={productsError}
         />
 
         {/* Product Grid */}
         <ProductGrid
           products={products}
-          loading={loading}
+          loading={productsLoading}
           onAddToCart={handleAddToCart}
           onImageClick={handleImageClick}
         />

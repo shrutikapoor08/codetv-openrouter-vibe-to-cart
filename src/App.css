@@ -684,6 +684,31 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
+/* Shake animation for roast toggle */
+.roast-toggle-shake {
+  animation: toggleShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes toggleShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-8px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(8px);
+  }
+}
+
 /* Easter Egg Message */
 .easter-egg {
   font-size: 0.85rem;
@@ -1056,6 +1081,151 @@
   font-size: 0.9rem;
 }
 
+/* Roast Me Button Styles */
+.roast-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.roast-me-button {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+  border: 3px solid #ff0000;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  box-shadow: 0 8px 20px rgba(255, 0, 0, 0.4), 0 0 30px rgba(255, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.roast-me-button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.roast-me-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.roast-me-button:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 30px rgba(255, 0, 0, 0.6), 0 0 50px rgba(255, 0, 0, 0.4);
+  background: linear-gradient(135deg, #ff1a1a 0%, #dd0000 100%);
+}
+
+.roast-me-button:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.roast-me-button-disabled {
+  background: linear-gradient(135deg, #999 0%, #666 100%);
+  border-color: #999;
+  cursor: not-allowed;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.roast-me-button-disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #999 0%, #666 100%);
+}
+
+.roast-me-button-disabled::before {
+  display: none;
+}
+
+.roast-me-flame {
+  font-size: 1.5rem;
+  animation: flameFlicker 0.8s infinite alternate;
+  z-index: 1;
+}
+
+@keyframes flameFlicker {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.2);
+    filter: brightness(1.5);
+  }
+}
+
+.roast-me-text {
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.roast-button-shake {
+  animation: buttonShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes buttonShake {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-8px) rotate(-3deg);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(8px) rotate(3deg);
+  }
+}
+
+.roast-me-hint {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  text-align: right;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .roast-me-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    gap: 0.75rem;
+  }
+
+  .roast-me-flame {
+    font-size: 1.2rem;
+  }
+
+  .roast-me-hint {
+    font-size: 0.75rem;
+  }
+}
+
 @media (max-width: 768px) {
   .clothing-analysis-section {
     padding: 1.5rem;
@@ -1074,5 +1244,7 @@
     font-size: 1rem;
   }
 }
+
+
 
 

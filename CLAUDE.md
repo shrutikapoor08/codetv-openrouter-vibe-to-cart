@@ -117,7 +117,6 @@ User Input → Express /api/vibe
 **Required (when MOCK_MODE=false):**
 
 - `OPENROUTER_API_KEY` - Multi-model LLM access
-- `TAVILY_API_KEY` - Web search functionality (optional for basic usage)
 
 **Optional:**
 
@@ -132,14 +131,13 @@ User Input → Express /api/vibe
 
 ## 🤖 AI Agent Architecture (The Important Part)
 
-### LangGraph ReAct Pattern
+### Direct LLM Invocation Pattern
 
-The `webSearchAgent` uses the **ReAct** (Reasoning + Acting) pattern:
+The `webSearchAgent` uses **direct model invocation** for product recommendations:
 
-1. **Reason:** LLM analyzes user query
-2. **Act:** Decides if tools (Tavily search) are needed
-3. **Observe:** Processes tool results
-4. **Respond:** Generates final output
+1. **Reason:** LLM analyzes user vibe query
+2. **Generate:** Creates product recommendations with reasoning
+3. **Respond:** Returns structured JSON output
 
 **Key Components:**
 
@@ -152,14 +150,8 @@ new ChatOpenAI({
   },
 });
 
-// Tools
-new TavilySearch({ maxResults: 3 });
-
-// Memory
-new MemorySaver(); // Persists conversation state
-
-// Agent
-createReactAgent({ llm, tools, checkpointSaver });
+// Direct invocation
+const response = await model.invoke([question]);
 ```
 
 ### OpenRouter Configuration
@@ -306,7 +298,7 @@ curl "http://localhost:3001/agent?query="
 **Production Mode (MOCK_MODE=false):**
 
 - Takes 3-10 seconds (AI processing)
-- Real OpenRouter + Tavily calls
+- Real OpenRouter API calls
 - Unique responses each time
 
 ---
@@ -555,7 +547,7 @@ Ask the human developer if:
 - Multiple valid approaches (need preference)
 - Breaking changes to core functionality
 - Deployment or production concerns
-- Third-party integrations beyond OpenRouter/Tavily
+- Third-party integrations beyond OpenRouter
 
 ---
 
@@ -581,7 +573,6 @@ Easy tasks that add value:
 - [OpenRouter Docs](https://openrouter.ai/docs)
 - [LangChain JS Docs](https://js.langchain.com/docs/)
 - [LangGraph Docs](https://langchain-ai.github.io/langgraphjs/)
-- [Tavily API Docs](https://docs.tavily.com/)
 - [React Docs](https://react.dev/)
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)
 
