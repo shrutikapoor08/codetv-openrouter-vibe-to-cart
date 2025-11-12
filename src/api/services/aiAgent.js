@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import { ChatOpenAI } from "@langchain/openai";
 import { MemorySaver } from "@langchain/langgraph";
 import { HumanMessage } from "@langchain/core/messages";
@@ -13,6 +14,9 @@ import {
   DEFAULT_VIBE,
   ROAST_RESPONSES,
 } from "../utils/mockData.js";
+
+// Load environment variables from .env file
+dotenv.config({ path: [".env.local", ".env"] });
 
 /**
  * Get mock response for a given vibe

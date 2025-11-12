@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { getDirname } from "./utils/paths.js";
 
 // Load environment variables from .env file
-dotenv.config();
+dotenv.config({ path: [".env.local", ".env"] });
 
 import { PORT } from "./config/env.js";
 import { validateAPIKeys } from "./config/apiKeyValidation.js";

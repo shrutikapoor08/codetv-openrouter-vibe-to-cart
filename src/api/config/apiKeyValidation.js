@@ -1,4 +1,8 @@
+import dotenv from "dotenv";
 import { MOCK_MODE } from "./env.js";
+
+// Load environment variables from .env file
+dotenv.config({ path: [".env.local", ".env"] });
 
 /**
  * Validates that all required API keys are present in environment variables
