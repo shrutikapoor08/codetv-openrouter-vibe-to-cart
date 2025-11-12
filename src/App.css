@@ -13,7 +13,8 @@
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  min-width: 300px;
+  width: 400px; /* Fixed width instead of min-width */
+  max-width: calc(100vw - 40px); /* Responsive on small screens */
   z-index: 1000;
   animation: slideIn 0.3s ease-out;
 }
@@ -134,6 +135,34 @@
   transform: scale(0.95);
 }
 
+.cart-roast {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #ffebee;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.cart-roast-header {
+  font-weight: bold;
+  color: #dc3545;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.cart-roast-loading {
+  color: #999;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.cart-roast-text {
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-style: italic;
+}
 
 .container {
   max-width: 1200px;
@@ -341,6 +370,8 @@
   transition: all 0.3s ease;
   animation: slideIn 0.5s ease-out;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes slideIn {
@@ -429,6 +460,7 @@
   margin: 0 0 1.5rem 0;
   text-align: center;
   font-style: italic;
+  flex-grow: 1; /* Push button to bottom */
 }
 
 .add-to-cart {
@@ -442,6 +474,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: auto; /* Stick to bottom */
 }
 
 .add-to-cart:hover {
@@ -506,11 +539,23 @@
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  border: 2px solid transparent;
 }
 
 .roast-toggle:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Make roast mode stand out when active */
+.roast-toggle:has(input[type="checkbox"]:checked) {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+  border-color: #ff4444;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+.roast-toggle:has(input[type="checkbox"]:checked):hover {
+  box-shadow: 0 6px 16px rgba(255, 107, 107, 0.5);
 }
 
 .roast-toggle input[type="checkbox"] {
@@ -550,6 +595,13 @@
   font-weight: 600;
   color: #333;
   user-select: none;
+  transition: color 0.3s;
+}
+
+/* White text when roast mode is active */
+.roast-toggle:has(input[type="checkbox"]:checked) .roast-toggle-label {
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Easter Egg Message */

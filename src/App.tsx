@@ -154,6 +154,7 @@ function App() {
         cartItems={cartItems}
         onClose={closeDrawer}
         onRemoveItem={removeFromCart}
+        roastMode={roastMode}
       />
 
       <div className="container">

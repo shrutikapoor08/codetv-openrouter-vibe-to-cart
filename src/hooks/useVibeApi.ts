@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { Product } from "../types";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api/vibe";
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3001/api/vibe";
 
 interface UseVibeApiOptions {
   onSuccess?: (products: Product[]) => void;
@@ -49,7 +50,8 @@ export function useVibeApi(options: UseVibeApiOptions = {}) {
       setProducts(productsArray);
       options.onSuccess?.(productsArray);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      const errorMessage =
+        err instanceof Error ? err.message : "Something went wrong";
       setError(errorMessage);
       options.onError?.(errorMessage);
     } finally {
