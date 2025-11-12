@@ -80,11 +80,7 @@ export const generateVibeImage = async (vibeDescription, options = {}) => {
       };
     }
 
-    // Make the API request using direct fetch (more control than SDK)
-    if (!OPENROUTER_API_KEY) {
-      throw new Error("OpenRouter API key missing");
-    }
-
+    // Make direct API call (SDK doesn't properly support image generation yet)
     console.log("📤 Sending request to OpenRouter...");
     console.log("Request config:", JSON.stringify(requestBody, null, 2));
 
