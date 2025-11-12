@@ -5,6 +5,7 @@ interface CartDrawerProps {
   cartCount: number;
   cartItems: Product[];
   onClose: () => void;
+  onRemoveItem: (index: number) => void;
 }
 
 export default function CartDrawer({
@@ -12,6 +13,7 @@ export default function CartDrawer({
   cartCount,
   cartItems,
   onClose,
+  onRemoveItem,
 }: CartDrawerProps) {
   if (!show) return null;
 
@@ -24,10 +26,25 @@ export default function CartDrawer({
         </button>
       </div>
       <div className="cart-items">
-        {cartItems.slice(-3).map((item, index) => (
+        {cartItems.map((item, index) => (
           <div key={index} className="cart-item">
-            <span className="cart-item-emoji">{item.emoji}</span>
+            {item.image ? (
+              <img
+                src={item.image}
+                alt={item.name}
+                className="cart-item-image"
+              />
+            ) : (
+              <span className="cart-item-emoji">{item.emoji}</span>
+            )}
             <span className="cart-item-name">{item.name}</span>
+            <button
+              className="cart-item-remove"
+              onClick={() => onRemoveItem(index)}
+              aria-label="Remove item"
+            >
+              ✕
+            </button>
           </div>
         ))}
       </div>
