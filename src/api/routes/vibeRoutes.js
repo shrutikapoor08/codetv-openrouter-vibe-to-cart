@@ -1,6 +1,9 @@
 import webSearchAgent from "../services/aiAgent.js";
 import { generateVibeImage } from "../services/imageGeneration.js";
-import { getCachedImagePath, saveProductImage } from "../services/imageService.js";
+import {
+  getCachedImagePath,
+  saveProductImage,
+} from "../services/imageService.js";
 import { getCachedVibe, cacheVibe } from "../services/vibeService.js";
 
 /**

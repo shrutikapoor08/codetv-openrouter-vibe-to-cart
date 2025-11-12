@@ -33,10 +33,10 @@ const __dirname = getDirname(import.meta.url);
 export const PATHS = {
   // Cache directory for vibe storage
   CACHE_DIR: path.join(__dirname, "../../../.cache"),
-  
+
   // Public images directory
   IMAGES_DIR: path.join(__dirname, "../../../public/images"),
-  
+
   // Root directory
   ROOT_DIR: path.join(__dirname, "../../../"),
 };

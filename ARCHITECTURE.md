@@ -269,6 +269,7 @@ src/api/
 ### Key Design Principles
 
 **1. Separation of Concerns**
+
 - **Config**: Environment and validation
 - **Services**: Business logic and external integrations
 - **Middleware**: Request processing and error handling
@@ -276,15 +277,18 @@ src/api/
 - **Utils**: Shared utilities and test data
 
 **2. Centralized Configuration**
+
 - `config/env.js` exports all environment variables
 - Single source of truth for `MOCK_MODE`, API keys, etc.
 - Prevents duplication across files
 
 **3. Reusable Utilities**
+
 - `utils/paths.js` provides `getDirname()` and common path constants
 - Eliminates repeated `fileURLToPath` boilerplate
 
 **4. Service Layer Pattern**
+
 - Services encapsulate business logic
 - Easy to test in isolation
 - Clear dependencies and interfaces

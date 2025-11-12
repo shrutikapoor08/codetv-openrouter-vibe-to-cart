@@ -1,5 +1,8 @@
 import { generateVibeImage } from "../services/imageGeneration.js";
-import { getCachedImagePath, saveProductImage } from "../services/imageService.js";
+import {
+  getCachedImagePath,
+  saveProductImage,
+} from "../services/imageService.js";
 
 /**
  * POST /api/product-image

@@ -38,12 +38,16 @@ export function getCachedVibe(vibe, roastMode = false) {
   try {
     const cache = JSON.parse(fs.readFileSync(VIBE_CACHE_FILE, "utf8"));
     const key = generateVibeKey(vibe, roastMode);
-    
+
     if (cache[key]) {
-      console.log(`📦 Using cached products for vibe: "${vibe}" (${roastMode ? 'roast' : 'normal'} mode)`);
+      console.log(
+        `📦 Using cached products for vibe: "${vibe}" (${
+          roastMode ? "roast" : "normal"
+        } mode)`
+      );
       return cache[key].products;
     }
-    
+
     return null;
   } catch (error) {
     console.error("Error reading vibe cache:", error.message);
@@ -61,16 +65,18 @@ export function cacheVibe(vibe, roastMode, products) {
   try {
     const cache = JSON.parse(fs.readFileSync(VIBE_CACHE_FILE, "utf8"));
     const key = generateVibeKey(vibe, roastMode);
-    
+
     cache[key] = {
       products,
       timestamp: new Date().toISOString(),
       vibe,
       roastMode,
     };
-    
+
     fs.writeFileSync(VIBE_CACHE_FILE, JSON.stringify(cache, null, 2), "utf8");
-    console.log(`💾 Cached products for vibe: "${vibe}" (${products.length} products)`);
+    console.log(
+      `💾 Cached products for vibe: "${vibe}" (${products.length} products)`
+    );
   } catch (error) {
     console.error("Error writing vibe cache:", error.message);
   }
@@ -91,10 +97,10 @@ export function getVibeCacheStats() {
   try {
     const cache = JSON.parse(fs.readFileSync(VIBE_CACHE_FILE, "utf8"));
     const entries = Object.keys(cache);
-    
+
     return {
       totalVibes: entries.length,
-      vibes: entries.map(key => ({
+      vibes: entries.map((key) => ({
         key,
         vibe: cache[key].vibe,
         roastMode: cache[key].roastMode,

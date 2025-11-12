@@ -1,8 +1,5 @@
 import { getCacheStats } from "../services/imageService.js";
-import {
-  clearVibeCache,
-  getVibeCacheStats,
-} from "../services/vibeService.js";
+import { clearVibeCache, getVibeCacheStats } from "../services/vibeService.js";
 
 /**
  * GET /api/image-cache-stats

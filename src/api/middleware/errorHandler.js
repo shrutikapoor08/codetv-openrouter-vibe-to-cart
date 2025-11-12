@@ -20,7 +20,7 @@ export const asyncHandler = (fn) => {
  */
 export const errorHandler = (error, req, res, next) => {
   console.error("❌ Error:", error.message);
-  
+
   // Check if response already sent
   if (res.headersSent) {
     return next(error);

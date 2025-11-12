@@ -87,7 +87,7 @@ src/
 **Backend Request Flow:**
 
 ```
-User Input → Express /api/vibe 
+User Input → Express /api/vibe
           → validateVibeInput middleware
           → vibeRoutes.getVibeProducts
           → Check vibeService cache

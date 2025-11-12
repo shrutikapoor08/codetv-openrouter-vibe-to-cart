@@ -11,14 +11,7 @@ interface VibeFormProps {
 
 const VibeForm = forwardRef<HTMLFormElement, VibeFormProps>(
   (
-    {
-      vibe,
-      loading,
-      easterEggMessage,
-      onVibeChange,
-      onSubmit,
-      onSurpriseMe,
-    },
+    { vibe, loading, easterEggMessage, onVibeChange, onSubmit, onSurpriseMe },
     ref
   ) => {
     return (
