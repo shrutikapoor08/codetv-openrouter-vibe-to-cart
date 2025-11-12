@@ -25,14 +25,14 @@ export default function ProductGrid({
       <h2 className="products-title">Your Vibe Products</h2>
       <div className="product-grid">
         {products.map((product, index) => {
-          const hasImage = product.image && !imageErrors.has(index);
-          
+          const hasImage = product.image;
+
           return (
             <div key={index} className="product-card">
               {hasImage && (
                 <div className="product-image">
-                  <img 
-                    src={product.image} 
+                  <img
+                    src={product.image}
                     alt={product.name}
                     onError={() => handleImageError(index)}
                   />
