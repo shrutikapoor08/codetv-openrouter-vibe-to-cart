@@ -1,4 +1,10 @@
+import { OpenRouter } from "@openrouter/sdk";
 import { MOCK_MODE, OPENROUTER_API_KEY } from "../config/env.js";
+
+// Initialize OpenRouter client
+const client = new OpenRouter({
+  apiKey: OPENROUTER_API_KEY,
+});
 
 // Mock base64 image response (tiny 1x1 pixel transparent PNG)
 const MOCK_IMAGE_BASE64 =
@@ -52,8 +58,8 @@ CRITICAL:
     console.log("Prompt:", enhancedPrompt);
     console.log("Aspect Ratio:", aspectRatio);
 
-    // Prepare the request body for OpenRouter's image generation
-    const requestBody = {
+    // Prepare the request configuration
+    const requestConfig = {
       model: "google/gemini-2.5-flash-image", // Nano Banana model
       messages: [
         {
@@ -67,41 +73,19 @@ CRITICAL:
 
     // Add aspect ratio configuration if specified
     if (aspectRatio !== "1:1") {
-      requestBody.image_config = {
+      requestConfig.image_config = {
         aspect_ratio: aspectRatio,
       };
     }
 
-    // Make the API request to OpenRouter
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer":
-            "https://github.com/shrutikapoor08/codetv-openrouter-vibe-to-cart",
-          "X-Title": "Vibe to Cart - Image Generation",
-        },
-        body: JSON.stringify(requestBody),
-      }
-    );
+    // Make the API request using OpenRouter SDK
+    const response = await client.chat.send(requestConfig);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("OpenRouter API error:", errorText);
-      throw new Error(
-        `OpenRouter API error: ${response.status} - ${errorText}`
-      );
-    }
-
-    const data = await response.json();
     console.log("✅ Image generation response received");
 
     // Extract the image from the response
-    if (data.choices && data.choices[0] && data.choices[0].message) {
-      const message = data.choices[0].message;
+    if (response.choices && response.choices[0] && response.choices[0].message) {
+      const message = response.choices[0].message;
 
       // Check for images in the response
       if (message.images && message.images.length > 0) {
