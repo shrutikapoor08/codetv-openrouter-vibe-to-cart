@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import ReactCanvasConfetti from "react-canvas-confetti";
+// import ReactCanvasConfetti from "react-canvas-confetti";
 import { SURPRISE_VIBES, APP_GRADIENTS } from "./constants";
 import { useConfetti } from "./hooks/useConfetti";
 import { useVibeApi } from "./hooks/useVibeApi";
@@ -66,7 +66,7 @@ function App() {
       }}
     >
       {/* Confetti Canvas */}
-      <ReactCanvasConfetti
+      {/* <ReactCanvasConfetti
         onInit={getInstance}
         style={{
           position: "fixed",
@@ -77,7 +77,7 @@ function App() {
           left: 0,
           zIndex: 9999,
         }}
-      />
+      /> */}
 
       {/* Cart Drawer */}
       <CartDrawer

@@ -12,7 +12,7 @@ export function validateAPIKeys() {
     return;
   }
 
-  const requiredKeys = ["OPENROUTER_API_KEY"];
+  const requiredKeys = ["OPENROUTER_API_KEY", "TAVILY_API_KEY"];
   const missingKeys = [];
 
   for (const key of requiredKeys) {
