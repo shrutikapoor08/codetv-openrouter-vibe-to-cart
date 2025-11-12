@@ -1105,6 +1105,75 @@
   flex: 1;
 }
 
+/* Shopping Options in Item Cards */
+.item-shopping {
+  padding: 0 1.25rem;
+  margin: 1rem 0;
+}
+
+.shopping-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.shopping-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shopping-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.shopping-option:hover {
+  background: #e9ecef;
+  border-color: #667eea;
+  transform: translateX(2px);
+}
+
+.store-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.store-logo {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: contain;
+  background: white;
+  padding: 2px;
+}
+
+.store-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.store-price {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #28a745;
+  background: #d4edda;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
 .item-actions {
   padding: 0 1.25rem;
   margin-bottom: 1rem;

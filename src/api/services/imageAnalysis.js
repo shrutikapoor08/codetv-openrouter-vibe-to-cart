@@ -93,9 +93,81 @@ const searchItemImage = async (item) => {
 };
 
 /**
+ * Extract store name from URL
+ * @param {string} url - The URL to extract store name from
+ * @returns {string} - Store name
+ */
+const extractStoreName = (url) => {
+  try {
+    const domain = new URL(url).hostname;
+    // Remove www. and .com/.net/etc
+    const storeName = domain
+      .replace(/^www\./, '')
+      .replace(/\.(com|net|org|co\.uk|shop|store).*$/, '')
+      .split('.')[0];
+
+    // Capitalize first letter
+    return storeName.charAt(0).toUpperCase() + storeName.slice(1);
+  } catch {
+    return 'Online Store';
+  }
+};
+
+/**
+ * Convert image URL to likely product page URL
+ * @param {string} imageUrl - The product image URL
+ * @returns {string|null} - Product page URL or null
+ */
+const imageUrlToProductUrl = (imageUrl) => {
+  if (!imageUrl) return null;
+
+  try {
+    const url = new URL(imageUrl);
+    const hostname = url.hostname;
+    const pathname = url.pathname;
+
+    // Common patterns to convert image URLs to product pages
+    const patterns = {
+      // Amazon - extract ASIN from image URL
+      'amazon': () => {
+        const asinMatch = pathname.match(/\/([A-Z0-9]{10})[._]/);
+        if (asinMatch) return `https://www.amazon.com/dp/${asinMatch[1]}`;
+        return null;
+      },
+      // Nordstrom - keep domain, try to find product ID
+      'nordstrom': () => {
+        const idMatch = pathname.match(/\/(\d+)\//);
+        if (idMatch) return `https://www.nordstrom.com/s/${idMatch[1]}`;
+        return `https://${hostname}`;
+      },
+      // Mango - extract product code
+      'mango': () => {
+        const codeMatch = pathname.match(/\/([A-Z0-9]+)_/);
+        if (codeMatch) return `https://shop.mango.com/us/search?q=${codeMatch[1]}`;
+        return `https://shop.mango.com`;
+      },
+      // Generic - just return the base domain
+      'default': () => `https://${hostname}`
+    };
+
+    // Check for specific stores
+    for (const [store, handler] of Object.entries(patterns)) {
+      if (hostname.includes(store)) {
+        return handler();
+      }
+    }
+
+    // Default: return base URL
+    return patterns.default();
+  } catch {
+    return null;
+  }
+};
+
+/**
  * Search for shopping links for a clothing item using OpenRouter web search
  * @param {Object} item - The clothing item to search for
- * @returns {Promise<Array>} - Array of shopping links
+ * @returns {Promise<Array>} - Array of shopping links with prices and store info
  */
 const searchClothingItem = async (item) => {
   if (MOCK_MODE) {
@@ -104,22 +176,32 @@ const searchClothingItem = async (item) => {
         title: `Shop ${item.type}`,
         url: "https://example.com",
         snippet: `Find the perfect ${item.color} ${item.style} ${item.type}`,
+        price: "$49.99",
+        store: "Example Store",
       },
     ];
   }
 
   try {
     // Create a search query from the item details
-    const searchQuery = `shop ${item.color} ${item.style} ${item.type} buy online`;
+    const searchQuery = `shop ${item.color} ${item.style} ${item.type} buy online price`;
 
-    console.log(`🔍 Searching for: "${searchQuery}"`);
+    console.log(`🔍 Searching for shopping options: "${searchQuery}"`);
 
     const requestConfig = {
       model: "openai/gpt-4o-mini", // Fast model for web search
       messages: [
         {
           role: "user",
-          content: `Find the best online shopping options for: ${item.color} ${item.style} ${item.type}. Return the top 3 most relevant shopping links.`,
+          content: `Find shopping options for: ${item.color} ${item.style} ${item.type}.
+
+For each option, provide:
+1. Store name
+2. Product URL
+3. Price (if available)
+4. Brief description
+
+Format your response as a list with clear structure. Include prices when you find them.`,
         },
       ],
       provider: {
@@ -127,7 +209,7 @@ const searchClothingItem = async (item) => {
         allow_fallbacks: false,
       },
       transforms: ["web_search"], // Enable web search
-      max_tokens: 500,
+      max_tokens: 800,
       temperature: 0.3,
     };
 
@@ -148,6 +230,7 @@ const searchClothingItem = async (item) => {
 
     if (!fetchResponse.ok) {
       console.error(`⚠️ Web search failed for ${item.type}`);
+      // Return empty array - we'll use image URL as primary link
       return [];
     }
 
@@ -157,24 +240,52 @@ const searchClothingItem = async (item) => {
     if (response.choices && response.choices[0]) {
       const content = response.choices[0].message.content;
 
-      // Try to extract URLs from the content
+      // Extract URLs
       const urlRegex = /https?:\/\/[^\s<>"{}|\\^`\[\]]+/g;
       const urls = content.match(urlRegex) || [];
 
+      // Extract prices (various currency formats)
+      const priceRegex = /(?:\$|USD|€|EUR|£|GBP)\s*(\d+(?:[.,]\d{2})?)|(\d+(?:[.,]\d{2})?)\s*(?:\$|USD|€|EUR|£|GBP)/gi;
+      const prices = [];
+      let match;
+      while ((match = priceRegex.exec(content)) !== null) {
+        prices.push(match[0]);
+      }
+
       // Create shopping links from found URLs
-      const links = urls.slice(0, 3).map((url, index) => ({
-        title: `Shop ${item.type} - Option ${index + 1}`,
-        url: url,
-        snippet: `${item.color} ${item.style} ${item.type}`,
-      }));
+      const links = urls.slice(0, 3).map((url, index) => {
+        const storeName = extractStoreName(url);
+
+        // Try to find a price near this URL in the content
+        const urlIndex = content.indexOf(url);
+        const contextStart = Math.max(0, urlIndex - 100);
+        const contextEnd = Math.min(content.length, urlIndex + 100);
+        const context = content.substring(contextStart, contextEnd);
+
+        // Look for price in context
+        const contextPriceMatch = context.match(priceRegex);
+        const price = contextPriceMatch ? contextPriceMatch[0] : (prices[index] || null);
+
+        return {
+          title: `${storeName} - ${item.type}`,
+          url: url,
+          snippet: `${item.color} ${item.style} ${item.type}`,
+          price: price,
+          store: storeName,
+        };
+      });
 
       console.log(`✅ Found ${links.length} shopping links for ${item.type}`);
+      if (links.some(l => l.price)) {
+        console.log(`   💰 Prices found: ${links.filter(l => l.price).map(l => l.price).join(', ')}`);
+      }
       return links;
     }
 
     return [];
   } catch (error) {
     console.error(`❌ Error searching for ${item.type}:`, error.message);
+    // Return empty array - we'll use image URL as primary link
     return [];
   }
 };
@@ -322,10 +433,37 @@ Return ONLY raw JSON (no markdown, no code blocks):
             searchClothingItem(item),
           ]);
 
+          // If we have an image URL, create a shopping link from it
+          let enhancedShoppingLinks = [...shoppingLinks];
+          if (imageUrl) {
+            const productUrl = imageUrlToProductUrl(imageUrl);
+            if (productUrl) {
+              const storeName = extractStoreName(productUrl);
+              // Add as first shopping option
+              enhancedShoppingLinks.unshift({
+                title: `${storeName} - ${item.type}`,
+                url: productUrl,
+                snippet: `${item.color} ${item.style} ${item.type}`,
+                price: null,
+                store: storeName,
+              });
+            }
+          }
+
+          // Remove duplicates based on store name
+          const uniqueLinks = [];
+          const seenStores = new Set();
+          for (const link of enhancedShoppingLinks) {
+            if (!seenStores.has(link.store)) {
+              uniqueLinks.push(link);
+              seenStores.add(link.store);
+            }
+          }
+
           return {
             ...item,
             imageUrl,
-            shoppingLinks,
+            shoppingLinks: uniqueLinks.slice(0, 3), // Keep max 3 links
           };
         })
       );

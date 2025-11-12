@@ -20,6 +20,8 @@ export interface ClothingItem {
     title: string;
     url: string;
     snippet: string;
+    price?: string;
+    store?: string;
   }[];
 }
 
