@@ -1,4 +1,4 @@
-import webSearchAgent from "../services/aiAgent.js";
+import webSearchAgent, { roastCart } from "../services/aiAgent.js";
 import { generateVibeImage } from "../services/imageGeneration.js";
 import {
   getCachedImagePath,
@@ -90,4 +90,34 @@ export const getVibeProducts = async (req, res) => {
   }
 
   res.json(products);
+};
+
+/**
+ * POST /api/roast-cart
+ * Roast the user's cart items
+ */
+export const roastCartItems = async (req, res) => {
+  const { cartItems } = req.body;
+
+  if (!cartItems || !Array.isArray(cartItems)) {
+    return res.status(400).json({ error: "cartItems array is required" });
+  }
+
+  if (cartItems.length === 0) {
+    return res.json({
+      roast: "Your cart is empty, just like your will to commit to anything.",
+    });
+  }
+
+  try {
+    const roast = await roastCart(cartItems);
+    res.json({ roast });
+  } catch (error) {
+    console.error("❌ Error roasting cart:", error);
+    res.status(500).json({
+      error: "Failed to roast cart",
+      roast:
+        "I'd roast your cart, but it looks like my AI is having a breakdown.",
+    });
+  }
 };

@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { LOADING_MESSAGES, getEasterEggMessage } from "../constants";
 
 interface UseVibeSubmitOptions {
-  onSubmit: (vibe: string, roastMode: boolean) => Promise<void>;
+  onSubmit: (vibe: string) => Promise<void>;
 }
 
 /**
@@ -14,7 +14,7 @@ export function useVibeSubmit({ onSubmit }: UseVibeSubmitOptions) {
   const [easterEggMessage, setEasterEggMessage] = useState("");
 
   const handleSubmit = useCallback(
-    async (vibe: string, roastMode: boolean) => {
+    async (vibe: string) => {
       if (!vibe.trim()) return;
 
       // Check for easter eggs
@@ -34,7 +34,7 @@ export function useVibeSubmit({ onSubmit }: UseVibeSubmitOptions) {
       }, 1500);
 
       try {
-        await onSubmit(vibe, roastMode);
+        await onSubmit(vibe);
       } finally {
         clearInterval(messageInterval);
         setLoadingMessage("");

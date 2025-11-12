@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { Product } from "../types";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api/vibe";
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3001/api/vibe";
 
 interface UseVibeApiOptions {
   onSuccess?: (products: Product[]) => void;
@@ -13,7 +14,7 @@ export function useVibeApi(options: UseVibeApiOptions = {}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchVibeProducts = async (vibe: string, roastMode: boolean = false) => {
+  const fetchVibeProducts = async (vibe: string) => {
     setLoading(true);
     setError("");
     setProducts([]);
@@ -21,9 +22,7 @@ export function useVibeApi(options: UseVibeApiOptions = {}) {
     try {
       const url = new URL(API_URL);
       url.searchParams.set("query", vibe);
-      if (roastMode) {
-        url.searchParams.set("mode", "roast");
-      }
+      // Note: roastMode is NOT passed here - it only affects cart roasting
 
       const response = await fetch(url.toString());
 
@@ -35,7 +34,8 @@ export function useVibeApi(options: UseVibeApiOptions = {}) {
       setProducts(data);
       options.onSuccess?.(data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      const errorMessage =
+        err instanceof Error ? err.message : "Something went wrong";
       setError(errorMessage);
       options.onError?.(errorMessage);
     } finally {

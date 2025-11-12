@@ -25,21 +25,25 @@ dotenv.config({ path: [".env.local", ".env"] });
  * @returns {string} JSON stringified product array or roast message
  */
 function getMockVibeResponse(vibe, roastMode = false) {
-  if (roastMode) {
-    // Return a roast instead of products
-    const roast =
-      ROAST_RESPONSES[vibe.toLowerCase().trim()] || ROAST_RESPONSES.default;
-    return JSON.stringify([
-      {
-        emoji: "🔥",
-        name: "Reality Check",
-        reason: roast,
-      },
-    ]);
-  }
-
   const normalizedVibe = vibe.toLowerCase().trim();
   const products = MOCK_VIBES[normalizedVibe] || DEFAULT_VIBE;
+
+  if (roastMode) {
+    // Return roasted versions of the products
+    const roastIntro =
+      ROAST_RESPONSES[normalizedVibe] || ROAST_RESPONSES.default;
+
+    return JSON.stringify(
+      products.map((product, index) => ({
+        ...product,
+        reason:
+          index === 0
+            ? `${roastIntro} Anyway, ${product.reason.toLowerCase()}`
+            : product.reason,
+      }))
+    );
+  }
+
   return JSON.stringify(products);
 }
 
@@ -51,22 +55,24 @@ function getMockVibeResponse(vibe, roastMode = false) {
  */
 function createVibePrompt(vibe, roastMode = false) {
   if (roastMode) {
-    return `You are RoastBot, a brutally honest AI with zero chill.
+    return `You are RoastBot, a brutally honest personal shopper with zero chill and maximum sass.
 The user described their vibe as: "${vibe}"
 
-Your job is to roast their vibe in a funny, dramatic, slightly mean way.
-Be honest, witty, and entertaining. Think: "I'm not mad, I'm just disappointed."
+Your job is to recommend EXACTLY 3 products that match their vibe, but roast them along the way.
+Each product should be funny, slightly mean, but still useful. Think: "I'm judging you, but here's what you need."
 
-Respond with ONLY a JSON array with ONE item:
+You MUST respond ONLY as a valid JSON array with EXACTLY 3 items in this exact format:
 [
-  {
-    "emoji": "🔥",
-    "name": "Reality Check", 
-    "reason": "Your hilarious roast here (2-3 sentences max)"
-  }
+  {"emoji":"🔥", "name":"Snarky Product Name", "reason":"Your witty, slightly mean justification here"},
+  {"emoji":"💀", "name":"Another Roast Product", "reason":"Another sassy reason with a burn"},
+  {"emoji":"😬", "name":"Third Roast Product", "reason":"Final roast justification"}
 ]
 
-Make it funny but not cruel. Think sassy best friend, not bully.`;
+IMPORTANT: Return EXACTLY 3 products, no more, no less.
+Be funny, sarcastic, and slightly mean - but still recommend actual products.
+DO NOT include any other text, explanations, or markdown formatting. ONLY the JSON array.
+
+User vibe: ${vibe}`;
   }
 
   return `You are VibeBot, a hilarious, over-the-top personal shopper with a sassy personality.
@@ -158,3 +164,56 @@ const webSearchAgent = async ({ description, roastMode = false }) => {
 };
 
 export default webSearchAgent;
+
+/**
+ * Roast the user's cart items
+ * @param {Array} cartItems - Array of products in the cart
+ * @returns {Promise<string>} A funny roast about their shopping choices
+ */
+export const roastCart = async (cartItems) => {
+  // Mock mode - return mock roast
+  if (MOCK_MODE) {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return "Looking at your cart, I can tell you're the type of person who adds items to cart just to feel something.";
+  }
+
+  if (!cartItems || cartItems.length === 0) {
+    return "Your cart is empty, just like your will to commit to anything.";
+  }
+
+  try {
+    // Initialize OpenRouter model
+    const model = new ChatOpenAI({
+      model: "openai/gpt-4o-mini",
+      temperature: 0.9, // High temperature for creative roasts
+      apiKey: OPENROUTER_API_KEY,
+      maxRetries: 2,
+      configuration: {
+        baseURL: "https://openrouter.ai/api/v1",
+        defaultHeaders: {
+          "HTTP-Referer":
+            "https://github.com/shrutikapoor08/codetv-openrouter-vibe-to-cart",
+          "X-Title": "Vibe to Cart",
+        },
+      },
+    });
+
+    const itemNames = cartItems.map((item) => item.name).join(", ");
+    const prompt = `You are RoastBot, a brutally honest shopping critic with zero chill.
+
+The user has these items in their cart: ${itemNames}
+
+Roast their shopping choices in EXACTLY 1 sentence. Be funny, dramatic, and slightly mean. 
+Think: "What do these purchases say about this person?"
+Be witty and entertaining, like a sassy best friend, not cruel.
+
+IMPORTANT: Your response must be EXACTLY 1 sentence - no more, no less.
+Respond with ONLY the roast text, no quotes, no extra formatting.`;
+
+    const response = await model.invoke([new HumanMessage(prompt)]);
+    return response.content;
+  } catch (error) {
+    console.error("❌ Error roasting cart:", error.message);
+    return "I'd roast your cart, but it looks like my AI is having a breakdown. How fitting.";
+  }
+};

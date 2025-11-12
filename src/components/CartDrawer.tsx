@@ -1,4 +1,5 @@
 import type { Product } from "../types";
+import { useCartRoast } from "../hooks/useCartRoast";
 
 interface CartDrawerProps {
   show: boolean;
@@ -6,6 +7,7 @@ interface CartDrawerProps {
   cartItems: Product[];
   onClose: () => void;
   onRemoveItem: (index: number) => void;
+  roastMode: boolean;
 }
 
 export default function CartDrawer({
@@ -14,7 +16,10 @@ export default function CartDrawer({
   cartItems,
   onClose,
   onRemoveItem,
+  roastMode,
 }: CartDrawerProps) {
+  const { roast, loading } = useCartRoast(cartItems, roastMode);
+
   if (!show) return null;
 
   return (
@@ -48,6 +53,17 @@ export default function CartDrawer({
           </div>
         ))}
       </div>
+
+      {roastMode && cartItems.length > 0 && (
+        <div className="cart-roast">
+          <div className="cart-roast-header">🔥 RoastBot Says:</div>
+          {loading ? (
+            <div className="cart-roast-loading">Preparing your roast...</div>
+          ) : (
+            <div className="cart-roast-text">{roast}</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -12,7 +12,7 @@ export function useCart(options: UseCartOptions = {}) {
   const [showCartDrawer, setShowCartDrawer] = useState(false);
 
   const addToCart = (product: Product) => {
-    setCartItems((prev) => [...prev, product]);
+    setCartItems((prev) => [product, ...prev]); // Add to beginning instead of end
     setCartCount((prev) => prev + 1);
     setShowCartDrawer(true);
 

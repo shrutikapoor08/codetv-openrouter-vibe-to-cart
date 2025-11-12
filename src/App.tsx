@@ -39,7 +39,7 @@ function App() {
 
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleSubmit(vibe, roastMode);
+    await handleSubmit(vibe);
   };
 
   const handleSurpriseMe = () => {
@@ -92,6 +92,7 @@ function App() {
         cartItems={cartItems}
         onClose={closeDrawer}
         onRemoveItem={removeFromCart}
+        roastMode={roastMode}
       />
 
       <div className="container">
