@@ -25,6 +25,7 @@ import {
   getVibeCacheStatsRoute,
   clearVibeCacheRoute,
 } from "./routes/cacheRoutes.js";
+import { analyzeImage } from "./routes/imageAnalysisRoutes.js";
 
 // Validate API keys before starting the server
 validateAPIKeys();
@@ -48,6 +49,9 @@ app.post(
   validateProductImageInput,
   asyncHandler(generateProductImage)
 );
+
+// Image analysis route
+app.post("/api/analyze-image", asyncHandler(analyzeImage));
 
 // Cache management routes
 app.get("/api/image-cache-stats", getImageCacheStats);

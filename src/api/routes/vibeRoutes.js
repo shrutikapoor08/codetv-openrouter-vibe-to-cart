@@ -1,5 +1,5 @@
 import webSearchAgent from "../services/aiAgent.js";
-import { generate4ImageVariants } from "../services/imageGeneration.js";
+import { generateVibeImage } from "../services/imageGeneration.js";
 import {
   getCachedImagePath,
   saveProductImage,
@@ -33,32 +33,35 @@ export const getVibeProducts = async (req, res) => {
     cacheVibe(vibe, roastMode, products);
   }
 
-  // Generate 4 images for the vibe if requested
+  // Generate 1 image for the vibe if requested (much faster!)
   if (generateImages && Array.isArray(products)) {
-    console.log(`🖼️  Generating 4 images for vibe: "${vibe}"`);
+    console.log(`🖼️  Generating 1 image for vibe: "${vibe}"`);
 
     try {
-      // Generate 4 different image variants for this vibe
-      const imageResults = await generate4ImageVariants(vibe, {
+      // Generate just ONE image for speed - all products will share it
+      const imageResult = await generateVibeImage(vibe, {
         aspectRatio: "1:1",
       });
 
-      console.log(`✅ Generated ${imageResults.length} images successfully`);
+      console.log(`✅ Generated image successfully`);
+
+      // Create multiple references to the same image (one per product)
+      const images = products.map((_, index) => ({
+        id: index + 1,
+        url: imageResult.imageUrl,
+        prompt: imageResult.prompt,
+      }));
 
       // Attach all images to the response
       const response = {
         products,
-        images: imageResults.map((result, index) => ({
-          id: index + 1,
-          url: result.imageUrl,
-          prompt: result.prompt,
-        })),
+        images,
         vibe,
       };
 
       return res.json(response);
     } catch (error) {
-      console.error(`❌ Failed to generate images for vibe:`, error.message);
+      console.error(`❌ Failed to generate image for vibe:`, error.message);
       // Return products without images on error
       return res.json({ products, images: [], vibe });
     }

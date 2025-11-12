@@ -13,7 +13,7 @@ export function useVibeApi(options: UseVibeApiOptions = {}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchVibeProducts = async (vibe: string, roastMode: boolean = false) => {
+  const fetchVibeProducts = async (vibe: string, roastMode: boolean = false, skipImages: boolean = false) => {
     setLoading(true);
     setError("");
     setProducts([]);
@@ -23,6 +23,9 @@ export function useVibeApi(options: UseVibeApiOptions = {}) {
       url.searchParams.set("query", vibe);
       if (roastMode) {
         url.searchParams.set("mode", "roast");
+      }
+      if (skipImages) {
+        url.searchParams.set("generateImages", "false");
       }
 
       const response = await fetch(url.toString());

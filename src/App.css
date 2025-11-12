@@ -314,6 +314,30 @@
   justify-content: center;
   background: #f8f9fa;
   border-radius: 12px;
+  position: relative;
+}
+
+.product-image.clickable {
+  cursor: pointer;
+}
+
+.product-image.clickable::after {
+  content: "🔍 Click to analyze";
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.product-image.clickable:hover::after {
+  opacity: 1;
 }
 
 .product-image img {
@@ -400,12 +424,21 @@
   }
 }
 
-/* Roast Mode Toggle */
-.roast-toggle-container {
+/* Toggle Controls Container */
+.toggle-controls {
   position: absolute;
   top: 2rem;
   right: 2rem;
   z-index: 100;
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* Roast Mode Toggle */
+.roast-toggle-container {
+  /* Position controlled by parent now */
 }
 
 .roast-toggle {
@@ -616,6 +649,178 @@
   }
   50% {
     box-shadow: 0 0 30px rgba(255, 107, 107, 0.9);
+  }
+}
+
+/* Clothing Analysis Section - Bottom */
+.clothing-analysis-section {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.clothing-analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.clothing-analysis-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: #f0f0f0;
+  color: #333;
+  transform: rotate(90deg);
+}
+
+.clothing-analysis-loading {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.clothing-analysis-loading p {
+  margin-top: 1rem;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.clothing-analysis-content {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.clothing-summary {
+  font-size: 1.1rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+}
+
+.clothing-items h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.clothing-items ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.clothing-item-detail {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.clothing-item-detail:hover {
+  transform: translateX(5px);
+  background: #e9ecef;
+}
+
+.item-type {
+  font-weight: 700;
+  color: #667eea;
+  text-transform: capitalize;
+  min-width: 100px;
+  font-size: 1rem;
+}
+
+.item-color {
+  padding: 0.25rem 0.75rem;
+  background: white;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #555;
+  text-transform: capitalize;
+}
+
+.item-style {
+  padding: 0.25rem 0.75rem;
+  background: white;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+  text-transform: capitalize;
+}
+
+.analysis-error {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  border-radius: 8px;
+  color: #856404;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .clothing-analysis-section {
+    padding: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .clothing-item-detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .item-type {
+    min-width: auto;
   }
 }
 

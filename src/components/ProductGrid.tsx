@@ -5,12 +5,14 @@ interface ProductGridProps {
   products: Product[];
   loading: boolean;
   onAddToCart: (product: Product) => void;
+  onImageClick?: (imageUrl: string) => void;
 }
 
 export default function ProductGrid({
   products,
   loading,
   onAddToCart,
+  onImageClick,
 }: ProductGridProps) {
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
 
@@ -30,7 +32,11 @@ export default function ProductGrid({
           return (
             <div key={index} className="product-card">
               {hasImage && (
-                <div className="product-image">
+                <div
+                  className="product-image clickable"
+                  onClick={() => onImageClick?.(product.image!)}
+                  title="Click to analyze outfit details"
+                >
                   <img
                     src={product.image}
                     alt={product.name}
