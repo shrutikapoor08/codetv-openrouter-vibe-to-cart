@@ -1,27 +1,100 @@
 import { MOCK_MODE, OPENROUTER_API_KEY } from "../config/env.js";
-import { generateVibeImage } from "./imageGeneration.js";
 
 /**
- * Generate an image for a specific clothing item
- * @param {Object} item - The clothing item to generate image for
- * @returns {Promise<string>} - Image URL
+ * Search for a product image using web search
+ * @param {Object} item - The clothing item to search for
+ * @returns {Promise<string|null>} - Image URL from web search
  */
-const generateItemImage = async (item) => {
+const searchItemImage = async (item) => {
   if (MOCK_MODE) {
     return "https://via.placeholder.com/300x400?text=" + encodeURIComponent(item.type);
   }
 
   try {
-    const prompt = `A professional product photo of a ${item.color} ${item.style} ${item.type}, clean white background, high quality, fashion photography, well-lit, centered`;
+    // Create a search query optimized for product images
+    const searchQuery = `${item.color} ${item.style} ${item.type} product photo`;
 
-    console.log(`📸 Generating image for: ${item.color} ${item.style} ${item.type}`);
+    console.log(`📸 Searching for image: "${searchQuery}"`);
 
-    const result = await generateVibeImage(prompt, { aspectRatio: "3:4" });
+    const requestConfig = {
+      model: "openai/gpt-4o-mini", // Fast model for web search
+      messages: [
+        {
+          role: "user",
+          content: `Find a high-quality product image of a ${item.color} ${item.style} ${item.type}. Return the direct image URL. Look for professional product photography.`,
+        },
+      ],
+      provider: {
+        order: ["Perplexity"], // Use Perplexity for web search
+        allow_fallbacks: false,
+      },
+      transforms: ["web_search"], // Enable web search
+      max_tokens: 300,
+      temperature: 0.3,
+    };
 
-    console.log(`✅ Generated image for ${item.type}`);
-    return result.imageUrl;
+    const fetchResponse = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer":
+            "https://github.com/shrutikapoor08/codetv-openrouter-vibe-to-cart",
+          "X-Title": "Vibe to Cart - Image Search",
+        },
+        body: JSON.stringify(requestConfig),
+      }
+    );
+
+    if (!fetchResponse.ok) {
+      console.error(`⚠️ Image search failed for ${item.type}`);
+      return null;
+    }
+
+    const response = await fetchResponse.json();
+
+    // Extract image URLs from the response
+    if (response.choices && response.choices[0]) {
+      const content = response.choices[0].message.content;
+
+      // Try to extract image URLs (jpg, jpeg, png, webp)
+      const imageUrlRegex = /https?:\/\/[^\s<>"{}|\\^`\[\]]+\.(jpg|jpeg|png|webp|gif)(\?[^\s<>"{}|\\^`\[\]]*)?/gi;
+      const imageUrls = content.match(imageUrlRegex);
+
+      if (imageUrls && imageUrls.length > 0) {
+        // Return the first image URL found
+        const imageUrl = imageUrls[0];
+        console.log(`✅ Found image for ${item.type}: ${imageUrl.substring(0, 60)}...`);
+        return imageUrl;
+      }
+
+      // If no direct image URL, try to extract any URL that might be an image
+      const urlRegex = /https?:\/\/[^\s<>"{}|\\^`\[\]]+/g;
+      const urls = content.match(urlRegex);
+
+      if (urls && urls.length > 0) {
+        // Filter for URLs that might be images
+        const potentialImageUrl = urls.find(url =>
+          url.includes('image') ||
+          url.includes('photo') ||
+          url.includes('cdn') ||
+          url.includes('img')
+        );
+
+        if (potentialImageUrl) {
+          console.log(`✅ Found potential image for ${item.type}`);
+          return potentialImageUrl;
+        }
+      }
+
+      console.log(`⚠️ No image URL found for ${item.type}`);
+    }
+
+    return null;
   } catch (error) {
-    console.error(`❌ Failed to generate image for ${item.type}:`, error.message);
+    console.error(`❌ Error searching for image of ${item.type}:`, error.message);
     return null;
   }
 };
@@ -246,13 +319,13 @@ Return ONLY raw JSON (no markdown, no code blocks):
         console.log(`   ${i + 1}. ${item.type} - ${item.color} - ${item.style}`);
       });
 
-      // Generate images and search for shopping links for each item (in parallel)
-      console.log("🛍️  Generating images and searching for shopping links...");
+      // Search for images and shopping links for each item (in parallel)
+      console.log("🛍️  Searching for product images and shopping links...");
       const itemsWithExtras = await Promise.all(
         analysis.items.map(async (item) => {
-          // Run image generation and shopping search in parallel for each item
+          // Run image search and shopping search in parallel for each item
           const [imageUrl, shoppingLinks] = await Promise.all([
-            generateItemImage(item),
+            searchItemImage(item),
             searchClothingItem(item),
           ]);
 
