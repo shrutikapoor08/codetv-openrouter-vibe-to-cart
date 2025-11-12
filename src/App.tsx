@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
+import ReactCanvasConfetti from "react-canvas-confetti";
+import type { CreateTypes } from "canvas-confetti";
 import "./App.css";
 
 interface Product {
@@ -43,10 +45,83 @@ function App() {
   const [cartCount, setCartCount] = useState(0);
   const [showCartDrawer, setShowCartDrawer] = useState(false);
   const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [roastMode, setRoastMode] = useState(false);
+  const [vibeHistory, setVibeHistory] = useState<string[]>([]);
+  const [easterEggMessage, setEasterEggMessage] = useState("");
+  
+  const refAnimationInstance = useRef<CreateTypes | null>(null);
+
+  const getInstance = useCallback((instance: { confetti: CreateTypes }) => {
+    refAnimationInstance.current = instance.confetti;
+  }, []);
+
+  const makeShot = useCallback((particleRatio: number, opts: object) => {
+    refAnimationInstance.current?.({
+      ...opts,
+      origin: { y: 0.7 },
+      particleCount: Math.floor(200 * particleRatio),
+    });
+  }, []);
+
+  const fireConfetti = useCallback(() => {
+    makeShot(0.25, {
+      spread: 26,
+      startVelocity: 55,
+    });
+
+    makeShot(0.2, {
+      spread: 60,
+    });
+
+    makeShot(0.35, {
+      spread: 100,
+      decay: 0.91,
+      scalar: 0.8,
+    });
+
+    makeShot(0.1, {
+      spread: 120,
+      startVelocity: 25,
+      decay: 0.92,
+      scalar: 1.2,
+    });
+
+    makeShot(0.1, {
+      spread: 120,
+      startVelocity: 45,
+    });
+  }, [makeShot]);
+
+  const checkForEasterEggs = (userVibe: string) => {
+    const lowerVibe = userVibe.toLowerCase();
+    setEasterEggMessage("");
+
+    if (lowerVibe.includes("villain") || lowerVibe.includes("evil")) {
+      setEasterEggMessage("🦹‍♀️ We sense dark energy... excellent.");
+    } else if (lowerVibe.includes("chaotic") || lowerVibe.includes("chaos")) {
+      setEasterEggMessage("🌪️ Chaos detected. Recommend glitter and bad decisions.");
+    } else if (lowerVibe.includes("ceo") || lowerVibe.includes("boss")) {
+      setEasterEggMessage("💼 Boss energy detected. Don't forget to hydrate between meetings.");
+    } else if (lowerVibe.includes("broke") || lowerVibe.includes("poor")) {
+      setEasterEggMessage("💸 We see you. Window shopping is still shopping.");
+    } else if (lowerVibe.includes("therapy") || lowerVibe.includes("therapist")) {
+      setEasterEggMessage("🛋️ This app is NOT a licensed therapist. But we can recommend candles.");
+    } else if (lowerVibe.includes("sad") || lowerVibe.includes("depressed")) {
+      setEasterEggMessage("🥺 Sending virtual hugs... and product recommendations.");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!vibe.trim()) return;
+
+    // Check for easter eggs
+    checkForEasterEggs(vibe);
+
+    // Add to vibe history
+    if (!vibeHistory.includes(vibe)) {
+      setVibeHistory((prev) => [vibe, ...prev].slice(0, 5));
+    }
 
     setLoading(true);
     setError("");
@@ -60,9 +135,13 @@ function App() {
     }, 1500);
 
     try {
-      const response = await fetch(
-        `http://localhost:3001/api/vibe?query=${encodeURIComponent(vibe)}`
-      );
+      const url = new URL("http://localhost:3001/api/vibe");
+      url.searchParams.set("query", vibe);
+      if (roastMode) {
+        url.searchParams.set("mode", "roast");
+      }
+      
+      const response = await fetch(url.toString());
 
       if (!response.ok) {
         throw new Error("Failed to fetch vibe recommendations");
@@ -95,6 +174,9 @@ function App() {
     setCartCount((prev) => prev + 1);
     setShowCartDrawer(true);
     
+    // Fire confetti!
+    fireConfetti();
+    
     // Auto-hide drawer after 3 seconds
     setTimeout(() => {
       setShowCartDrawer(false);
@@ -103,6 +185,20 @@ function App() {
 
   return (
     <div className="app">
+      {/* Confetti Canvas */}
+      <ReactCanvasConfetti
+        onInit={getInstance}
+        style={{
+          position: "fixed",
+          pointerEvents: "none",
+          width: "100%",
+          height: "100%",
+          top: 0,
+          left: 0,
+          zIndex: 9999,
+        }}
+      />
+
       {/* Cart Drawer */}
       {showCartDrawer && (
         <div className="cart-drawer">
@@ -137,6 +233,20 @@ function App() {
           </p>
         </header>
 
+        {/* Roast Mode Toggle */}
+        <div className="roast-toggle-container">
+          <label className="roast-toggle">
+            <input
+              type="checkbox"
+              checked={roastMode}
+              onChange={(e) => setRoastMode(e.target.checked)}
+            />
+            <span className="roast-toggle-label">
+              {roastMode ? "🔥 Roast Mode" : "💝 Nice Mode"}
+            </span>
+          </label>
+        </div>
+
         <form onSubmit={handleSubmit} className="vibe-form">
           <input
             type="text"
@@ -162,6 +272,38 @@ function App() {
             🎲 Surprise Me
           </button>
         </form>
+
+        {/* Easter Egg Message */}
+        {easterEggMessage && (
+          <div className="easter-egg">
+            <p>{easterEggMessage}</p>
+          </div>
+        )}
+
+        {/* Vibe History */}
+        {vibeHistory.length > 0 && (
+          <div className="vibe-history">
+            <h3 className="vibe-history-title">Recent Vibes:</h3>
+            <div className="vibe-history-items">
+              {vibeHistory.map((pastVibe, index) => (
+                <button
+                  key={index}
+                  className="vibe-history-item"
+                  onClick={() => {
+                    setVibe(pastVibe);
+                    setTimeout(() => {
+                      const form = document.querySelector("form");
+                      form?.requestSubmit();
+                    }, 100);
+                  }}
+                  disabled={loading}
+                >
+                  {pastVibe}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {loadingMessage && (
           <div className="loading">

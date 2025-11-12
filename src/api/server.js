@@ -27,6 +27,7 @@ app.use((req, res, next) => {
 app.get("/api/vibe", async (req, res) => {
   try {
     const vibe = req.query.query || req.query.vibe;
+    const roastMode = req.query.mode === "roast";
 
     if (!vibe || vibe.trim() === "") {
       return res.status(400).json({
@@ -35,7 +36,10 @@ app.get("/api/vibe", async (req, res) => {
       });
     }
 
-    const response = await webSearchAgent({ description: vibe });
+    const response = await webSearchAgent({ 
+      description: vibe,
+      roastMode: roastMode 
+    });
     
     // Parse the JSON string response and send as proper JSON
     const products = JSON.parse(response);

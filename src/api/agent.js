@@ -172,9 +172,26 @@ const DEFAULT_VIBE = [
 /**
  * Get mock response for a given vibe
  * @param {string} vibe - User's vibe description
- * @returns {string} JSON stringified product array
+ * @param {boolean} roastMode - Whether to roast instead of recommend
+ * @returns {string} JSON stringified product array or roast message
  */
-function getMockVibeResponse(vibe) {
+function getMockVibeResponse(vibe, roastMode = false) {
+  if (roastMode) {
+    // Return a roast instead of products
+    const roasts = {
+      "villain era": "A villain era? Honey, villains have plans. You're giving 'forgot to return a library book' energy.",
+      "hot girl autumn but broke": "Hot girl autumn but broke is just regular autumn with better lighting in your selfies.",
+      "cottagecore ceo": "You want to run a Fortune 500 company from a fairy cottage? LinkedIn is not a fairy tale, Susan.",
+      default: "Your vibe is giving 'I watched one TikTok and made it my personality.' Iconic, but make it less predictable.",
+    };
+    const roast = roasts[vibe.toLowerCase().trim()] || roasts.default;
+    return JSON.stringify([{
+      emoji: "🔥",
+      name: "Reality Check",
+      reason: roast
+    }]);
+  }
+  
   const normalizedVibe = vibe.toLowerCase().trim();
   const products = MOCK_VIBES[normalizedVibe] || DEFAULT_VIBE;
   return JSON.stringify(products);
@@ -183,9 +200,29 @@ function getMockVibeResponse(vibe) {
 /**
  * Creates the VibeBot prompt for product recommendations
  * @param {string} vibe - User's vibe description
+ * @param {boolean} roastMode - Whether to roast instead of recommend
  * @returns {string} Formatted prompt for the AI
  */
-function createVibePrompt(vibe) {
+function createVibePrompt(vibe, roastMode = false) {
+  if (roastMode) {
+    return `You are RoastBot, a brutally honest AI with zero chill.
+The user described their vibe as: "${vibe}"
+
+Your job is to roast their vibe in a funny, dramatic, slightly mean way.
+Be honest, witty, and entertaining. Think: "I'm not mad, I'm just disappointed."
+
+Respond with ONLY a JSON array with ONE item:
+[
+  {
+    "emoji": "🔥",
+    "name": "Reality Check", 
+    "reason": "Your hilarious roast here (2-3 sentences max)"
+  }
+]
+
+Make it funny but not cruel. Think sassy best friend, not bully.`;
+  }
+  
   return `You are VibeBot, a hilarious, over-the-top personal shopper with a sassy personality.
 
 The user will describe their vibe/mood/aesthetic. You must respond with 3-5 funny, dramatic, or oddly specific product recommendations that match that vibe.
@@ -210,13 +247,14 @@ User vibe: ${vibe}`;
  * Main agent function - processes user vibes and returns product recommendations
  * @param {Object} params
  * @param {string} params.description - User's vibe description
- * @returns {Promise<string>} JSON string of product recommendations
+ * @param {boolean} params.roastMode - Whether to roast instead of recommend
+ * @returns {Promise<string>} JSON string of product recommendations or roast
  */
-const webSearchAgent = async ({ description }) => {
+const webSearchAgent = async ({ description, roastMode = false }) => {
   // Mock mode - return mock response without API calls
   if (MOCK_MODE) {
     await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
-    return getMockVibeResponse(description);
+    return getMockVibeResponse(description, roastMode);
   }
 
   try {
@@ -253,7 +291,7 @@ const webSearchAgent = async ({ description }) => {
     });
 
     // Create the prompt and invoke agent
-    const vibePrompt = createVibePrompt(description);
+    const vibePrompt = createVibePrompt(description, roastMode);
     const question = new HumanMessage(vibePrompt);
 
     const agentNextState = await agent.invoke(

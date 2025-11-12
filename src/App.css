@@ -361,3 +361,132 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Roast Mode Toggle */
+.roast-toggle-container {
+  max-width: 900px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.roast-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.roast-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.roast-toggle input[type="checkbox"] {
+  width: 44px;
+  height: 24px;
+  appearance: none;
+  background: #ddd;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.roast-toggle input[type="checkbox"]:checked {
+  background: #ff6b6b;
+}
+
+.roast-toggle input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.roast-toggle input[type="checkbox"]:checked::before {
+  transform: translateX(20px);
+}
+
+.roast-toggle-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  user-select: none;
+}
+
+/* Easter Egg Message */
+.easter-egg {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.5s ease-out;
+}
+
+.easter-egg p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #667eea;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Vibe History */
+.vibe-history {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.vibe-history-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.vibe-history-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.vibe-history-item {
+  background: #f0f0f0;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.vibe-history-item:hover:not(:disabled) {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.vibe-history-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
