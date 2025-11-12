@@ -62,11 +62,28 @@ app.get("/", (req, res) => {
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
+// Handle uncaught exceptions and rejections
+process.on("uncaughtException", (error) => {
+  console.error("💥 Uncaught Exception:", error);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("💥 Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1);
+});
+
 // Start server
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`✅ Server running on port ${port}`);
   console.log(`   http://localhost:${port}`);
   if (process.env.MOCK_MODE === "true") {
     console.log("   🎭 MOCK MODE enabled");
   }
+});
+
+// Keep the process alive
+server.on("error", (error) => {
+  console.error("❌ Server error:", error);
+  process.exit(1);
 });
