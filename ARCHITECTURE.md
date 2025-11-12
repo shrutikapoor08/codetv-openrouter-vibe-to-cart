@@ -52,16 +52,17 @@ graph TD
 
 ### AI & Orchestration
 
-| Technology           | Version | Purpose                          |
-| -------------------- | ------- | -------------------------------- |
-| **LangChain Core**   | 1.0.4   | Message handling & primitives    |
-| **LangGraph**        | 1.0.2   | Agent workflow orchestration     |
-| **LangChain OpenAI** | 1.1.0   | OpenRouter/OpenAI integration    |
-| **LangChain Tavily** | 1.0.0   | Web search tool integration      |
-| **OpenRouter API**   | -       | Multi-model LLM & image access   |
-| **Tavily API**       | -       | Web search service               |
+| Technology           | Version | Purpose                        |
+| -------------------- | ------- | ------------------------------ |
+| **LangChain Core**   | 1.0.4   | Message handling & primitives  |
+| **LangGraph**        | 1.0.2   | Agent workflow orchestration   |
+| **LangChain OpenAI** | 1.1.0   | OpenRouter/OpenAI integration  |
+| **LangChain Tavily** | 1.0.0   | Web search tool integration    |
+| **OpenRouter API**   | -       | Multi-model LLM & image access |
+| **Tavily API**       | -       | Web search service             |
 
 **OpenRouter Models Used:**
+
 - Text: `openai/gpt-4o-mini` (product recommendations)
 - Images: `google/gemini-2.5-flash-image` (product visuals)
 
@@ -98,7 +99,7 @@ sequenceDiagram
     end
 
     Express->>Frontend: Products JSON response
-    
+
     loop For each product
         Frontend->>Express: GET /api/product-image?name=<product>
         Express->>ImageGen: generateProductImage({productName})
@@ -334,7 +335,7 @@ flowchart TD
     H --> I[Generate MD5 Hash]
     I --> J[Save to public/images/]
     J --> K[Return Image URL]
-    
+
     style C fill:#e1ffe1
     style K fill:#e1ffe1
     style F fill:#ffe1e1
@@ -521,6 +522,7 @@ codetv-openrouter-vibe-to-cart/
 **OpenRouter Usage in This Project:**
 
 1. **Text Generation (Product Recommendations)**
+
    - Service: `services/aiAgent.js`
    - Model: `openai/gpt-4o-mini`
    - Purpose: Generate funny product recommendations from user vibes

@@ -1,10 +1,16 @@
 import { OpenRouter } from "@openrouter/sdk";
 import { MOCK_MODE, OPENROUTER_API_KEY } from "../config/env.js";
 
-// Initialize OpenRouter client
-const client = new OpenRouter({
-  apiKey: OPENROUTER_API_KEY,
-});
+// Initialize OpenRouter client (lazy initialization to avoid crashes if key is missing)
+let client = null;
+const getClient = () => {
+  if (!client && OPENROUTER_API_KEY) {
+    client = new OpenRouter({
+      apiKey: OPENROUTER_API_KEY,
+    });
+  }
+  return client;
+};
 
 // Mock base64 image response (tiny 1x1 pixel transparent PNG)
 const MOCK_IMAGE_BASE64 =
@@ -79,12 +85,20 @@ CRITICAL:
     }
 
     // Make the API request using OpenRouter SDK
-    const response = await client.chat.send(requestConfig);
+    const openRouterClient = getClient();
+    if (!openRouterClient) {
+      throw new Error("OpenRouter client not initialized - API key may be missing");
+    }
+    const response = await openRouterClient.chat.send(requestConfig);
 
     console.log("✅ Image generation response received");
 
     // Extract the image from the response
-    if (response.choices && response.choices[0] && response.choices[0].message) {
+    if (
+      response.choices &&
+      response.choices[0] &&
+      response.choices[0].message
+    ) {
       const message = response.choices[0].message;
 
       // Check for images in the response
