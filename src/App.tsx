@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 // import ReactCanvasConfetti from "react-canvas-confetti";
 import { SURPRISE_VIBES, APP_GRADIENTS } from "./constants";
 import { useConfetti } from "./hooks/useConfetti";
@@ -30,6 +30,7 @@ function App() {
   const [productLoadingMessage, setProductLoadingMessage] = useState("");
   const [showRoastModal, setShowRoastModal] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const roastDebounceTimer = useRef<number | null>(null);
 
   const { getInstance, fireConfetti } = useConfetti();
   const {
@@ -91,7 +92,36 @@ function App() {
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);
+
+    // If roast mode is enabled, debounce the roast modal
+    if (roastMode) {
+      // Clear existing timer
+      if (roastDebounceTimer.current) {
+        clearTimeout(roastDebounceTimer.current);
+      }
+
+      // Set new timer to show roast modal after 2 seconds of no new additions
+      roastDebounceTimer.current = setTimeout(() => {
+        setShowRoastModal(true);
+      }, 2000);
+    }
   };
+
+  // Effect to clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (roastDebounceTimer.current) {
+        clearTimeout(roastDebounceTimer.current);
+      }
+    };
+  }, []);
+
+  // Close roast modal when roast mode is turned off
+  useEffect(() => {
+    if (!roastMode) {
+      setShowRoastModal(false);
+    }
+  }, [roastMode]);
 
   const handleVibeHistoryClick = (pastVibe: string) => {
     setVibe(pastVibe);
@@ -199,12 +229,9 @@ function App() {
       />
 
       <div className="container">
-        {/* Roast Me Button - Top Right */}
+        {/* Roast Mode Toggle - Top Right */}
         <div className="toggle-controls">
-          <RoastToggle
-            onRoastClick={() => setShowRoastModal(true)}
-            disabled={cartItems.length === 0}
-          />
+          <RoastToggle roastMode={roastMode} onToggle={setRoastMode} />
 
           {/* Skip Images Toggle */}
           {/* <div className="roast-toggle-container">
