@@ -1378,6 +1378,344 @@
   }
 }
 
+/* ====================================
+   ROAST MODE THEME - Evil Color Palette
+   ==================================== */
+
+.roast-mode-theme .title {
+  color: #ff3333;
+  text-shadow: 0 0 20px rgba(255, 51, 51, 0.8), 0 0 40px rgba(255, 0, 0, 0.5);
+}
+
+.roast-mode-theme .tagline {
+  color: #ff6666;
+}
+
+.roast-mode-theme .vibe-input {
+  background: rgba(20, 0, 0, 0.9);
+  border: 2px solid #8b0000;
+  color: #ff6666;
+}
+
+.roast-mode-theme .vibe-input::placeholder {
+  color: #994444;
+}
+
+.roast-mode-theme .vibe-input:focus {
+  border-color: #ff0000;
+  box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2), 0 0 20px rgba(255, 0, 0, 0.4);
+}
+
+.roast-mode-theme .vibe-button {
+  background: linear-gradient(135deg, #8b0000 0%, #ff0000 100%);
+  border: 2px solid #ff0000;
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+}
+
+.roast-mode-theme .vibe-button:hover {
+  background: linear-gradient(135deg, #a00000 0%, #ff3333 100%);
+  box-shadow: 0 6px 20px rgba(255, 0, 0, 0.6);
+  transform: translateY(-2px);
+}
+
+.roast-mode-theme .surprise-button {
+  background: rgba(139, 0, 0, 0.3);
+  border: 2px solid #8b0000;
+  color: #ff6666;
+}
+
+.roast-mode-theme .surprise-button:hover {
+  background: rgba(139, 0, 0, 0.5);
+  border-color: #ff0000;
+  color: #ff3333;
+}
+
+.roast-mode-theme .products-title {
+  color: #ff3333;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.roast-mode-theme .product-card {
+  background: rgba(20, 0, 0, 0.8);
+  border: 2px solid #660000;
+  box-shadow: 0 8px 32px rgba(255, 0, 0, 0.2);
+}
+
+.roast-mode-theme .product-card:hover {
+  border-color: #ff0000;
+  box-shadow: 0 12px 40px rgba(255, 0, 0, 0.4);
+  transform: translateY(-8px);
+}
+
+.roast-mode-theme .product-name {
+  color: #ff6666;
+}
+
+.roast-mode-theme .product-reason {
+  color: #cc4444;
+}
+
+.roast-mode-theme .add-to-cart {
+  background: linear-gradient(135deg, #660000 0%, #8b0000 100%);
+  border: 2px solid #8b0000;
+  color: #ffcccc;
+}
+
+.roast-mode-theme .add-to-cart:hover {
+  background: linear-gradient(135deg, #8b0000 0%, #b30000 100%);
+  border-color: #ff0000;
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+}
+
+.roast-mode-theme .cart-drawer {
+  background: rgba(10, 0, 0, 0.95);
+  border: 2px solid #660000;
+  box-shadow: 0 8px 32px rgba(255, 0, 0, 0.3);
+}
+
+.roast-mode-theme .cart-header {
+  border-bottom-color: #660000;
+}
+
+.roast-mode-theme .cart-header h3 {
+  color: #ff3333;
+}
+
+.roast-mode-theme .cart-close {
+  color: #ff6666;
+}
+
+.roast-mode-theme .cart-close:hover {
+  background: rgba(139, 0, 0, 0.3);
+  color: #ff3333;
+}
+
+.roast-mode-theme .cart-item {
+  background: rgba(30, 0, 0, 0.7);
+  border: 1px solid #660000;
+}
+
+.roast-mode-theme .cart-item-name {
+  color: #ff6666;
+}
+
+.roast-mode-theme .cart-item-remove {
+  background: #660000;
+  color: #ff6666;
+}
+
+.roast-mode-theme .cart-item-remove:hover {
+  background: #8b0000;
+  color: #ff3333;
+}
+
+.roast-mode-theme .vibe-history {
+  background: rgba(20, 0, 0, 0.6);
+  border: 2px solid #660000;
+}
+
+.roast-mode-theme .vibe-history-title {
+  color: #ff6666;
+}
+
+.roast-mode-theme .vibe-history-item {
+  background: rgba(30, 0, 0, 0.5);
+  border: 1px solid #660000;
+  color: #cc4444;
+}
+
+.roast-mode-theme .vibe-history-item:hover {
+  background: rgba(40, 0, 0, 0.7);
+  border-color: #8b0000;
+  color: #ff6666;
+}
+
+.roast-mode-theme .loading-text {
+  color: #ff6666;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.roast-mode-theme .loading-spinner {
+  border-color: rgba(139, 0, 0, 0.2);
+  border-top-color: #ff0000;
+}
+
+.roast-mode-theme .error {
+  background: rgba(139, 0, 0, 0.2);
+  border-left-color: #ff0000;
+  color: #ff6666;
+}
+
+.roast-mode-theme .easter-egg {
+  background: rgba(139, 0, 0, 0.2);
+  border: 1px solid #660000;
+  color: #ff6666;
+}
+
+.roast-mode-theme .clothing-analysis-section {
+  background: rgba(10, 0, 0, 0.95);
+  border: 2px solid #660000;
+}
+
+.roast-mode-theme .clothing-analysis-header h2 {
+  color: #ff3333;
+}
+
+.roast-mode-theme .analysis-subtitle {
+  color: #cc4444;
+}
+
+.roast-mode-theme .close-button {
+  background: #660000;
+  color: #ff6666;
+}
+
+.roast-mode-theme .close-button:hover {
+  background: #8b0000;
+  color: #ff3333;
+}
+
+.roast-mode-theme .clothing-item-card {
+  background: rgba(20, 0, 0, 0.8);
+  border: 2px solid #660000;
+}
+
+.roast-mode-theme .clothing-item-card:hover {
+  border-color: #8b0000;
+  box-shadow: 0 8px 30px rgba(255, 0, 0, 0.3);
+}
+
+.roast-mode-theme .item-type {
+  color: #ff6666;
+}
+
+.roast-mode-theme .detail-label {
+  color: #994444;
+}
+
+.roast-mode-theme .item-color,
+.roast-mode-theme .item-style {
+  color: #cc4444;
+}
+
+.roast-mode-theme .add-to-cart-item {
+  background: linear-gradient(135deg, #660000 0%, #8b0000 100%);
+  border-color: #8b0000;
+}
+
+.roast-mode-theme .add-to-cart-item:hover {
+  background: linear-gradient(135deg, #8b0000 0%, #b30000 100%);
+  border-color: #ff0000;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+}
+
+.roast-mode-theme .clothing-summary {
+  background: rgba(30, 0, 0, 0.6);
+  border-left: 4px solid #ff0000;
+  color: #cc4444;
+}
+
+.roast-mode-theme .shopping-link {
+  background: rgba(30, 0, 0, 0.6);
+  border: 1px solid #660000;
+  color: #ff6666;
+}
+
+.roast-mode-theme .shopping-link:hover {
+  background: rgba(40, 0, 0, 0.8);
+  border-color: #8b0000;
+  color: #ff3333;
+}
+
+/* Vibe images in roast mode */
+.roast-mode-theme .vibe-image-card {
+  border-color: #660000;
+  box-shadow: 0 8px 32px rgba(255, 0, 0, 0.2);
+}
+
+.roast-mode-theme .vibe-image-card:hover {
+  border-color: #8b0000;
+  box-shadow: 0 12px 40px rgba(255, 0, 0, 0.4);
+  transform: translateY(-8px);
+}
+
+.roast-mode-theme .choose-vibe-btn {
+  background: linear-gradient(135deg, #660000 0%, #8b0000 100%);
+  border-color: #8b0000;
+  color: #ffcccc;
+}
+
+.roast-mode-theme .choose-vibe-btn:hover {
+  background: linear-gradient(135deg, #8b0000 0%, #b30000 100%);
+  border-color: #ff0000;
+  color: white;
+}
+
+/* Additional atmospheric effects for roast mode */
+.roast-mode-theme::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(139, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  animation: pulseRed 3s ease-in-out infinite;
+}
+
+@keyframes pulseRed {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.roast-mode-theme .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Make the entire roast toggle glow in roast mode */
+.roast-mode-theme .roast-toggle {
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.6), 0 0 40px rgba(255, 0, 0, 0.3);
+  animation: roastGlow 2s ease-in-out infinite;
+}
+
+@keyframes roastGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.6), 0 0 40px rgba(255, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.8), 0 0 60px rgba(255, 0, 0, 0.5);
+  }
+}
+
+/* Add red tint to scrollbar in roast mode */
+.roast-mode-theme ::-webkit-scrollbar-thumb {
+  background: #8b0000;
+}
+
+.roast-mode-theme ::-webkit-scrollbar-thumb:hover {
+  background: #b30000;
+}
+
+.roast-mode-theme ::-webkit-scrollbar-track {
+  background: rgba(20, 0, 0, 0.5);
+}
+
+
+
 
 
 
