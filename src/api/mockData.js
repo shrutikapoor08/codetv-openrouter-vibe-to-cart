@@ -166,8 +166,12 @@ export const DEFAULT_VIBE = [
  * Roast responses for specific vibes (used in roast mode)
  */
 export const ROAST_RESPONSES = {
-  "villain era": "A villain era? Honey, villains have plans. You're giving 'forgot to return a library book' energy.",
-  "hot girl autumn but broke": "Hot girl autumn but broke is just regular autumn with better lighting in your selfies.",
-  "cottagecore ceo": "You want to run a Fortune 500 company from a fairy cottage? LinkedIn is not a fairy tale, Susan.",
-  default: "Your vibe is giving 'I watched one TikTok and made it my personality.' Iconic, but make it less predictable.",
+  "villain era":
+    "A villain era? Honey, villains have plans. You're giving 'forgot to return a library book' energy.",
+  "hot girl autumn but broke":
+    "Hot girl autumn but broke is just regular autumn with better lighting in your selfies.",
+  "cottagecore ceo":
+    "You want to run a Fortune 500 company from a fairy cottage? LinkedIn is not a fairy tale, Susan.",
+  default:
+    "Your vibe is giving 'I watched one TikTok and made it my personality.' Iconic, but make it less predictable.",
 };

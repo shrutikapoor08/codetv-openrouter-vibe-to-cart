@@ -36,11 +36,11 @@ app.get("/api/vibe", async (req, res) => {
       });
     }
 
-    const response = await webSearchAgent({ 
+    const response = await webSearchAgent({
       description: vibe,
-      roastMode: roastMode 
+      roastMode: roastMode,
     });
-    
+
     // Parse the JSON string response and send as proper JSON
     const products = JSON.parse(response);
     res.json(products);

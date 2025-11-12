@@ -6,7 +6,11 @@ interface ProductGridProps {
   onAddToCart: (product: Product) => void;
 }
 
-export default function ProductGrid({ products, loading, onAddToCart }: ProductGridProps) {
+export default function ProductGrid({
+  products,
+  loading,
+  onAddToCart,
+}: ProductGridProps) {
   if (products.length === 0 || loading) return null;
 
   return (

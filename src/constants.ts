@@ -45,7 +45,8 @@ export const EASTER_EGG_TRIGGERS = [
   },
   {
     keywords: ["ceo", "boss"],
-    message: "💼 Boss energy detected. Don't forget to hydrate between meetings.",
+    message:
+      "💼 Boss energy detected. Don't forget to hydrate between meetings.",
   },
   {
     keywords: ["broke", "poor"],
@@ -53,7 +54,8 @@ export const EASTER_EGG_TRIGGERS = [
   },
   {
     keywords: ["therapy", "therapist"],
-    message: "🛋️ This app is NOT a licensed therapist. But we can recommend candles.",
+    message:
+      "🛋️ This app is NOT a licensed therapist. But we can recommend candles.",
   },
   {
     keywords: ["sad", "depressed"],
@@ -68,12 +70,12 @@ export const EASTER_EGG_TRIGGERS = [
  */
 export function getEasterEggMessage(vibe: string): string {
   const lowerVibe = vibe.toLowerCase();
-  
+
   for (const trigger of EASTER_EGG_TRIGGERS) {
-    if (trigger.keywords.some(keyword => lowerVibe.includes(keyword))) {
+    if (trigger.keywords.some((keyword) => lowerVibe.includes(keyword))) {
       return trigger.message;
     }
   }
-  
+
   return "";
 }

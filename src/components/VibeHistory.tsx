@@ -4,7 +4,11 @@ interface VibeHistoryProps {
   onSelectVibe: (vibe: string) => void;
 }
 
-export default function VibeHistory({ vibeHistory, loading, onSelectVibe }: VibeHistoryProps) {
+export default function VibeHistory({
+  vibeHistory,
+  loading,
+  onSelectVibe,
+}: VibeHistoryProps) {
   if (vibeHistory.length === 0) return null;
 
   return (

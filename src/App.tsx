@@ -1,7 +1,13 @@
 import { useState } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
-import { LOADING_MESSAGES, SURPRISE_VIBES, getEasterEggMessage } from "./constants";
+import {
+  LOADING_MESSAGES,
+  SURPRISE_VIBES,
+  getEasterEggMessage,
+} from "./constants";
 import { useConfetti } from "./hooks/useConfetti";
+import { useVibeApi } from "./hooks/useVibeApi";
+import { useCart } from "./hooks/useCart";
 import type { Product } from "./types";
 import CartDrawer from "./components/CartDrawer";
 import RoastToggle from "./components/RoastToggle";
@@ -12,18 +18,16 @@ import "./App.css";
 
 function App() {
   const [vibe, setVibe] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [loadingMessage, setLoadingMessage] = useState("");
-  const [cartCount, setCartCount] = useState(0);
-  const [showCartDrawer, setShowCartDrawer] = useState(false);
-  const [cartItems, setCartItems] = useState<Product[]>([]);
   const [roastMode, setRoastMode] = useState(false);
   const [vibeHistory, setVibeHistory] = useState<string[]>([]);
   const [easterEggMessage, setEasterEggMessage] = useState("");
 
   const { getInstance, fireConfetti } = useConfetti();
+  const { products, loading, error, fetchVibeProducts } = useVibeApi();
+  const { cartItems, cartCount, showCartDrawer, addToCart, closeDrawer } = useCart({
+    onAddToCart: () => fireConfetti(),
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,10 +42,6 @@ function App() {
       setVibeHistory((prev) => [vibe, ...prev].slice(0, 5));
     }
 
-    setLoading(true);
-    setError("");
-    setProducts([]);
-
     // Rotate loading messages
     const messageInterval = setInterval(() => {
       setLoadingMessage(
@@ -49,28 +49,10 @@ function App() {
       );
     }, 1500);
 
-    try {
-      const url = new URL("http://localhost:3001/api/vibe");
-      url.searchParams.set("query", vibe);
-      if (roastMode) {
-        url.searchParams.set("mode", "roast");
-      }
-      
-      const response = await fetch(url.toString());
+    await fetchVibeProducts(vibe, roastMode);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch vibe recommendations");
-      }
-
-      const data = await response.json();
-      setProducts(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      clearInterval(messageInterval);
-      setLoading(false);
-      setLoadingMessage("");
-    }
+    clearInterval(messageInterval);
+    setLoadingMessage("");
   };
 
   const handleSurpriseMe = () => {
@@ -85,17 +67,7 @@ function App() {
   };
 
   const handleAddToCart = (product: Product) => {
-    setCartItems((prev) => [...prev, product]);
-    setCartCount((prev) => prev + 1);
-    setShowCartDrawer(true);
-    
-    // Fire confetti!
-    fireConfetti();
-    
-    // Auto-hide drawer after 3 seconds
-    setTimeout(() => {
-      setShowCartDrawer(false);
-    }, 3000);
+    addToCart(product);
   };
 
   const handleVibeHistoryClick = (pastVibe: string) => {
@@ -107,7 +79,12 @@ function App() {
   };
 
   return (
-    <div className="app">
+    <div className="app" style={{
+      background: roastMode 
+        ? 'linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%)' 
+        : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      transition: 'background 0.5s ease-out'
+    }}>
       {/* Confetti Canvas */}
       <ReactCanvasConfetti
         onInit={getInstance}
@@ -127,7 +104,7 @@ function App() {
         show={showCartDrawer}
         cartCount={cartCount}
         cartItems={cartItems}
-        onClose={() => setShowCartDrawer(false)}
+        onClose={closeDrawer}
       />
 
       <div className="container">

@@ -21,14 +21,17 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 function getMockVibeResponse(vibe, roastMode = false) {
   if (roastMode) {
     // Return a roast instead of products
-    const roast = ROAST_RESPONSES[vibe.toLowerCase().trim()] || ROAST_RESPONSES.default;
-    return JSON.stringify([{
-      emoji: "🔥",
-      name: "Reality Check",
-      reason: roast
-    }]);
+    const roast =
+      ROAST_RESPONSES[vibe.toLowerCase().trim()] || ROAST_RESPONSES.default;
+    return JSON.stringify([
+      {
+        emoji: "🔥",
+        name: "Reality Check",
+        reason: roast,
+      },
+    ]);
   }
-  
+
   const normalizedVibe = vibe.toLowerCase().trim();
   const products = MOCK_VIBES[normalizedVibe] || DEFAULT_VIBE;
   return JSON.stringify(products);
@@ -59,7 +62,7 @@ Respond with ONLY a JSON array with ONE item:
 
 Make it funny but not cruel. Think sassy best friend, not bully.`;
   }
-  
+
   return `You are VibeBot, a hilarious, over-the-top personal shopper with a sassy personality.
 
 The user will describe their vibe/mood/aesthetic. You must respond with 3-5 funny, dramatic, or oddly specific product recommendations that match that vibe.

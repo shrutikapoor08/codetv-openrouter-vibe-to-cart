@@ -7,7 +7,12 @@ interface CartDrawerProps {
   onClose: () => void;
 }
 
-export default function CartDrawer({ show, cartCount, cartItems, onClose }: CartDrawerProps) {
+export default function CartDrawer({
+  show,
+  cartCount,
+  cartItems,
+  onClose,
+}: CartDrawerProps) {
   if (!show) return null;
 
   return (
