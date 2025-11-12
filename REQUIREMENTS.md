@@ -27,10 +27,10 @@
 - [x] **Add loading animations** - Funny rotating messages ("Consulting your inner chaos...")
 - [x] **Implement "Surprise Me" button** - Random vibe generator (15 preset vibes)
 - [x] **Create fake cart functionality** - Count items, show drawer
-- [ ] **Add confetti effect** - On "Add to Cart" click
-- [ ] **Implement Roast Mode toggle** - Alternative AI personality
-- [ ] **Add easter eggs** - Special responses for specific vibes
-- [ ] **Vibe history display** - Show past vibes entered
+- [x] **Add confetti effect** - On "Add to Cart" click
+- [x] **Implement Roast Mode toggle** - Alternative AI personality
+- [x] **Add easter eggs** - Special responses for specific vibes
+- [x] **Vibe history display** - Show past vibes entered
 
 ### Phase 3: Advanced Features (Hour 4)
 
