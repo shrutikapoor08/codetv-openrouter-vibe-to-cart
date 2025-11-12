@@ -8,7 +8,7 @@ export const LOADING_MESSAGES = [
   "Vibing with the universe...",
   "Analyzing your aesthetic...",
   "Summoning your spirit products...",
-];
+] as const;
 
 /**
  * Pre-defined vibes for the "Surprise Me" button
@@ -29,12 +29,20 @@ export const SURPRISE_VIBES = [
   "girlboss gaslight gatekeep",
   "dark academia dropout",
   "cottage witch on antidepressants",
-];
+] as const;
+
+/**
+ * Easter egg trigger configuration
+ */
+interface EasterEggTrigger {
+  keywords: readonly string[];
+  message: string;
+}
 
 /**
  * Easter egg messages triggered by specific keywords in user input
  */
-export const EASTER_EGG_TRIGGERS = [
+export const EASTER_EGG_TRIGGERS: readonly EasterEggTrigger[] = [
   {
     keywords: ["villain", "evil"],
     message: "🦹‍♀️ We sense dark energy... excellent.",
@@ -65,8 +73,8 @@ export const EASTER_EGG_TRIGGERS = [
 
 /**
  * Check if user's vibe triggers an easter egg
- * @param {string} vibe - User's vibe input
- * @returns {string} Easter egg message or empty string
+ * @param vibe - User's vibe input
+ * @returns Easter egg message or empty string
  */
 export function getEasterEggMessage(vibe: string): string {
   const lowerVibe = vibe.toLowerCase();
@@ -79,3 +87,11 @@ export function getEasterEggMessage(vibe: string): string {
 
   return "";
 }
+
+/**
+ * App gradient styles for different modes
+ */
+export const APP_GRADIENTS = {
+  normal: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  roast: "linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%)",
+} as const;
