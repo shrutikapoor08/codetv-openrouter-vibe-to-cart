@@ -126,6 +126,43 @@ export default function ClothingAnalysis({
                       <span className="item-type">{item.type}</span>
                     </div>
 
+                    {/* Shopping options */}
+                    {item.shoppingLinks && item.shoppingLinks.length > 0 && (
+                      <div className="item-shopping">
+                        <div className="shopping-title">🛍️ Where to Buy</div>
+                        <div className="shopping-options">
+                          {item.shoppingLinks.slice(0, 3).map((link, idx) => (
+                            <a
+                              key={idx}
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="shopping-option"
+                            >
+                              <div className="store-info">
+                                <img
+                                  src={`https://www.google.com/s2/favicons?domain=${
+                                    new URL(link.url).hostname
+                                  }&sz=32`}
+                                  alt={link.store || "Store"}
+                                  className="store-logo"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = "none";
+                                  }}
+                                />
+                                <span className="store-name">
+                                  {link.store || "Shop"}
+                                </span>
+                              </div>
+                              {link.price && (
+                                <span className="store-price">{link.price}</span>
+                              )}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="item-actions">
                       <button
                         className="add-to-cart-item"
