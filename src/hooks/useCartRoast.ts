@@ -14,12 +14,19 @@ export function useCartRoast(cartItems: Product[], roastMode: boolean) {
     const fetchRoast = async () => {
       setLoading(true);
       try {
+        // Strip out base64 images to avoid 413 payload too large errors
+        const itemsWithoutImages = cartItems.map(({ emoji, name, reason }) => ({
+          emoji,
+          name,
+          reason,
+        }));
+
         const response = await fetch("http://localhost:3001/api/roast-cart", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ cartItems }),
+          body: JSON.stringify({ cartItems: itemsWithoutImages }),
         });
 
         const data = await response.json();
