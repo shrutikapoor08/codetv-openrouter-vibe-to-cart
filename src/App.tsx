@@ -190,7 +190,7 @@ function App() {
           <RoastToggle roastMode={roastMode} onToggle={setRoastMode} />
 
           {/* Skip Images Toggle */}
-          <div className="roast-toggle-container">
+          {/* <div className="roast-toggle-container">
             <label className="roast-toggle">
               <input
                 type="checkbox"
@@ -201,7 +201,7 @@ function App() {
                 ⚡ Fast Mode (No Images)
               </span>
             </label>
-          </div>
+          </div> */}
         </div>
 
         <header className="header">
