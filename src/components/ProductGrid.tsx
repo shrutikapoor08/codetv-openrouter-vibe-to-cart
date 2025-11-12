@@ -19,6 +19,11 @@ export default function ProductGrid({
       <div className="product-grid">
         {products.map((product, index) => (
           <div key={index} className="product-card">
+            {product.image && (
+              <div className="product-image">
+                <img src={product.image} alt={product.name} />
+              </div>
+            )}
             <div className="product-emoji">{product.emoji}</div>
             <h3 className="product-name">{product.name}</h3>
             <p className="product-reason">{product.reason}</p>
