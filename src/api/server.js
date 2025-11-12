@@ -24,6 +24,8 @@ import {
   getImageCacheStats,
   getVibeCacheStatsRoute,
   clearVibeCacheRoute,
+  getVibeImageCacheStatsRoute,
+  clearVibeImageCacheRoute,
 } from "./routes/cacheRoutes.js";
 import { analyzeImage } from "./routes/imageAnalysisRoutes.js";
 
@@ -60,6 +62,8 @@ app.post("/api/analyze-image", asyncHandler(analyzeImage));
 app.get("/api/image-cache-stats", getImageCacheStats);
 app.get("/api/vibe-cache-stats", getVibeCacheStatsRoute);
 app.post("/api/clear-vibe-cache", clearVibeCacheRoute);
+app.get("/api/vibe-image-cache-stats", getVibeImageCacheStatsRoute);
+app.post("/api/clear-vibe-image-cache", clearVibeImageCacheRoute);
 
 // Home route
 app.get("/", (req, res) => {

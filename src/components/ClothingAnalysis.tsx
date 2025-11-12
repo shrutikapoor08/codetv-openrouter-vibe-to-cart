@@ -16,7 +16,10 @@ export default function ClothingAnalysis({
   return (
     <div className="clothing-analysis-section">
       <div className="clothing-analysis-header">
-        <h2>👔 Outfit Details</h2>
+        <div>
+          <h2>👔 Outfit Details</h2>
+          <p className="analysis-subtitle">🍌 Analyzed by Nano Banana AI</p>
+        </div>
         <button className="close-button" onClick={onClose}>
           ✕
         </button>

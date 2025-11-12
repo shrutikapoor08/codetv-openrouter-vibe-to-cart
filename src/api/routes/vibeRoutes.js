@@ -8,6 +8,10 @@ import {
   saveProductImage,
 } from "../services/imageService.js";
 import { getCachedVibe, cacheVibe } from "../services/vibeService.js";
+import {
+  getCachedVibeImage,
+  cacheVibeImage,
+} from "../services/vibeImageCache.js";
 
 /**
  * GET /api/vibe-images
@@ -74,35 +78,40 @@ export const getVibeProducts = async (req, res) => {
     cacheVibe(vibe, roastMode, products);
   }
 
-  // Generate unique images for each product
+  // Generate unique images for each product (with caching)
   if (generateImages && Array.isArray(products)) {
-    console.log(
-      `🖼️  Generating ${products.length} unique images for vibe: "${vibe}"`
-    );
+    console.log(`🖼️  Checking cache and generating images for vibe: "${vibe}"`);
 
     try {
-      // Generate one unique image for each product
-      const imagePromises = products.map((product, index) => {
-        // Create a unique prompt for each product - focus on the product itself
-        const productPrompt = `${product.name} - ${product.reason}`;
-        console.log(
-          `   Generating image ${index + 1}/${products.length} for: ${
-            product.name
-          }`
-        );
+      // Generate one unique image for each product (check cache first)
+      const imagePromises = products.map(async (product, index) => {
+        // Create a unique prompt for each product
+        const productPrompt = `${vibe} - ${product.name}: ${product.reason}`;
 
-        return generateVibeImage(productPrompt, {
+        // Check if we have a cached image for this exact prompt
+        const cachedImage = getCachedVibeImage(productPrompt);
+        if (cachedImage) {
+          console.log(`   ✅ Using cached image ${index + 1}/${products.length} for: ${product.name}`);
+          return cachedImage;
+        }
+
+        // Generate new image if not cached
+        console.log(`   🎨 Generating new image ${index + 1}/${products.length} for: ${product.name}`);
+        const imageResult = await generateVibeImage(productPrompt, {
           aspectRatio: "1:1",
-          isProductImage: true, // This will trigger product-focused prompt
         });
+
+        // Cache the generated image for future use
+        cacheVibeImage(productPrompt, imageResult);
+
+        return imageResult;
       });
 
-      // Generate all images in parallel
+      // Wait for all images (cached or generated)
       const imageResults = await Promise.all(imagePromises);
 
-      console.log(
-        `✅ Generated ${imageResults.length} unique images successfully`
-      );
+      const cachedCount = imageResults.filter((_, i) => getCachedVibeImage(`${vibe} - ${products[i].name}: ${products[i].reason}`)).length;
+      console.log(`✅ Retrieved ${imageResults.length} images (${cachedCount} from cache, ${imageResults.length - cachedCount} newly generated)`)
 
       // Map each image to its corresponding product
       const images = imageResults.map((result, index) => ({
