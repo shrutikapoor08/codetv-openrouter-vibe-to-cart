@@ -83,45 +83,59 @@ CRITICAL:
     }
 
     // Make direct API call (SDK doesn't properly support image generation yet)
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://github.com/shrutikapoor08/codetv-openrouter-vibe-to-cart",
-        "X-Title": "Vibe to Cart",
-      },
-      body: JSON.stringify(requestBody),
-    });
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer":
+            "https://github.com/shrutikapoor08/codetv-openrouter-vibe-to-cart",
+          "X-Title": "Vibe to Cart",
+        },
+        body: JSON.stringify(requestBody),
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error("OpenRouter API error:", errorText);
-      throw new Error(`OpenRouter API error: ${response.status} - ${errorText}`);
+      throw new Error(
+        `OpenRouter API error: ${response.status} - ${errorText}`
+      );
     }
 
     const data = await response.json();
 
     console.log("✅ Image generation response received");
-    console.log("Response structure:", JSON.stringify({
-      hasChoices: !!data.choices,
-      choicesLength: data.choices?.length,
-      firstChoice: data.choices?.[0] ? {
-        hasMessage: !!data.choices[0].message,
-        messageKeys: Object.keys(data.choices[0].message || {}),
-        hasImages: !!data.choices[0].message?.images,
-        imagesLength: data.choices[0].message?.images?.length,
-        hasContent: !!data.choices[0].message?.content,
-        contentPreview: data.choices[0].message?.content?.substring(0, 100)
-      } : null
-    }, null, 2));
+    console.log(
+      "Response structure:",
+      JSON.stringify(
+        {
+          hasChoices: !!data.choices,
+          choicesLength: data.choices?.length,
+          firstChoice: data.choices?.[0]
+            ? {
+                hasMessage: !!data.choices[0].message,
+                messageKeys: Object.keys(data.choices[0].message || {}),
+                hasImages: !!data.choices[0].message?.images,
+                imagesLength: data.choices[0].message?.images?.length,
+                hasContent: !!data.choices[0].message?.content,
+                contentPreview: data.choices[0].message?.content?.substring(
+                  0,
+                  100
+                ),
+              }
+            : null,
+        },
+        null,
+        2
+      )
+    );
 
     // Extract the image from the response
-    if (
-      data.choices &&
-      data.choices[0] &&
-      data.choices[0].message
-    ) {
+    if (data.choices && data.choices[0] && data.choices[0].message) {
       const message = data.choices[0].message;
 
       // Check for images in the response
