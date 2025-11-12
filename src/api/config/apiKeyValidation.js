@@ -27,7 +27,7 @@ export function validateAPIKeys() {
       console.error(`   - ${key}`);
     });
     console.error(
-      "\nPlease add these to your .env.local file and restart the server.\n"
+      "\nPlease add these to your .env file and restart the server.\n"
     );
     process.exit(1);
   }

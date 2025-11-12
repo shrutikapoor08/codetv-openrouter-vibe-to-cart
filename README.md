@@ -60,16 +60,18 @@ Built for a 4-hour hackathon. Optimized for laughs.
 3. **Set up environment variables**
 
    ```bash
-   cp .env.example .env.local
+   cp .env.example .env
    ```
 
-   Edit `.env.local` and add your API keys:
+   Edit `.env` and add your API keys:
 
    ```bash
    MOCK_MODE=false  # Set to true for testing without API calls
    OPENROUTER_API_KEY=your-key-here
    TAVILY_API_KEY=your-key-here
    ```
+
+   > **Note:** The backend server uses Node.js's native `--env-file` flag (Node 20.6+) to load environment variables from `.env`. The `npm run server` script handles this automatically.
 
 4. **Start the development servers**
 
@@ -82,7 +84,7 @@ Built for a 4-hour hackathon. Optimized for laughs.
    Terminal 2 - Backend:
 
    ```bash
-   node src/api/server.js
+   npm run server
    ```
 
 5. **Open in browser**
@@ -97,7 +99,7 @@ Built for a 4-hour hackathon. Optimized for laughs.
 Don't have API keys yet? No problem!
 
 ```bash
-# In .env.local
+# In .env
 MOCK_MODE=true
 ```
 
@@ -129,13 +131,15 @@ npm run dev       # Start Vite dev server (frontend)
 npm run build     # Build for production
 npm run preview   # Preview production build
 npm run lint      # Run ESLint
+npm run server    # Start Express backend server
 ```
 
-**Backend:**
+**Backend (alternative):**
 
 ```bash
-node src/api/server.js              # Start Express server (production mode)
-MOCK_MODE=true node src/api/server.js  # Start with mock mode
+npm run server                      # Start Express server (production mode)
+MOCK_MODE=true npm run server       # Start with mock mode
+PORT=3002 npm run server            # Start on different port
 ```
 
 ---
@@ -174,7 +178,7 @@ codetv-openrouter-vibe-to-cart/
 ├── public/                         # Public static files
 │   └── images/                    # AI-generated product images
 ├── .cache/                         # Vibe cache (gitignored)
-├── .env.local                      # Environment variables (gitignored)
+├── .env                           # Environment variables (gitignored)
 ├── .env.example                    # Environment template
 ├── REQUIREMENTS.md                 # Project requirements & roadmap
 ├── ARCHITECTURE.md                 # Technical architecture docs
@@ -264,7 +268,7 @@ If you see `SELF_SIGNED_CERT_IN_CHAIN` errors:
 
 **Solutions:**
 
-1. Check `.env.local` exists and has valid keys
+1. Check `.env` exists and has valid keys
 2. Restart the server after adding keys
 3. Use `MOCK_MODE=true` to bypass validation
 
@@ -273,7 +277,7 @@ If you see `SELF_SIGNED_CERT_IN_CHAIN` errors:
 If port 3001 is taken:
 
 ```bash
-PORT=3002 node src/api/server.js
+PORT=3002 npm run server
 ```
 
 ---

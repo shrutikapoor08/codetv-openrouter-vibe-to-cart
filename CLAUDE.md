@@ -126,7 +126,7 @@ User Input → Express /api/vibe
 
 **Note:** `NODE_TLS_REJECT_UNAUTHORIZED` is automatically set to "0" in development by `config/env.js`
 
-**Never commit `.env.local`** - It's gitignored for security
+**Never commit `.env`** - It's gitignored for security
 
 ---
 
@@ -318,7 +318,7 @@ curl "http://localhost:3001/agent?query="
 **Cause:** OpenRouter API key not found  
 **Fix:**
 
-1. Check `.env.local` exists
+1. Check `.env` exists
 2. Ensure `OPENROUTER_API_KEY=sk-or-v1-...` is set
 3. Restart server
 
@@ -333,7 +333,7 @@ curl "http://localhost:3001/agent?query="
 **Fix:**
 
 ```bash
-PORT=3002 node src/api/server.js
+PORT=3002 npm run server
 ```
 
 ### Issue: React Component Not Updating
@@ -451,7 +451,7 @@ Products: {{cart_items}}
 ❌ **Don't** add heavy dependencies without asking  
 ❌ **Don't** refactor working code unless requested  
 ❌ **Don't** remove mock mode (it's essential for testing)  
-❌ **Don't** commit API keys or `.env.local`  
+❌ **Don't** commit API keys or `.env`  
 ❌ **Don't** over-engineer (this is a hackathon project)  
 ❌ **Don't** break the existing `/agent` endpoint  
 ❌ **Don't** make it corporate/boring (keep it fun!)
@@ -493,10 +493,10 @@ When asked to "prepare for demo":
 
 ```bash
 # Enable verbose logging
-DEBUG=* node src/api/server.js
+DEBUG=* npm run server
 
 # Test agent directly
-node -e "import('./src/api/agent.js').then(m => m.default({description: 'test'}))"
+node --env-file=.env -e "import('./src/api/services/aiAgent.js').then(m => m.webSearchAgent({description: 'test'}))"
 ```
 
 ### Frontend Issues

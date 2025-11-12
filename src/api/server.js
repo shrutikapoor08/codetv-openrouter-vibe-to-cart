@@ -1,11 +1,6 @@
 import express from "express";
 import path from "path";
-import * as dotenv from "dotenv";
 import { getDirname } from "./utils/paths.js";
-
-// Load environment variables BEFORE importing config
-dotenv.config({ path: ".env.local" });
-
 import { PORT } from "./config/env.js";
 import { validateAPIKeys } from "./config/apiKeyValidation.js";
 
@@ -25,9 +20,6 @@ import {
   getVibeCacheStatsRoute,
   clearVibeCacheRoute,
 } from "./routes/cacheRoutes.js";
-
-// Configuration
-dotenv.config({ path: [".env.local", ".env"] });
 
 // Validate API keys before starting the server
 validateAPIKeys();

@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { MOCK_MODE, OPENROUTER_API_KEY } from "../config/env.js";
 
 // Mock base64 image response (tiny 1x1 pixel transparent PNG)

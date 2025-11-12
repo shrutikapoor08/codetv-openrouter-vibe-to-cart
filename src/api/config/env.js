@@ -3,7 +3,7 @@
  * Manages environment variables and development settings
  */
 
-// Mock mode - set MOCK_MODE=true in .env.local to use mock responses without API calls
+// Mock mode - set MOCK_MODE=true in .env to use mock responses without API calls
 export const MOCK_MODE = process.env.MOCK_MODE === "true";
 
 // Development mode - allow self-signed certificates (for corporate proxies, etc.)

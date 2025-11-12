@@ -39,11 +39,10 @@ graph TD
 
 ### Backend
 
-| Technology  | Version | Purpose                         |
-| ----------- | ------- | ------------------------------- |
-| **Node.js** | Latest  | Runtime environment             |
-| **Express** | 5.1.0   | HTTP server & routing           |
-| **dotenv**  | 16.4.5  | Environment variable management |
+| Technology  | Version | Purpose               |
+| ----------- | ------- | --------------------- |
+| **Node.js** | Latest  | Runtime environment   |
+| **Express** | 5.1.0   | HTTP server & routing |
 
 ### AI & Orchestration
 
@@ -299,7 +298,7 @@ src/api/
 
 ### Environment Variables
 
-**File:** `.env.local` (gitignored)
+**File:** `.env` (gitignored)
 
 ```bash
 # Mock Mode - Bypass API calls for testing
@@ -406,7 +405,7 @@ codetv-openrouter-vibe-to-cart/
 │
 ├── public/                    # Public static files
 │
-├── .env.local                 # Environment variables (gitignored)
+├── .env                       # Environment variables (gitignored)
 ├── .env.example               # Environment template
 ├── .gitignore                 # Git ignore rules
 │
@@ -486,7 +485,7 @@ new TavilySearch({
 npm run dev
 
 # Terminal 2: Backend server
-node src/api/server.js
+npm run server
 ```
 
 **Ports:**
@@ -512,7 +511,7 @@ node src/api/server.js
 **Environment Variables:**
 
 - Set via hosting platform dashboard
-- Never commit `.env.local` to git
+- Never commit `.env` to git
 - Use `.env.example` as template
 
 ---
@@ -649,14 +648,14 @@ graph LR
 npm install
 
 # Set up environment
-cp .env.example .env.local
-# Add your API keys to .env.local
+cp .env.example .env
+# Add your API keys to .env
 
 # Run in mock mode (no API keys needed)
-MOCK_MODE=true node src/api/server.js
+MOCK_MODE=true npm run server
 
 # Run with real APIs
-MOCK_MODE=false node src/api/server.js
+npm run server
 ```
 
 ### 2. Testing Strategy
