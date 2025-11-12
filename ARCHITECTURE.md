@@ -9,25 +9,28 @@
 ```mermaid
 graph TD
     A[React UI<br/>Vite + TypeScript] -->|HTTP Request| B[Express API<br/>Node.js]
-    B --> D[LangGraph Agent]
+    B --> D[AI Agent Service]
     B --> G[Image Generation<br/>Service]
+    B --> I[Image Analysis<br/>Service]
     D --> E[OpenRouter API<br/>Text: GPT-4o-mini]
-    D --> F[Tavily Search<br/>Web search tool]
-    G --> H[OpenRouter API<br/>Images: Gemini-Flash-Image]
+    G --> H[OpenRouter API<br/>Images: Gemini-2.5-Flash-Image]
+    I --> J[OpenRouter API<br/>Vision: Gemini-2.5-Flash-Image]
     E -->|AI Response| D
-    F -->|Search Results| D
     D -->|Products JSON| B
     H -->|Generated Image| G
     G -->|Image URL| B
+    J -->|Clothing Analysis| I
+    I -->|Analysis JSON| B
     B -->|JSON/Images| A
 
     style A fill:#e1f5ff
     style B fill:#fff4e1
     style D fill:#f0e1ff
     style E fill:#ffe1e1
-    style F fill:#e1ffe1
     style G fill:#ffe8f0
     style H fill:#ffe1e1
+    style I fill:#e8f5e8
+    style J fill:#ffe1e1
 ```
 
 ---
@@ -377,24 +380,16 @@ flowchart TD
    });
    ```
 
-2. **Tools**
+2. **Direct Model Invocation**
 
    ```javascript
-   new TavilySearch({
-     maxResults: 3,
-     tavilyApiKey: process.env.TAVILY_API_KEY,
-   });
+   // No external tools - direct AI invocation
+   const response = await model.invoke([question]);
    ```
 
-3. **Memory**
-
+3. **Response Parsing**
    ```javascript
-   new MemorySaver(); // Persists conversation state
-   ```
-
-4. **Agent Creation**
-   ```javascript
-   createReactAgent({
+   const products = JSON.parse(response.content);
      llm: agentModel,
      tools: [webTool],
      checkpointSaver: agentCheckpointer,
@@ -403,18 +398,19 @@ flowchart TD
 
 ### ReAct Agent Pattern
 
-**ReAct** = **Rea**soning + **Act**ing
+**Direct AI Processing**
 
-The agent follows this loop:
+The agent uses a straightforward approach:
 
-1. **Reason:** Analyze the user's vibe/query
-2. **Act:** Decide if tools (Tavily search) are needed
-3. **Observe:** Process tool results
-4. **Respond:** Generate final recommendation
+1. **Receive:** Get user's vibe/query
+2. **Process:** Send to GPT-4o-mini with structured prompt
+3. **Parse:** Extract JSON product recommendations
+4. **Enhance:** Generate images for each product
+5. **Return:** Send complete response to frontend
 
 ---
 
-## � Backend Directory Structure
+## 📁 Backend Directory Structure
 
 The backend follows a **service-oriented architecture** for better separation of concerns and maintainability:
 
@@ -551,9 +547,6 @@ MOCK_MODE=true
 # OpenRouter API Key - Multi-model LLM access
 OPENROUTER_API_KEY=sk-or-v1-...
 
-# Tavily API Key - Web search functionality
-TAVILY_API_KEY=tvly-dev-...
-
 # Server Port (optional)
 PORT=3001
 ```
@@ -567,7 +560,7 @@ PORT=3001
 **Logic:**
 
 - If `MOCK_MODE=true`: Skip validation
-- If `MOCK_MODE=false`: Require `OPENROUTER_API_KEY` and `TAVILY_API_KEY`
+- If `MOCK_MODE=false`: Require `OPENROUTER_API_KEY`
 - Exit with error code 1 if keys missing
 
 **Benefits:**
@@ -720,25 +713,26 @@ configuration: {
 - `openai/dall-e-3`
 - `stability-ai/stable-diffusion-xl`
 
-### Tavily Search Integration
+### Vision & Analysis Models
 
-**Purpose:** Enable AI to search the web for real-time information
+**Purpose:** Enable AI to analyze images and extract clothing information
 
-**Configuration:**
+**Current Implementation:**
 
 ```javascript
-new TavilySearch({
-  maxResults: 3,
-  tavilyApiKey: process.env.TAVILY_API_KEY,
-});
+// Vision analysis using Gemini Flash
+model: "google/gemini-2.5-flash-image"
+
+// Product image search using web-enabled GPT
+model: "openai/gpt-4o-mini:online"
 ```
 
 **Use Cases:**
 
-- Product research
-- Real-time trends
-- Location-based queries
-- Price checking (future)
+- Outfit analysis
+- Clothing item detection
+- Style recommendations
+- Product image search
 
 ---
 
@@ -986,17 +980,19 @@ npm run server
 
 **For Judges:**
 
-> "We built a full-stack AI agent using LangGraph for orchestration and OpenRouter for multi-model access. The architecture supports both web search via Tavily and conversational memory for context-aware recommendations."
+> "We built a full-stack AI-powered e-commerce app using LangChain and OpenRouter for multi-model access. The architecture leverages three different AI models for text generation, image creation, and vision analysis."
 
 > "We implemented a mock mode toggle that lets us demo without live API dependency - perfect for reliability during presentations."
 
-> "The modular design makes it trivial to swap models or add new AI personalities - we can switch from GPT-4 to Claude in one line of code."
+> "The modular design makes it trivial to swap models or add new AI personalities - we can switch between different OpenRouter models in one line of code."
 
 **Technical Highlights:**
 
-- ✅ ReAct agent pattern with tools
-- ✅ Multi-model capability via OpenRouter
-- ✅ Conversation state management
+- ✅ Multi-model AI architecture (GPT-4o-mini, Gemini Flash)
+- ✅ Direct model invocation for fast responses
+- ✅ Image generation and vision analysis
+- ✅ Roast Mode with dynamic theme switching
+- ✅ Three-tier caching system
 - ✅ Environment-based configuration
 - ✅ Graceful error handling
 - ✅ Mock mode for development

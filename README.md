@@ -251,7 +251,9 @@ Plain text response with AI-generated recommendations
 ### Current (MVP)
 
 ✅ AI-powered vibe processing via OpenRouter  
-✅ Web search integration with Tavily  
+✅ Multi-model AI (GPT-4o-mini, Gemini Flash)  
+✅ Image generation and analysis  
+✅ Roast Mode with evil theme  
 ✅ Mock mode for testing  
 ✅ Environment-based configuration  
 ✅ Error handling & validation
@@ -323,8 +325,7 @@ MIT License - See LICENSE file for details
 
 - Built for a 4-hour hackathon challenge
 - Powered by [OpenRouter](https://openrouter.ai/)
-- Web search by [Tavily](https://tavily.com/)
-- Orchestration by [LangChain](https://www.langchain.com/)
+- AI orchestration by [LangChain](https://www.langchain.com/)
 - Inspired by the chaos of modern e-commerce
 
 ---
