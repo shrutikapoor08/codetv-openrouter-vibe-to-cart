@@ -64,39 +64,41 @@ export default function ClothingAnalysis({
                       />
                     </div>
                     <div className="item-header">
-                    <span className="item-number">#{index + 1}</span>
-                    <span className="item-type">{item.type}</span>
-                  </div>
-                  <div className="item-details">
-                    <div className="detail-row">
-                      <span className="detail-label">Color:</span>
-                      <span className="item-color">{item.color}</span>
+                      <span className="item-number">#{index + 1}</span>
+                      <span className="item-type">{item.type}</span>
                     </div>
-                    <div className="detail-row">
-                      <span className="detail-label">Style:</span>
-                      <span className="item-style">{item.style}</span>
-                    </div>
-                  </div>
-
-                  {item.shoppingLinks && item.shoppingLinks.length > 0 && (
-                    <div className="shopping-links">
-                      <div className="shopping-links-header">🛍️ Shop this item:</div>
-                      <div className="shopping-links-list">
-                        {item.shoppingLinks.map((link, linkIndex) => (
-                          <a
-                            key={linkIndex}
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="shopping-link"
-                          >
-                            <span className="link-icon">🔗</span>
-                            <span className="link-title">{link.title}</span>
-                          </a>
-                        ))}
+                    <div className="item-details">
+                      <div className="detail-row">
+                        <span className="detail-label">Color:</span>
+                        <span className="item-color">{item.color}</span>
+                      </div>
+                      <div className="detail-row">
+                        <span className="detail-label">Style:</span>
+                        <span className="item-style">{item.style}</span>
                       </div>
                     </div>
-                  )}
+
+                    {item.shoppingLinks && item.shoppingLinks.length > 0 && (
+                      <div className="shopping-links">
+                        <div className="shopping-links-header">
+                          🛍️ Shop this item:
+                        </div>
+                        <div className="shopping-links-list">
+                          {item.shoppingLinks.map((link, linkIndex) => (
+                            <a
+                              key={linkIndex}
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="shopping-link"
+                            >
+                              <span className="link-icon">🔗</span>
+                              <span className="link-title">{link.title}</span>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
             </div>
