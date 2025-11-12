@@ -266,7 +266,6 @@ function App() {
         <ProductGrid
           products={products}
           loading={productsLoading}
-          onAddToCart={handleAddToCart}
           onImageClick={handleImageClick}
         />
 

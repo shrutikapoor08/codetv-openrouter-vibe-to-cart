@@ -21,7 +21,7 @@ export default function ProductGrid({
 
   return (
     <div className="products">
-      <h2 className="products-title">Your Vibe Products</h2>
+      <h2 className="products-title">Your Outfits</h2>
       <div className="product-grid">
         {products.map((product, index) => {
           const hasImage = product.image;
@@ -41,13 +41,12 @@ export default function ProductGrid({
                   />
                 </div>
               )}
-              <h3 className="product-name">{product.name}</h3>
-              <p className="product-reason">{product.reason}</p>
+
               <button
                 className="add-to-cart"
-                onClick={() => onAddToCart(product)}
+                onClick={() => onImageClick?.(product.image!)}
               >
-                Add to Vibe Cart
+                Analyze Outfit
               </button>
             </div>
           );

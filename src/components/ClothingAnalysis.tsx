@@ -108,6 +108,7 @@ export default function ClothingAnalysis({
               🎨 Outfit Breakdown (
               {analysis.items.filter((item) => item.imageUrl).length} items)
             </h3>
+
             <div className="clothing-items-grid">
               {analysis.items
                 .filter((item) => item.imageUrl)
@@ -124,16 +125,6 @@ export default function ClothingAnalysis({
                       <span className="item-number">#{index + 1}</span>
                       <span className="item-type">{item.type}</span>
                     </div>
-                    <div className="item-details">
-                      <div className="detail-row">
-                        <span className="detail-label">Color:</span>
-                        <span className="item-color">{item.color}</span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="detail-label">Style:</span>
-                        <span className="item-style">{item.style}</span>
-                      </div>
-                    </div>
 
                     <div className="item-actions">
                       <button
@@ -143,37 +134,12 @@ export default function ClothingAnalysis({
                         Add to Vibe Cart
                       </button>
                     </div>
-
-                    {item.shoppingLinks && item.shoppingLinks.length > 0 && (
-                      <div className="shopping-links">
-                        <div className="shopping-links-header">
-                          🛍️ Shop this item:
-                        </div>
-                        <div className="shopping-links-list">
-                          {item.shoppingLinks.map((link, linkIndex) => (
-                            <a
-                              key={linkIndex}
-                              href={link.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="shopping-link"
-                            >
-                              <span className="link-icon">🔗</span>
-                              <span className="link-title">{link.title}</span>
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ))}
             </div>
           </div>
 
-          <div className="outfit-summary">
-            <h4>✨ Overall Aesthetic</h4>
-            <p className="clothing-summary">{analysis.summary}</p>
-          </div>
+
 
           {analysis.error && (
             <p className="analysis-error">
