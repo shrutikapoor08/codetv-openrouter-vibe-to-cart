@@ -9,9 +9,9 @@ This document provides context and guidance for AI assistants helping to develop
 ## 🎯 Project Context
 
 **What:** AI-powered "vibe-based" e-commerce recommendation system  
-**Purpose:** 4-hour hackathon project - fun first, polish second  
+**Purpose:** Hackathon project - fun first, polish second  
 **Goal:** Transform user emotional states into product recommendations with humor  
-**Stack:** React + Express + LangChain + OpenRouter
+**Stack:** React 19 + Express 5 + LangChain + OpenRouter + Custom CSS
 
 **Core Philosophy:**
 
@@ -19,6 +19,7 @@ This document provides context and guidance for AI assistants helping to develop
 - Working demo > Perfect code
 - Mock data > Real integrations (for speed)
 - Fun personalities > Generic responses
+- Evil theme when roasting users
 
 ---
 
@@ -44,17 +45,20 @@ src/api/
 │   ├── env.js                 # CENTRALIZED CONFIG - Environment variables
 │   └── apiKeyValidation.js    # ENV VALIDATION - API key checks
 ├── services/
-│   ├── aiAgent.js             # AI AGENT - LangGraph orchestration (THE BRAIN)
-│   ├── imageGeneration.js     # IMAGE GEN - OpenRouter image creation
+│   ├── aiAgent.js             # AI AGENT - LangChain + OpenRouter (THE BRAIN)
+│   ├── imageGeneration.js     # IMAGE GEN - Gemini Flash image generation
+│   ├── imageAnalysis.js       # IMAGE ANALYSIS - Vision AI for outfit detection
 │   ├── vibeService.js         # VIBE CACHE - Deterministic product storage
+│   ├── vibeImageCache.js      # VIBE IMAGE CACHE - Generated vibe images
 │   └── imageService.js        # IMAGE CACHE - Product image caching
 ├── middleware/
 │   ├── cors.js                # CORS - Cross-origin configuration
 │   ├── errorHandler.js        # ERROR HANDLING - Centralized async error catching
 │   └── validators.js          # VALIDATION - Request input validation
 ├── routes/
-│   ├── vibeRoutes.js          # VIBE ENDPOINTS - /api/vibe handlers
+│   ├── vibeRoutes.js          # VIBE ENDPOINTS - /api/vibe, /api/roast-cart
 │   ├── imageRoutes.js         # IMAGE ENDPOINTS - /api/product-image handlers
+│   ├── imageAnalysisRoutes.js # ANALYSIS ENDPOINTS - /api/analyze-image
 │   └── cacheRoutes.js         # CACHE ENDPOINTS - Cache management
 └── utils/
     ├── paths.js               # PATH UTILS - Shared __dirname resolution
@@ -69,14 +73,20 @@ src/
 ├── main.tsx                    # REACT BOOTSTRAP
 ├── components/
 │   ├── VibeForm.tsx           # FORM - Vibe input
-│   ├── ProductGrid.tsx        # PRODUCTS - Product display
+│   ├── ProductGrid.tsx        # PRODUCTS - Product display (renamed from outfits)
 │   ├── CartDrawer.tsx         # CART - Shopping cart UI
+│   ├── RoastModal.tsx         # ROAST - Cart roasting modal
+│   ├── RoastToggle.tsx        # TOGGLE - Roast mode switch with sound
+│   ├── ClothingAnalysis.tsx   # ANALYSIS - Outfit analysis display
 │   ├── StatusDisplay.tsx      # STATUS - Loading/error states
-│   └── ...
+│   ├── VibeHistory.tsx        # HISTORY - Recent vibe chips
+│   └── VibeImageGrid.tsx      # VIBE IMAGES - AI-generated vibe visuals
 ├── hooks/
 │   ├── useVibeApi.ts          # API HOOK - Vibe product fetching
+│   ├── useVibeImages.ts       # IMAGE HOOK - Vibe image generation
 │   ├── useVibeSubmit.ts       # SUBMIT HOOK - Form submission logic
 │   ├── useCart.ts             # CART HOOK - Cart management
+│   ├── useCartRoast.ts        # ROAST HOOK - Cart roasting logic
 │   └── useConfetti.ts         # CONFETTI HOOK - Celebration effects
 ├── constants.ts                # CONSTANTS - Loading messages, vibes, etc.
 └── types.ts                    # TYPES - TypeScript interfaces
@@ -87,7 +97,7 @@ src/
 **Backend Request Flow:**
 
 ```
-User Input → Express /api/vibe
+User Input → Express /api/vibe?vibe=X&roastMode=Y
           → validateVibeInput middleware
           → vibeRoutes.getVibeProducts
           → Check vibeService cache
@@ -95,7 +105,23 @@ User Input → Express /api/vibe
           → Generate images via imageGeneration service
           → Cache in imageService
           → Return products with images
+
+User clicks "Analyze Outfit" → POST /api/analyze-image
+          → imageAnalysis.analyzeImage()
+          → Gemini Vision API extracts clothing items
+          → Search for product images (gpt-4o-mini:online)
+          → Return analysis with shopping links
+
+Roast Mode Active → POST /api/roast-cart
+          → aiAgent.roastCart()
+          → GPT-4o-mini generates roast
+          → Return roast message for modal
 ```
+
+**Models Used:**
+- `openai/gpt-4o-mini` - Product recommendations, cart roasts
+- `openai/gpt-4o-mini:online` - Web-enabled product image search
+- `google/gemini-2.5-flash-image` - Image generation and visual analysis
 
 **Mock Mode:**
 
@@ -154,6 +180,30 @@ new ChatOpenAI({
 const response = await model.invoke([question]);
 ```
 
+### Multi-Model Architecture
+
+The application uses different models for different tasks:
+
+1. **Product Recommendations** (`openai/gpt-4o-mini`)
+   - Fast, cost-effective text generation
+   - Vibe-to-product translation
+   - Cart roasting humor
+
+2. **Image Generation** (`google/gemini-2.5-flash-image`)
+   - Product outfit visualization
+   - Fast image generation
+   - Base64 PNG output
+
+3. **Image Analysis** (`google/gemini-2.5-flash-image`)
+   - Vision API for clothing detection
+   - Extracts type, color, style from outfit photos
+   - Generates shopping recommendations
+
+4. **Product Image Search** (`openai/gpt-4o-mini:online`)
+   - Web-enabled model for finding product images
+   - Returns direct image URLs
+   - Used in outfit analysis flow
+
 ### OpenRouter Configuration
 
 **Critical Headers:**
@@ -166,6 +216,15 @@ defaultHeaders: {
 ```
 
 These are **required** by OpenRouter for tracking/analytics.
+
+### Roast Mode Implementation
+
+When `roastMode=true`:
+- Prompt changes to sarcastic/roasting tone
+- Products get snarky descriptions
+- Cart roast endpoint activated
+- UI theme switches to evil red/black
+- Evil laugh sound plays on toggle
 
 ---
 
