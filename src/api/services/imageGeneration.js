@@ -84,7 +84,11 @@ CRITICAL:
     console.log("✅ Image generation response received");
 
     // Extract the image from the response
-    if (response.choices && response.choices[0] && response.choices[0].message) {
+    if (
+      response.choices &&
+      response.choices[0] &&
+      response.choices[0].message
+    ) {
       const message = response.choices[0].message;
 
       // Check for images in the response
