@@ -51,8 +51,8 @@ export const generateVibeImage = async (vibeDescription, options = {}) => {
     console.log("Aspect Ratio:", aspectRatio);
 
     // Prepare the request configuration
-    const requestConfig = {
-      model: "google/gemini-2.5-flash-image", // Nano Banana model
+    const requestBody = {
+      model: "google/gemini-2.5-flash-image",
       messages: [
         {
           role: "user",
@@ -64,13 +64,11 @@ export const generateVibeImage = async (vibeDescription, options = {}) => {
           ],
         },
       ],
-      modalities: ["image", "text"], // Required for image generation
-      max_tokens: 1000,
     };
 
     // Add aspect ratio configuration if specified
     if (aspectRatio !== "1:1") {
-      requestConfig.image_config = {
+      requestBody.image_config = {
         aspect_ratio: aspectRatio,
       };
     }
@@ -81,7 +79,7 @@ export const generateVibeImage = async (vibeDescription, options = {}) => {
     }
 
     console.log("📤 Sending request to OpenRouter...");
-    console.log("Request config:", JSON.stringify(requestConfig, null, 2));
+    console.log("Request config:", JSON.stringify(requestBody, null, 2));
 
     const fetchResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -91,7 +89,7 @@ export const generateVibeImage = async (vibeDescription, options = {}) => {
         "HTTP-Referer": "https://github.com/shrutikapoor08/codetv-openrouter-vibe-to-cart",
         "X-Title": "Vibe to Cart",
       },
-      body: JSON.stringify(requestConfig),
+      body: JSON.stringify(requestBody),
     });
 
     if (!fetchResponse.ok) {
@@ -102,7 +100,18 @@ export const generateVibeImage = async (vibeDescription, options = {}) => {
 
     const response = await fetchResponse.json();
     console.log("✅ Image generation response received");
-    console.log("Response structure:", JSON.stringify(response, null, 2).substring(0, 500));
+    console.log("Response structure:", JSON.stringify({
+      hasChoices: !!response.choices,
+      choicesLength: response.choices?.length,
+      firstChoice: response.choices?.[0] ? {
+        hasMessage: !!response.choices[0].message,
+        messageKeys: Object.keys(response.choices[0].message || {}),
+        hasImages: !!response.choices[0].message?.images,
+        imagesLength: response.choices[0].message?.images?.length,
+        hasContent: !!response.choices[0].message?.content,
+        contentPreview: response.choices[0].message?.content?.substring(0, 100)
+      } : null
+    }, null, 2));
 
     // Extract the image from the response
     if (
