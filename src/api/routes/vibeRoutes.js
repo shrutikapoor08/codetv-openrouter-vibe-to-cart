@@ -1,7 +1,7 @@
 import webSearchAgent, { roastCart } from "../services/aiAgent.js";
 import {
   generateVibeImage,
-  generate4ImageVariants,
+  generateImageVariants,
 } from "../services/imageGeneration.js";
 import {
   getCachedImagePath,
@@ -20,7 +20,7 @@ export const getVibeImages = async (req, res) => {
 
   try {
     // Generate 3 different image variants for this vibe
-    const imageResults = await generate4ImageVariants(vibe, {
+    const imageResults = await generateImageVariants(vibe, {
       aspectRatio: "1:1",
     });
 

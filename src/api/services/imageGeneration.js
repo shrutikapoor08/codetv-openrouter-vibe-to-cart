@@ -218,7 +218,7 @@ export const generateMultipleVibeImages = async (vibeDescription) => {
  * @param {object} options - Optional configuration
  * @returns {Promise<Array>}
  */
-export const generate4ImageVariants = async (vibeDescription, options = {}) => {
+export const generateImageVariants = async (vibeDescription, options = {}) => {
   console.log(`🎨 Generating 3 image variants for: "${vibeDescription}"`);
 
   try {
