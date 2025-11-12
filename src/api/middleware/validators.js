@@ -18,11 +18,13 @@ export const validateVibeInput = () => {
     }
 
     // Support both 'vibe' and 'query' parameters for backward compatibility
-    const vibe = req.query.vibe || req.query.query || req.body.vibe || req.body.query;
+    const vibe =
+      req.query.vibe || req.query.query || req.body.vibe || req.body.query;
 
     if (!vibe || vibe.trim() === "") {
       return res.status(400).json({
-        error: "vibe or query parameter is required. Example: ?vibe=villain+era",
+        error:
+          "vibe or query parameter is required. Example: ?vibe=villain+era",
       });
     }
 
