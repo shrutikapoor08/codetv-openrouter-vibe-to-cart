@@ -9,6 +9,14 @@
  */
 export const validateVibeInput = (fieldName = "vibe") => {
   return (req, res, next) => {
+    // Safety check for req object
+    if (!req || !req.query) {
+      console.error("❌ Validator error: req or req.query is undefined");
+      return res.status(500).json({
+        error: "Internal server error: Invalid request object",
+      });
+    }
+
     const vibe = req.query[fieldName] || req.body[fieldName];
 
     if (!vibe || vibe.trim() === "") {

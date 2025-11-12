@@ -36,6 +36,7 @@ const port = PORT;
 
 // Middleware setup
 app.use(express.json({ strict: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../../public")));
 app.use(corsMiddleware);
 
