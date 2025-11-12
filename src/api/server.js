@@ -38,8 +38,8 @@ const app = express();
 const port = PORT;
 
 // Middleware setup
-app.use(express.json({ strict: false, limit: '50mb' })); // Increased limit for data URIs
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ strict: false, limit: "50mb" })); // Increased limit for data URIs
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(express.static(path.join(__dirname, "../../public")));
 app.use(corsMiddleware);
 

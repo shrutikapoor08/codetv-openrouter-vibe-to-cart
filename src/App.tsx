@@ -5,7 +5,7 @@ import { useConfetti } from "./hooks/useConfetti";
 import { useVibeApi } from "./hooks/useVibeApi";
 import { useCart } from "./hooks/useCart";
 import { useVibeSubmit } from "./hooks/useVibeSubmit";
-import type { Product, ImageAnalysis } from "./types";
+import type { ImageAnalysis } from "./types";
 import CartDrawer from "./components/CartDrawer";
 import RoastToggle from "./components/RoastToggle";
 import RoastModal from "./components/RoastModal";
@@ -25,7 +25,6 @@ function App() {
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [showRoastModal, setShowRoastModal] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const roastDebounceTimer = useRef<number | null>(null);
 
   const { fireConfetti } = useConfetti();
   const {
@@ -35,16 +34,10 @@ function App() {
     fetchVibeProducts,
     clearProducts,
   } = useVibeApi();
-  const {
-    cartItems,
-    cartCount,
-    showCartDrawer,
-    addToCart,
-    removeFromCart,
-    closeDrawer,
-  } = useCart({
-    onAddToCart: () => fireConfetti(),
-  });
+  const { cartItems, cartCount, showCartDrawer, removeFromCart, closeDrawer } =
+    useCart({
+      onAddToCart: () => fireConfetti(),
+    });
 
   const { loadingMessage, vibeHistory, easterEggMessage, handleSubmit } =
     useVibeSubmit({
@@ -68,32 +61,6 @@ function App() {
       formRef.current?.requestSubmit();
     }, 100);
   };
-
-  const handleAddToCart = (product: Product) => {
-    addToCart(product);
-
-    // If roast mode is enabled, debounce the roast modal
-    if (roastMode) {
-      // Clear existing timer
-      if (roastDebounceTimer.current) {
-        clearTimeout(roastDebounceTimer.current);
-      }
-
-      // Set new timer to show roast modal after 2 seconds of no new additions
-      roastDebounceTimer.current = setTimeout(() => {
-        setShowRoastModal(true);
-      }, 2000);
-    }
-  };
-
-  // Effect to clean up timer on unmount
-  useEffect(() => {
-    return () => {
-      if (roastDebounceTimer.current) {
-        clearTimeout(roastDebounceTimer.current);
-      }
-    };
-  }, []);
 
   // Close roast modal when roast mode is turned off
   useEffect(() => {
@@ -266,7 +233,6 @@ function App() {
         <ProductGrid
           products={products}
           loading={productsLoading}
-          onAddToCart={handleAddToCart}
           onImageClick={handleImageClick}
         />
 

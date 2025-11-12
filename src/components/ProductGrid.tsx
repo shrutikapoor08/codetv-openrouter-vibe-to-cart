@@ -3,25 +3,19 @@ import type { Product } from "../types";
 interface ProductGridProps {
   products: Product[];
   loading: boolean;
-  onAddToCart: (product: Product) => void;
   onImageClick?: (imageUrl: string) => void;
 }
 
 export default function ProductGrid({
   products,
   loading,
-  onAddToCart,
   onImageClick,
 }: ProductGridProps) {
-  const handleImageError = (_index: number) => {
-    // Error handling could be implemented here
-  };
-
   if (products.length === 0 || loading) return null;
 
   return (
     <div className="products">
-      <h2 className="products-title">Your Vibe Products</h2>
+      <h2 className="products-title">Your Outfits</h2>
       <div className="product-grid">
         {products.map((product, index) => {
           const hasImage = product.image;
@@ -34,20 +28,18 @@ export default function ProductGrid({
                   onClick={() => onImageClick?.(product.image!)}
                   title="Click to analyze outfit details"
                 >
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    onError={() => handleImageError(index)}
-                  />
+                  <img src={product.image} alt={product.name} />
                 </div>
               )}
-              <h3 className="product-name">{product.name}</h3>
-              <p className="product-reason">{product.reason}</p>
               <button
                 className="add-to-cart"
-                onClick={() => onAddToCart(product)}
+                onClick={() => {
+                  if (hasImage && onImageClick) {
+                    onImageClick(product.image!);
+                  }
+                }}
               >
-                Add to Vibe Cart
+                Analyze Outfit
               </button>
             </div>
           );
