@@ -65,5 +65,10 @@ export function useVibeApi(options: UseVibeApiOptions = {}) {
     }
   };
 
-  return { products, loading, error, fetchVibeProducts };
+  const clearProducts = () => {
+    setProducts([]);
+    setError("");
+  };
+
+  return { products, loading, error, fetchVibeProducts, clearProducts };
 }

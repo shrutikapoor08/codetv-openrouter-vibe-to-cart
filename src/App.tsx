@@ -42,6 +42,7 @@ function App() {
     loading: productsLoading,
     error: productsError,
     fetchVibeProducts,
+    clearProducts,
   } = useVibeApi();
   const {
     cartItems,
@@ -63,6 +64,7 @@ function App() {
     e.preventDefault();
     // Clear previous results
     clearVibeImages();
+    clearProducts();
     setSelectedVibe(null);
     await handleSubmit(vibe, roastMode, skipImages);
   };
