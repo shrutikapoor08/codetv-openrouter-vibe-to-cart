@@ -83,6 +83,23 @@ CRITICAL:
     }
 
     // Make direct API call (SDK doesn't properly support image generation yet)
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://github.com/shrutikapoor08/codetv-openrouter-vibe-to-cart",
+        "X-Title": "Vibe to Cart",
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("OpenRouter API error:", errorText);
+      throw new Error(`OpenRouter API error: ${response.status} - ${errorText}`);
+    }
+
     const data = await response.json();
 
     console.log("✅ Image generation response received");
