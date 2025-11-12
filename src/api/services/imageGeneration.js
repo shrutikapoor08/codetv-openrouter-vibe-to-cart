@@ -43,22 +43,8 @@ export const generateVibeImage = async (vibeDescription, options = {}) => {
   try {
     const { aspectRatio = "1:1" } = options;
 
-    // Create a clean, product-focused prompt
-    const enhancedPrompt = `Create a clean product photo for: "${vibeDescription}". 
-
-Style: Simple, clean product photography with a plain neutral background (white, light gray, or soft pastel).
-The product should be the ONLY focus - centered, well-lit, professional product shot.
-Think: Clean e-commerce product photos, minimalist catalog images, simple Amazon/Etsy product listings.
-
-The image can be humorous or quirky in WHAT the product is, but the photo style should be clean and professional.
-Simple background, good lighting, product-focused composition.
-
-CRITICAL: 
-- Plain, simple background (solid color or minimal gradient)
-- Product is the main subject, centered and in focus
-- No busy scenes, no complex backgrounds, no clutter
-- Clean, professional product photography aesthetic
-- NO text, labels, words, signs, or captions in the image`;
+    // Create a clothing/fashion-focused prompt (single image per request)
+    const enhancedPrompt = `Create a professional product photo of a stylish clothing item or fashion accessory that matches this vibe: "${vibeDescription}". Show a clear, well-lit clothing product like a dress, jacket, shoes, bag, sunglasses, or fashion accessory. Make it look like a high-quality e-commerce product photo with the item centered against a clean or complementary background. The clothing/accessory should be the main focus and easily identifiable.`;
 
     console.log("🎨 Generating image with Nano Banana...");
     console.log("Prompt:", enhancedPrompt);
@@ -70,7 +56,12 @@ CRITICAL:
       messages: [
         {
           role: "user",
-          content: enhancedPrompt,
+          content: [
+            {
+              type: "text",
+              text: enhancedPrompt,
+            },
+          ],
         },
       ],
     };
@@ -83,6 +74,9 @@ CRITICAL:
     }
 
     // Make direct API call (SDK doesn't properly support image generation yet)
+    console.log("📤 Sending request to OpenRouter...");
+    console.log("Request config:", JSON.stringify(requestBody, null, 2));
+
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -100,39 +94,15 @@ CRITICAL:
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("OpenRouter API error:", errorText);
+      console.error("❌ OpenRouter API error:", response.status, errorText);
       throw new Error(
         `OpenRouter API error: ${response.status} - ${errorText}`
       );
     }
 
     const data = await response.json();
-
     console.log("✅ Image generation response received");
-    console.log(
-      "Response structure:",
-      JSON.stringify(
-        {
-          hasChoices: !!data.choices,
-          choicesLength: data.choices?.length,
-          firstChoice: data.choices?.[0]
-            ? {
-                hasMessage: !!data.choices[0].message,
-                messageKeys: Object.keys(data.choices[0].message || {}),
-                hasImages: !!data.choices[0].message?.images,
-                imagesLength: data.choices[0].message?.images?.length,
-                hasContent: !!data.choices[0].message?.content,
-                contentPreview: data.choices[0].message?.content?.substring(
-                  0,
-                  100
-                ),
-              }
-            : null,
-        },
-        null,
-        2
-      )
-    );
+    console.log("Response structure:", JSON.stringify(data, null, 2).substring(0, 500));
 
     // Extract the image from the response
     if (data.choices && data.choices[0] && data.choices[0].message) {
@@ -207,6 +177,45 @@ export const generateMultipleVibeImages = async (vibeDescription) => {
     return successful;
   } catch (error) {
     console.error("Error generating multiple images:", error);
+    throw error;
+  }
+};
+
+/**
+ * Generate 4 different image variants for the same vibe
+ * Makes 4 separate API calls with the same vibe to get different variations
+ * @param {string} vibeDescription - The user's vibe text
+ * @param {object} options - Optional configuration
+ * @returns {Promise<Array>}
+ */
+export const generate4ImageVariants = async (vibeDescription, options = {}) => {
+  console.log(`🎨 Generating 4 image variants for: "${vibeDescription}"`);
+
+  try {
+    // Make 4 parallel API calls with the same vibe (model will naturally vary outputs)
+    const imagePromises = Array(4).fill(null).map(() =>
+      generateVibeImage(vibeDescription, options)
+    );
+
+    const results = await Promise.allSettled(imagePromises);
+
+    const successful = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
+
+    const failed = results.filter((result) => result.status === "rejected");
+
+    if (failed.length > 0) {
+      console.warn(`⚠️ ${failed.length} out of 4 image generation(s) failed`);
+      failed.forEach((f, i) => {
+        console.error(`  Variant ${i + 1} error:`, f.reason?.message || f.reason);
+      });
+    }
+
+    console.log(`✅ Successfully generated ${successful.length} out of 4 images`);
+    return successful;
+  } catch (error) {
+    console.error("Error generating 4 image variants:", error);
     throw error;
   }
 };

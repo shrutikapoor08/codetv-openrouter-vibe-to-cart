@@ -1,5 +1,5 @@
 import webSearchAgent, { roastCart } from "../services/aiAgent.js";
-import { generateVibeImage } from "../services/imageGeneration.js";
+import { generate4ImageVariants } from "../services/imageGeneration.js";
 import {
   getCachedImagePath,
   saveProductImage,
@@ -33,60 +33,35 @@ export const getVibeProducts = async (req, res) => {
     cacheVibe(vibe, roastMode, products);
   }
 
-  // Generate images for products if requested
+  // Generate 4 images for the vibe if requested
   if (generateImages && Array.isArray(products)) {
-    console.log(`🖼️  Processing images for ${products.length} products...`);
+    console.log(`🖼️  Generating 4 images for vibe: "${vibe}"`);
 
-    const productsWithImages = await Promise.all(
-      products.map(async (product) => {
-        try {
-          // Check if cached image exists
-          let imagePath = getCachedImagePath(product.name, product.reason);
+    try {
+      // Generate 4 different image variants for this vibe
+      const imageResults = await generate4ImageVariants(vibe, {
+        aspectRatio: "1:1",
+      });
 
-          if (!imagePath) {
-            // Generate new image
-            console.log(`  🎨 Generating image for: ${product.name}`);
-            const imagePrompt = `${product.emoji} ${product.name}: ${product.reason}`;
+      console.log(`✅ Generated ${imageResults.length} images successfully`);
 
-            const result = await generateVibeImage(imagePrompt, {
-              aspectRatio: "1:1",
-            });
+      // Attach all images to the response
+      const response = {
+        products,
+        images: imageResults.map((result, index) => ({
+          id: index + 1,
+          url: result.imageUrl,
+          prompt: result.prompt,
+        })),
+        vibe,
+      };
 
-            // Save to disk
-            imagePath = saveProductImage(
-              product.name,
-              product.reason,
-              result.imageUrl
-            );
-          } else {
-            console.log(`  ✅ Using cached image for: ${product.name}`);
-          }
-
-          console.log(
-            `  📤 Product "${product.name}" → image: ${imagePath || "NONE"}`
-          );
-
-          return {
-            ...product,
-            image: imagePath,
-          };
-        } catch (error) {
-          console.error(
-            `  ❌ Failed to generate image for ${product.name}:`,
-            error.message
-          );
-          // Return product without image on error
-          return product;
-        }
-      })
-    );
-
-    console.log(`📦 Sending ${productsWithImages.length} products to client`);
-    productsWithImages.forEach((p, i) => {
-      console.log(`   ${i + 1}. ${p.name} - image: ${p.image ? "✅" : "❌"}`);
-    });
-
-    return res.json(productsWithImages);
+      return res.json(response);
+    } catch (error) {
+      console.error(`❌ Failed to generate images for vibe:`, error.message);
+      // Return products without images on error
+      return res.json({ products, images: [], vibe });
+    }
   }
 
   res.json(products);
