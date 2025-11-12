@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
 import type { CreateTypes } from "canvas-confetti";
+import { LOADING_MESSAGES, SURPRISE_VIBES, getEasterEggMessage } from "./constants";
 import "./App.css";
 
 interface Product {
@@ -8,33 +9,6 @@ interface Product {
   name: string;
   reason: string;
 }
-
-const LOADING_MESSAGES = [
-  "Consulting your inner chaos...",
-  "Reading your aura...",
-  "Channeling your main character energy...",
-  "Vibing with the universe...",
-  "Analyzing your aesthetic...",
-  "Summoning your spirit products...",
-];
-
-const SURPRISE_VIBES = [
-  "villain era",
-  "hot girl autumn but broke",
-  "cottagecore ceo",
-  "chaotic good but make it fashion",
-  "divorced but thriving",
-  "post-apocalyptic brunch influencer",
-  "startup founder in denial",
-  "cyberpunk beach bum",
-  "main character energy with student loan debt",
-  "hot mess express",
-  "sad indie music protagonist",
-  "feral academic",
-  "girlboss gaslight gatekeep",
-  "dark academia dropout",
-  "cottage witch on antidepressants",
-];
 
 function App() {
   const [vibe, setVibe] = useState("");
@@ -92,31 +66,13 @@ function App() {
     });
   }, [makeShot]);
 
-  const checkForEasterEggs = (userVibe: string) => {
-    const lowerVibe = userVibe.toLowerCase();
-    setEasterEggMessage("");
-
-    if (lowerVibe.includes("villain") || lowerVibe.includes("evil")) {
-      setEasterEggMessage("🦹‍♀️ We sense dark energy... excellent.");
-    } else if (lowerVibe.includes("chaotic") || lowerVibe.includes("chaos")) {
-      setEasterEggMessage("🌪️ Chaos detected. Recommend glitter and bad decisions.");
-    } else if (lowerVibe.includes("ceo") || lowerVibe.includes("boss")) {
-      setEasterEggMessage("💼 Boss energy detected. Don't forget to hydrate between meetings.");
-    } else if (lowerVibe.includes("broke") || lowerVibe.includes("poor")) {
-      setEasterEggMessage("💸 We see you. Window shopping is still shopping.");
-    } else if (lowerVibe.includes("therapy") || lowerVibe.includes("therapist")) {
-      setEasterEggMessage("🛋️ This app is NOT a licensed therapist. But we can recommend candles.");
-    } else if (lowerVibe.includes("sad") || lowerVibe.includes("depressed")) {
-      setEasterEggMessage("🥺 Sending virtual hugs... and product recommendations.");
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!vibe.trim()) return;
 
     // Check for easter eggs
-    checkForEasterEggs(vibe);
+    const easterEgg = getEasterEggMessage(vibe);
+    setEasterEggMessage(easterEgg);
 
     // Add to vibe history
     if (!vibeHistory.includes(vibe)) {
