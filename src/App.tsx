@@ -23,13 +23,25 @@ function App() {
   const [skipImages, setSkipImages] = useState(false);
   const [selectedVibe, setSelectedVibe] = useState<VibeImage | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
-  const [clothingAnalysis, setClothingAnalysis] = useState<ImageAnalysis | null>(null);
+  const [clothingAnalysis, setClothingAnalysis] =
+    useState<ImageAnalysis | null>(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const { getInstance, fireConfetti } = useConfetti();
-  const { vibeImages, loading: imagesLoading, error: imagesError, fetchVibeImages, clearVibeImages } = useVibeImages();
-  const { products, loading: productsLoading, error: productsError, fetchVibeProducts } = useVibeApi();
+  const {
+    vibeImages,
+    loading: imagesLoading,
+    error: imagesError,
+    fetchVibeImages,
+    clearVibeImages,
+  } = useVibeImages();
+  const {
+    products,
+    loading: productsLoading,
+    error: productsError,
+    fetchVibeProducts,
+  } = useVibeApi();
   const {
     cartItems,
     cartCount,
@@ -90,12 +102,14 @@ function App() {
     setTimeout(() => {
       window.scrollTo({
         top: document.documentElement.scrollHeight,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }, 100);
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL?.replace('/api/vibe', '') || "http://localhost:3001";
+      const API_URL =
+        import.meta.env.VITE_API_URL?.replace("/api/vibe", "") ||
+        "http://localhost:3001";
       const response = await fetch(`${API_URL}/api/analyze-image`, {
         method: "POST",
         headers: {
@@ -130,7 +144,7 @@ function App() {
     // Scroll back to top
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
   };
 

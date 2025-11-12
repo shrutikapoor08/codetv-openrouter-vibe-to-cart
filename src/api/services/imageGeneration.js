@@ -41,10 +41,17 @@ export const generateVibeImage = async (vibeDescription, options = {}) => {
   }
 
   try {
-    const { aspectRatio = "1:1" } = options;
+    const { aspectRatio = "1:1", isProductImage = false } = options;
 
-    // Create a clothing/fashion-focused prompt with unique variation
-    const enhancedPrompt = `Create a vibrant, visually striking image that captures the essence of this vibe: "${vibeDescription}". Make it bold, creative, and fun with saturated colors and dynamic composition. Ensure this image is unique and different from others.`;
+    // Create different prompts for product images vs vibe images
+    let enhancedPrompt;
+    if (isProductImage) {
+      // Product-focused prompt with clean studio photography style
+      enhancedPrompt = `Professional product photography of ${vibeDescription}. Clean studio shot with the product as the SOLE FOCUS in the center. Dramatic lighting, shallow depth of field with blurred background. High-end commercial product photography style. The product should fill most of the frame and be the only clear, sharp element. Cinematic lighting, premium quality.`;
+    } else {
+      // Vibe-focused prompt for the initial vibe selection images
+      enhancedPrompt = `Create a vibrant, visually striking image that captures the essence of this vibe: "${vibeDescription}". Make it bold, creative, and fun with saturated colors and dynamic composition. Ensure this image is unique and different from others.`;
+    }
 
     console.log("🎨 Generating image with Nano Banana...");
     console.log("Prompt:", enhancedPrompt);
@@ -81,21 +88,27 @@ export const generateVibeImage = async (vibeDescription, options = {}) => {
     console.log("📤 Sending request to OpenRouter...");
     console.log("Request config:", JSON.stringify(requestBody, null, 2));
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://github.com/shrutikapoor08/codetv-openrouter-vibe-to-cart",
-        "X-Title": "Vibe to Cart",
-      },
-      body: JSON.stringify(requestBody),
-    });
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer":
+            "https://github.com/shrutikapoor08/codetv-openrouter-vibe-to-cart",
+          "X-Title": "Vibe to Cart",
+        },
+        body: JSON.stringify(requestBody),
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error("❌ OpenRouter API error:", response.status, errorText);
-      throw new Error(`OpenRouter API error: ${response.status} - ${errorText}`);
+      throw new Error(
+        `OpenRouter API error: ${response.status} - ${errorText}`
+      );
     }
 
     const data = await response.json();
@@ -214,9 +227,9 @@ export const generate4ImageVariants = async (vibeDescription, options = {}) => {
 
   try {
     // Make 4 parallel API calls with the same vibe (model will naturally vary outputs)
-    const imagePromises = Array(4).fill(null).map(() =>
-      generateVibeImage(vibeDescription, options)
-    );
+    const imagePromises = Array(4)
+      .fill(null)
+      .map(() => generateVibeImage(vibeDescription, options));
 
     const results = await Promise.allSettled(imagePromises);
 
@@ -229,11 +242,16 @@ export const generate4ImageVariants = async (vibeDescription, options = {}) => {
     if (failed.length > 0) {
       console.warn(`⚠️ ${failed.length} out of 4 image generation(s) failed`);
       failed.forEach((f, i) => {
-        console.error(`  Variant ${i + 1} error:`, f.reason?.message || f.reason);
+        console.error(
+          `  Variant ${i + 1} error:`,
+          f.reason?.message || f.reason
+        );
       });
     }
 
-    console.log(`✅ Successfully generated ${successful.length} out of 4 images`);
+    console.log(
+      `✅ Successfully generated ${successful.length} out of 4 images`
+    );
     return successful;
   } catch (error) {
     console.error("Error generating 4 image variants:", error);

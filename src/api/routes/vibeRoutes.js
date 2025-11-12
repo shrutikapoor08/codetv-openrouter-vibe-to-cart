@@ -1,5 +1,8 @@
 import webSearchAgent, { roastCart } from "../services/aiAgent.js";
-import { generateVibeImage } from "../services/imageGeneration.js";
+import {
+  generateVibeImage,
+  generate4ImageVariants,
+} from "../services/imageGeneration.js";
 import {
   getCachedImagePath,
   saveProductImage,
@@ -73,24 +76,33 @@ export const getVibeProducts = async (req, res) => {
 
   // Generate unique images for each product
   if (generateImages && Array.isArray(products)) {
-    console.log(`🖼️  Generating ${products.length} unique images for vibe: "${vibe}"`);
+    console.log(
+      `🖼️  Generating ${products.length} unique images for vibe: "${vibe}"`
+    );
 
     try {
       // Generate one unique image for each product
       const imagePromises = products.map((product, index) => {
-        // Create a unique prompt for each product
-        const productPrompt = `${vibe} - ${product.name}: ${product.reason}`;
-        console.log(`   Generating image ${index + 1}/${products.length} for: ${product.name}`);
+        // Create a unique prompt for each product - focus on the product itself
+        const productPrompt = `${product.name} - ${product.reason}`;
+        console.log(
+          `   Generating image ${index + 1}/${products.length} for: ${
+            product.name
+          }`
+        );
 
         return generateVibeImage(productPrompt, {
           aspectRatio: "1:1",
+          isProductImage: true, // This will trigger product-focused prompt
         });
       });
 
       // Generate all images in parallel
       const imageResults = await Promise.all(imagePromises);
 
-      console.log(`✅ Generated ${imageResults.length} unique images successfully`);
+      console.log(
+        `✅ Generated ${imageResults.length} unique images successfully`
+      );
 
       // Map each image to its corresponding product
       const images = imageResults.map((result, index) => ({

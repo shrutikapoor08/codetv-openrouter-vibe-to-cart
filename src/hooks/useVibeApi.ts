@@ -14,7 +14,11 @@ export function useVibeApi(options: UseVibeApiOptions = {}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchVibeProducts = async (vibe: string, roastMode: boolean = false, skipImages: boolean = false) => {
+  const fetchVibeProducts = async (
+    vibe: string,
+    roastMode: boolean = false,
+    skipImages: boolean = false
+  ) => {
     setLoading(true);
     setError("");
     setProducts([]);
@@ -37,13 +41,15 @@ export function useVibeApi(options: UseVibeApiOptions = {}) {
 
       const data = await response.json();
       // Handle both response formats: { products: [...], images: [...] } or [...]
-      let productsArray: Product[] = Array.isArray(data) ? data : data.products || [];
+      let productsArray: Product[] = Array.isArray(data)
+        ? data
+        : data.products || [];
 
       // If images are provided, attach them to products
       if (!Array.isArray(data) && data.images && Array.isArray(data.images)) {
         productsArray = productsArray.map((product, index) => ({
           ...product,
-          image: data.images[index]?.url || product.image
+          image: data.images[index]?.url || product.image,
         }));
       }
 

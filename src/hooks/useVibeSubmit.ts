@@ -2,7 +2,11 @@ import { useState, useCallback } from "react";
 import { LOADING_MESSAGES, getEasterEggMessage } from "../constants";
 
 interface UseVibeSubmitOptions {
-  onSubmit: (vibe: string, roastMode: boolean, skipImages?: boolean) => Promise<void>;
+  onSubmit: (
+    vibe: string,
+    roastMode: boolean,
+    skipImages?: boolean
+  ) => Promise<void>;
 }
 
 /**
