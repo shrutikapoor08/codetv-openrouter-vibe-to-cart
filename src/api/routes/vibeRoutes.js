@@ -24,8 +24,8 @@ export const getVibeImages = async (req, res) => {
       aspectRatio: "1:1",
     });
 
-    // Take only first 3 images
-    const vibeImages = imageResults.slice(0, 3).map((result, index) => ({
+    // Map results to vibe image format
+    const vibeImages = imageResults.map((result, index) => ({
       id: index + 1,
       url: result.imageUrl,
       prompt: result.prompt,

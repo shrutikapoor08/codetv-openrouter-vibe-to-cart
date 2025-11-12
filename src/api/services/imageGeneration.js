@@ -212,18 +212,18 @@ export const generateMultipleVibeImages = async (vibeDescription) => {
 };
 
 /**
- * Generate 4 different image variants for the same vibe
- * Makes 4 separate API calls with the same vibe to get different variations
+ * Generate 3 different image variants for the same vibe
+ * Makes 3 separate API calls with the same vibe to get different variations
  * @param {string} vibeDescription - The user's vibe text
  * @param {object} options - Optional configuration
  * @returns {Promise<Array>}
  */
 export const generate4ImageVariants = async (vibeDescription, options = {}) => {
-  console.log(`🎨 Generating 4 image variants for: "${vibeDescription}"`);
+  console.log(`🎨 Generating 3 image variants for: "${vibeDescription}"`);
 
   try {
-    // Make 4 parallel API calls with the same vibe (model will naturally vary outputs)
-    const imagePromises = Array(4)
+    // Make 3 parallel API calls with the same vibe (model will naturally vary outputs)
+    const imagePromises = Array(3)
       .fill(null)
       .map(() => generateVibeImage(vibeDescription, options));
 
@@ -236,7 +236,7 @@ export const generate4ImageVariants = async (vibeDescription, options = {}) => {
     const failed = results.filter((result) => result.status === "rejected");
 
     if (failed.length > 0) {
-      console.warn(`⚠️ ${failed.length} out of 4 image generation(s) failed`);
+      console.warn(`⚠️ ${failed.length} out of 3 image generation(s) failed`);
       failed.forEach((f, i) => {
         console.error(
           `  Variant ${i + 1} error:`,
@@ -246,11 +246,11 @@ export const generate4ImageVariants = async (vibeDescription, options = {}) => {
     }
 
     console.log(
-      `✅ Successfully generated ${successful.length} out of 4 images`
+      `✅ Successfully generated ${successful.length} out of 3 images`
     );
     return successful;
   } catch (error) {
-    console.error("Error generating 4 image variants:", error);
+    console.error("Error generating 3 image variants:", error);
     throw error;
   }
 };
