@@ -4,10 +4,10 @@
 
 /**
  * Validates vibe input from query parameters or body
- * @param {string} fieldName - The field name to check (e.g., 'query', 'vibe')
+ * Supports both 'vibe' and 'query' parameter names for backward compatibility
  * @returns {Function} Express middleware function
  */
-export const validateVibeInput = (fieldName = "vibe") => {
+export const validateVibeInput = () => {
   return (req, res, next) => {
     // Safety check for req object
     if (!req || !req.query) {
@@ -17,11 +17,12 @@ export const validateVibeInput = (fieldName = "vibe") => {
       });
     }
 
-    const vibe = req.query[fieldName] || req.body[fieldName];
+    // Support both 'vibe' and 'query' parameters for backward compatibility
+    const vibe = req.query.vibe || req.query.query || req.body.vibe || req.body.query;
 
     if (!vibe || vibe.trim() === "") {
       return res.status(400).json({
-        error: `${fieldName} parameter is required. Provide as query parameter or in request body.`,
+        error: "vibe or query parameter is required. Example: ?vibe=villain+era",
       });
     }
 
