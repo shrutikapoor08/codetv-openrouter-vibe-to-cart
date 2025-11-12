@@ -18,7 +18,7 @@ import {
 } from "./middleware/validators.js";
 
 // Route handlers
-import { getVibeProducts, roastCartItems } from "./routes/vibeRoutes.js";
+import { getVibeProducts, getVibeImages, roastCartItems } from "./routes/vibeRoutes.js";
 import { generateProductImage } from "./routes/imageRoutes.js";
 import {
   getImageCacheStats,
@@ -42,6 +42,7 @@ app.use(express.static(path.join(__dirname, "../../public")));
 app.use(corsMiddleware);
 
 // Routes
+app.get("/api/vibe-images", validateVibeInput(), asyncHandler(getVibeImages));
 app.get("/api/vibe", validateVibeInput(), asyncHandler(getVibeProducts));
 
 app.post("/api/roast-cart", asyncHandler(roastCartItems));
