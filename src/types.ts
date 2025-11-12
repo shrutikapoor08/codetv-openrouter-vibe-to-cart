@@ -9,16 +9,6 @@ export interface Product {
 }
 
 /**
- * Vibe image option interface
- */
-export interface VibeImage {
-  id: number;
-  url: string;
-  prompt: string;
-  vibe: string;
-}
-
-/**
  * Clothing item from image analysis
  */
 export interface ClothingItem {

@@ -1,8 +1,5 @@
 import webSearchAgent, { roastCart } from "../services/aiAgent.js";
-import {
-  generateVibeImage,
-  generate4ImageVariants,
-} from "../services/imageGeneration.js";
+import { generateVibeImage } from "../services/imageGeneration.js";
 import {
   getCachedImagePath,
   saveProductImage,
@@ -12,44 +9,6 @@ import {
   getCachedVibeImage,
   cacheVibeImage,
 } from "../services/vibeImageCache.js";
-
-/**
- * GET /api/vibe-images
- * Generate 3 vibe image options for the user to choose from
- */
-export const getVibeImages = async (req, res) => {
-  const vibe = req.validatedVibe; // Set by validateVibeInput middleware
-
-  console.log(`🖼️  Generating 3 vibe images for: "${vibe}"`);
-
-  try {
-    // Generate 3 different image variants for this vibe
-    const imageResults = await generate4ImageVariants(vibe, {
-      aspectRatio: "1:1",
-    });
-
-    // Take only first 3 images
-    const vibeImages = imageResults.slice(0, 3).map((result, index) => ({
-      id: index + 1,
-      url: result.imageUrl,
-      prompt: result.prompt,
-      vibe: vibe,
-    }));
-
-    console.log(`✅ Generated ${vibeImages.length} vibe images successfully`);
-
-    return res.json({
-      images: vibeImages,
-      originalVibe: vibe,
-    });
-  } catch (error) {
-    console.error(`❌ Failed to generate vibe images:`, error.message);
-    return res.status(500).json({
-      error: "Failed to generate vibe images",
-      message: error.message,
-    });
-  }
-};
 
 /**
  * GET /api/vibe

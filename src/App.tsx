@@ -3,15 +3,13 @@ import { useState, useRef } from "react";
 import { SURPRISE_VIBES, APP_GRADIENTS } from "./constants";
 import { useConfetti } from "./hooks/useConfetti";
 import { useVibeApi } from "./hooks/useVibeApi";
-import { useVibeImages } from "./hooks/useVibeImages";
 import { useCart } from "./hooks/useCart";
 import { useVibeSubmit } from "./hooks/useVibeSubmit";
-import type { Product, VibeImage, ImageAnalysis } from "./types";
+import type { Product, ImageAnalysis } from "./types";
 import CartDrawer from "./components/CartDrawer";
 import RoastToggle from "./components/RoastToggle";
 import VibeForm from "./components/VibeForm";
 import VibeHistory from "./components/VibeHistory";
-import VibeImageGrid from "./components/VibeImageGrid";
 import ProductGrid from "./components/ProductGrid";
 import StatusDisplay from "./components/StatusDisplay";
 import ClothingAnalysis from "./components/ClothingAnalysis";
@@ -21,7 +19,6 @@ function App() {
   const [vibe, setVibe] = useState("");
   const [roastMode, setRoastMode] = useState(false);
   const [skipImages, setSkipImages] = useState(false);
-  const [selectedVibe, setSelectedVibe] = useState<VibeImage | null>(null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [clothingAnalysis, setClothingAnalysis] =
     useState<ImageAnalysis | null>(null);
@@ -29,19 +26,7 @@ function App() {
   const formRef = useRef<HTMLFormElement>(null);
 
   const { getInstance, fireConfetti } = useConfetti();
-  const {
-    vibeImages,
-    loading: imagesLoading,
-    error: imagesError,
-    fetchVibeImages,
-    clearVibeImages,
-  } = useVibeImages();
-  const {
-    products,
-    loading: productsLoading,
-    error: productsError,
-    fetchVibeProducts,
-  } = useVibeApi();
+  const { products, loading, error, fetchVibeProducts } = useVibeApi();
   const {
     cartItems,
     cartCount,
@@ -55,21 +40,12 @@ function App() {
 
   const { loadingMessage, vibeHistory, easterEggMessage, handleSubmit } =
     useVibeSubmit({
-      onSubmit: fetchVibeImages, // First step: fetch vibe images
+      onSubmit: fetchVibeProducts,
     });
 
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Clear previous results
-    clearVibeImages();
-    setSelectedVibe(null);
     await handleSubmit(vibe, roastMode, skipImages);
-  };
-
-  const handleSelectVibe = async (vibeImage: VibeImage) => {
-    setSelectedVibe(vibeImage);
-    // Fetch products for the selected vibe
-    await fetchVibeProducts(vibeImage.vibe);
   };
 
   const handleSurpriseMe = () => {
@@ -218,7 +194,7 @@ function App() {
         <VibeForm
           ref={formRef}
           vibe={vibe}
-          loading={imagesLoading}
+          // loading={imagesLoading}
           easterEggMessage={easterEggMessage}
           onVibeChange={setVibe}
           onSubmit={onFormSubmit}
@@ -228,28 +204,21 @@ function App() {
         {/* Vibe History */}
         <VibeHistory
           vibeHistory={vibeHistory}
-          loading={imagesLoading}
+          loading={loading}
           onSelectVibe={handleVibeHistoryClick}
         />
 
         {/* Status Display - Loading & Errors */}
         <StatusDisplay
-          loading={imagesLoading || productsLoading}
+          loading={loading}
           loadingMessage={loadingMessage}
-          error={imagesError || productsError}
-        />
-
-        {/* Vibe Image Selection Grid */}
-        <VibeImageGrid
-          vibeImages={vibeImages}
-          loading={imagesLoading}
-          onSelectVibe={handleSelectVibe}
+          error={error}
         />
 
         {/* Product Grid */}
         <ProductGrid
           products={products}
-          loading={productsLoading}
+          loading={loading}
           onAddToCart={handleAddToCart}
           onImageClick={handleImageClick}
         />
