@@ -1,8 +1,8 @@
-import { getCacheStats } from "../productImageCache.js";
+import { getCacheStats } from "../services/imageService.js";
 import {
   clearVibeCache,
   getVibeCacheStats,
-} from "../vibeCache.js";
+} from "../services/vibeService.js";
 
 /**
  * GET /api/image-cache-stats

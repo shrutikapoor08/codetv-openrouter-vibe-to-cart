@@ -132,7 +132,7 @@ Plain text response with AI-generated product recommendations
 
 ### Agent Components
 
-The `webSearchAgent` is built using **LangGraph's ReAct Agent** pattern:
+The `webSearchAgent` (located in `src/api/services/aiAgent.js`) is built using **LangGraph's ReAct Agent** pattern:
 
 ```mermaid
 flowchart TD
@@ -233,7 +233,65 @@ The agent follows this loop:
 
 ---
 
-## 🔐 Security & Configuration
+## � Backend Directory Structure
+
+The backend follows a **service-oriented architecture** for better separation of concerns and maintainability:
+
+```
+src/api/
+├── server.js                      # Main Express server entry point
+│
+├── config/                        # Configuration and validation
+│   ├── env.js                    # Centralized environment variables
+│   └── apiKeyValidation.js       # API key validation logic
+│
+├── services/                      # Core business logic
+│   ├── aiAgent.js                # LangChain ReAct agent (product generation)
+│   ├── imageGeneration.js        # OpenRouter image generation
+│   ├── vibeService.js            # Vibe caching service
+│   └── imageService.js           # Product image caching service
+│
+├── middleware/                    # Express middleware
+│   ├── cors.js                   # CORS configuration
+│   ├── errorHandler.js           # Centralized error handling
+│   └── validators.js             # Request validation middleware
+│
+├── routes/                        # Route handlers
+│   ├── vibeRoutes.js             # /api/vibe endpoints
+│   ├── imageRoutes.js            # /api/product-image endpoints
+│   └── cacheRoutes.js            # Cache management endpoints
+│
+└── utils/                         # Shared utilities
+    ├── paths.js                  # Path resolution helpers
+    └── mockData.js               # Mock responses for testing
+```
+
+### Key Design Principles
+
+**1. Separation of Concerns**
+- **Config**: Environment and validation
+- **Services**: Business logic and external integrations
+- **Middleware**: Request processing and error handling
+- **Routes**: HTTP endpoint definitions
+- **Utils**: Shared utilities and test data
+
+**2. Centralized Configuration**
+- `config/env.js` exports all environment variables
+- Single source of truth for `MOCK_MODE`, API keys, etc.
+- Prevents duplication across files
+
+**3. Reusable Utilities**
+- `utils/paths.js` provides `getDirname()` and common path constants
+- Eliminates repeated `fileURLToPath` boilerplate
+
+**4. Service Layer Pattern**
+- Services encapsulate business logic
+- Easy to test in isolation
+- Clear dependencies and interfaces
+
+---
+
+## �🔐 Security & Configuration
 
 ### Environment Variables
 
@@ -255,7 +313,7 @@ PORT=3001
 
 ### Validation Layer
 
-**File:** `src/api/validation.js`
+**File:** `src/api/config/apiKeyValidation.js`
 
 **Purpose:** Ensures required API keys are present before server starts
 

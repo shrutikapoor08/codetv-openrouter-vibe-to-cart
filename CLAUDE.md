@@ -29,40 +29,86 @@ When starting work on this project, read in this order:
 1. **README.md** - Quick start, setup, basic understanding
 2. **REQUIREMENTS.md** - Features, timeline, TODO list
 3. **ARCHITECTURE.md** - Technical design, data flow, component structure
-4. **This file (CLAUDE.md)** - AI agent-specific guidance
+4. **This file (AGENTS.md)** - AI agent-specific guidance
 
 ---
 
 ## 🗂️ Codebase Structure
 
-### Critical Files
+### Backend Architecture (Service-Oriented)
 
 ```
 src/api/
-├── server.js       # EXPRESS SERVER - Main HTTP routing
-├── agent.js        # AI AGENT - LangGraph orchestration (THE BRAIN)
-└── validation.js   # ENV VALIDATION - API key checks
+├── server.js                   # EXPRESS SERVER - Main HTTP routing
+├── config/
+│   ├── env.js                 # CENTRALIZED CONFIG - Environment variables
+│   └── apiKeyValidation.js    # ENV VALIDATION - API key checks
+├── services/
+│   ├── aiAgent.js             # AI AGENT - LangGraph orchestration (THE BRAIN)
+│   ├── imageGeneration.js     # IMAGE GEN - OpenRouter image creation
+│   ├── vibeService.js         # VIBE CACHE - Deterministic product storage
+│   └── imageService.js        # IMAGE CACHE - Product image caching
+├── middleware/
+│   ├── cors.js                # CORS - Cross-origin configuration
+│   ├── errorHandler.js        # ERROR HANDLING - Centralized async error catching
+│   └── validators.js          # VALIDATION - Request input validation
+├── routes/
+│   ├── vibeRoutes.js          # VIBE ENDPOINTS - /api/vibe handlers
+│   ├── imageRoutes.js         # IMAGE ENDPOINTS - /api/product-image handlers
+│   └── cacheRoutes.js         # CACHE ENDPOINTS - Cache management
+└── utils/
+    ├── paths.js               # PATH UTILS - Shared __dirname resolution
+    └── mockData.js            # MOCK DATA - Test fixtures
+```
 
+### Frontend Architecture (Component-Based)
+
+```
 src/
-├── App.tsx         # REACT ENTRY - Main UI component
-├── main.tsx        # REACT BOOTSTRAP
-└── index.css       # GLOBAL STYLES
+├── App.tsx                     # MAIN APP - React entry point
+├── main.tsx                    # REACT BOOTSTRAP
+├── components/
+│   ├── VibeForm.tsx           # FORM - Vibe input
+│   ├── ProductGrid.tsx        # PRODUCTS - Product display
+│   ├── CartDrawer.tsx         # CART - Shopping cart UI
+│   ├── StatusDisplay.tsx      # STATUS - Loading/error states
+│   └── ...
+├── hooks/
+│   ├── useVibeApi.ts          # API HOOK - Vibe product fetching
+│   ├── useVibeSubmit.ts       # SUBMIT HOOK - Form submission logic
+│   ├── useCart.ts             # CART HOOK - Cart management
+│   └── useConfetti.ts         # CONFETTI HOOK - Celebration effects
+├── constants.ts                # CONSTANTS - Loading messages, vibes, etc.
+└── types.ts                    # TYPES - TypeScript interfaces
 ```
 
 ### Key Patterns
 
-**Agent Flow:**
+**Backend Request Flow:**
 
 ```
-User Input → Express /agent endpoint → webSearchAgent() → OpenRouter + Tavily → Response
+User Input → Express /api/vibe 
+          → validateVibeInput middleware
+          → vibeRoutes.getVibeProducts
+          → Check vibeService cache
+          → If not cached: aiAgent.webSearchAgent()
+          → Generate images via imageGeneration service
+          → Cache in imageService
+          → Return products with images
 ```
 
 **Mock Mode:**
 
-- Controlled by `MOCK_MODE` environment variable
+- Controlled by `MOCK_MODE` in `config/env.js`
 - Bypasses all external API calls
-- Returns static responses from `mockResponses` object
+- Returns static responses from `utils/mockData.js`
 - Essential for testing without API costs
+
+**Centralized Configuration:**
+
+- All environment variables exported from `config/env.js`
+- Single source of truth for `MOCK_MODE`, API keys, PORT
+- Prevents duplication across files
 
 ---
 
@@ -71,13 +117,14 @@ User Input → Express /agent endpoint → webSearchAgent() → OpenRouter + Tav
 **Required (when MOCK_MODE=false):**
 
 - `OPENROUTER_API_KEY` - Multi-model LLM access
-- `TAVILY_API_KEY` - Web search functionality
+- `TAVILY_API_KEY` - Web search functionality (optional for basic usage)
 
 **Optional:**
 
 - `MOCK_MODE` - Set to "true" for testing (default: false)
 - `PORT` - Server port (default: 3001)
-- `NODE_TLS_REJECT_UNAUTHORIZED` - Set to "0" for dev SSL bypass (⚠️ dev only)
+
+**Note:** `NODE_TLS_REJECT_UNAUTHORIZED` is automatically set to "0" in development by `config/env.js`
 
 **Never commit `.env.local`** - It's gitignored for security
 
@@ -150,19 +197,19 @@ These are **required** by OpenRouter for tracking/analytics.
 
 ### Task: Modify AI Prompt
 
-1. Open `src/api/agent.js`
-2. Locate the `webSearchAgent` function
-3. The prompt is implicit in how you call the agent
-4. For explicit prompts, wrap input in `HumanMessage`:
+1. Open `src/api/services/aiAgent.js`
+2. Locate the `createVibePrompt` function
+3. Update the prompt template
+4. The prompt is used to generate product recommendations
    ```javascript
    const question = new HumanMessage("Your custom prompt here");
    ```
 
 ### Task: Add Mock Response
 
-1. Open `src/api/agent.js`
-2. Find `mockResponses` object
-3. Add new key-value pair:
+1. Open `src/api/utils/mockData.js`
+2. Find `MOCK_VIBES` object
+3. Add new key-value pair with your vibe and products
    ```javascript
    const mockResponses = {
      "new vibe input": "Your mock response here",
@@ -172,8 +219,8 @@ These are **required** by OpenRouter for tracking/analytics.
 
 ### Task: Switch AI Models
 
-1. Open `src/api/agent.js`
-2. Change the `model` parameter:
+1. Open `src/api/services/aiAgent.js`
+2. Change the `model` parameter in the `ChatOpenAI` initialization:
    ```javascript
    new ChatOpenAI({
      model: "anthropic/claude-3.5-sonnet", // or any OpenRouter model

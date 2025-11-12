@@ -145,21 +145,44 @@ MOCK_MODE=true node src/api/server.js  # Start with mock mode
 ```
 codetv-openrouter-vibe-to-cart/
 ├── src/
-│   ├── api/
-│   │   ├── server.js          # Express server & routes
-│   │   ├── agent.js           # LangGraph AI agent
-│   │   └── validation.js      # API key validation
-│   ├── App.tsx                # Main React component
-│   ├── main.tsx               # React entry point
-│   └── assets/                # Static assets
-├── public/                    # Public static files
-├── .env.local                 # Environment variables (gitignored)
-├── .env.example               # Environment template
-├── REQUIREMENTS.md            # Project requirements & roadmap
-├── ARCHITECTURE.md            # Technical architecture docs
-├── CLAUDE.md                  # AI agent guide
-└── README.md                  # This file
+│   ├── api/                        # Backend (Express + LangChain)
+│   │   ├── server.js              # Express server entry point
+│   │   ├── config/                # Configuration
+│   │   │   ├── env.js            # Environment variables
+│   │   │   └── apiKeyValidation.js
+│   │   ├── services/              # Business logic
+│   │   │   ├── aiAgent.js        # LangChain AI agent
+│   │   │   ├── imageGeneration.js # OpenRouter image gen
+│   │   │   ├── vibeService.js    # Vibe caching
+│   │   │   └── imageService.js   # Image caching
+│   │   ├── middleware/            # Express middleware
+│   │   │   ├── cors.js
+│   │   │   ├── errorHandler.js
+│   │   │   └── validators.js
+│   │   ├── routes/                # HTTP routes
+│   │   │   ├── vibeRoutes.js
+│   │   │   ├── imageRoutes.js
+│   │   │   └── cacheRoutes.js
+│   │   └── utils/                 # Shared utilities
+│   │       ├── paths.js
+│   │       └── mockData.js
+│   ├── components/                # React components
+│   ├── hooks/                     # Custom React hooks
+│   ├── App.tsx                    # Main React component
+│   ├── main.tsx                   # React entry point
+│   └── constants.ts               # Frontend constants
+├── public/                         # Public static files
+│   └── images/                    # AI-generated product images
+├── .cache/                         # Vibe cache (gitignored)
+├── .env.local                      # Environment variables (gitignored)
+├── .env.example                    # Environment template
+├── REQUIREMENTS.md                 # Project requirements & roadmap
+├── ARCHITECTURE.md                 # Technical architecture docs
+├── AGENTS.md                       # General AI agent guide
+└── README.md                       # This file
 ```
+
+**Note:** The backend follows a **service-oriented architecture** for better code organization. See [ARCHITECTURE.md](./ARCHITECTURE.md) for details.
 
 ---
 

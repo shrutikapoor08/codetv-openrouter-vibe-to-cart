@@ -1,4 +1,4 @@
-// API Key validation utilities
+import { MOCK_MODE } from "./env.js";
 
 /**
  * Validates that all required API keys are present in environment variables
@@ -7,7 +7,7 @@
  */
 export function validateAPIKeys() {
   // Skip validation in mock mode
-  if (process.env.MOCK_MODE === "true") {
+  if (MOCK_MODE) {
     console.log("🎭 MOCK MODE: Skipping API key validation");
     return;
   }

@@ -1,8 +1,9 @@
 import express from "express";
 import path from "path";
-import { fileURLToPath } from "url";
 import * as dotenv from "dotenv";
-import { validateAPIKeys } from "./validation.js";
+import { getDirname } from "./utils/paths.js";
+import { PORT } from "./config/env.js";
+import { validateAPIKeys } from "./config/apiKeyValidation.js";
 
 // Middleware
 import { corsMiddleware } from "./middleware/cors.js";
@@ -27,11 +28,10 @@ dotenv.config({ path: [".env.local", ".env"] });
 // Validate API keys before starting the server
 validateAPIKeys();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = getDirname(import.meta.url);
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = PORT;
 
 // Middleware setup
 app.use(express.json({ strict: false }));

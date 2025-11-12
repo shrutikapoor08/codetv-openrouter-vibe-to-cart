@@ -1,10 +1,5 @@
 import "dotenv/config";
-
-// Fix for self-signed certificate issues (development only)
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-// Mock mode - set MOCK_MODE=true in .env.local to use mock responses
-const MOCK_MODE = process.env.MOCK_MODE === "true";
+import { MOCK_MODE, OPENROUTER_API_KEY } from "../config/env.js";
 
 // Mock base64 image response (tiny 1x1 pixel transparent PNG)
 const MOCK_IMAGE_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
@@ -81,7 +76,7 @@ CRITICAL:
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
         "HTTP-Referer": "https://github.com/shrutikapoor08/codetv-openrouter-vibe-to-cart",
         "X-Title": "Vibe to Cart - Image Generation",

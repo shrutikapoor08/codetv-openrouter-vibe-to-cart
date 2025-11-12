@@ -4,13 +4,8 @@ import { MemorySaver } from "@langchain/langgraph";
 import { HumanMessage } from "@langchain/core/messages";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { TavilySearch } from "@langchain/tavily";
-import { MOCK_VIBES, DEFAULT_VIBE, ROAST_RESPONSES } from "./mockData.js";
-
-// Configuration
-const MOCK_MODE = process.env.MOCK_MODE === "true";
-
-// Hackathon mode - allow self-signed certificates
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+import { MOCK_MODE, OPENROUTER_API_KEY, TAVILY_API_KEY } from "../config/env.js";
+import { MOCK_VIBES, DEFAULT_VIBE, ROAST_RESPONSES } from "../utils/mockData.js";
 
 /**
  * Get mock response for a given vibe
@@ -103,14 +98,14 @@ const webSearchAgent = async ({ description, roastMode = false }) => {
     // Initialize tools
     const webTool = new TavilySearch({
       maxResults: 3,
-      tavilyApiKey: process.env.TAVILY_API_KEY,
+      tavilyApiKey: TAVILY_API_KEY,
     });
 
     // Initialize OpenRouter model
     const agentModel = new ChatOpenAI({
       model: "openai/gpt-4o-mini",
       temperature: 0.7, // Increased for more creative responses
-      apiKey: process.env.OPENROUTER_API_KEY,
+      apiKey: OPENROUTER_API_KEY,
       maxRetries: 2,
       configuration: {
         baseURL: "https://openrouter.ai/api/v1",

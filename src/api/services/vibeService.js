@@ -1,13 +1,9 @@
 import fs from "fs";
 import path from "path";
-import crypto from "crypto";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { PATHS } from "../utils/paths.js";
 
 // Path to cache directory
-const CACHE_DIR = path.join(__dirname, "../../.cache");
+const CACHE_DIR = PATHS.CACHE_DIR;
 const VIBE_CACHE_FILE = path.join(CACHE_DIR, "vibes.json");
 
 // Ensure cache directory exists
