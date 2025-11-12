@@ -10,7 +10,6 @@ interface ProductGridProps {
 export default function ProductGrid({
   products,
   loading,
-  onAddToCart,
   onImageClick,
 }: ProductGridProps) {
   const handleImageError = (_index: number) => {

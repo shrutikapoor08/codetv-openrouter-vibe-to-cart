@@ -4,6 +4,10 @@ import {
   getVibeImageCacheStats,
   clearVibeImageCache,
 } from "../services/vibeImageCache.js";
+import {
+  getImageAnalysisCacheStats,
+  clearImageAnalysisCache,
+} from "../services/imageAnalysisCache.js";
 
 /**
  * GET /api/image-cache-stats
@@ -48,4 +52,22 @@ export const getVibeImageCacheStatsRoute = (req, res) => {
 export const clearVibeImageCacheRoute = (req, res) => {
   clearVibeImageCache();
   res.json({ success: true, message: "Vibe image cache cleared" });
+};
+
+/**
+ * GET /api/image-analysis-cache-stats
+ * Returns statistics about the image analysis cache
+ */
+export const getImageAnalysisCacheStatsRoute = (req, res) => {
+  const stats = getImageAnalysisCacheStats();
+  res.json(stats);
+};
+
+/**
+ * POST /api/clear-image-analysis-cache
+ * Clears the image analysis cache
+ */
+export const clearImageAnalysisCacheRoute = (req, res) => {
+  clearImageAnalysisCache();
+  res.json({ success: true, message: "Image analysis cache cleared" });
 };
