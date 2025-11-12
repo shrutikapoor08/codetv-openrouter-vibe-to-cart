@@ -10,18 +10,24 @@
 graph TD
     A[React UI<br/>Vite + TypeScript] -->|HTTP Request| B[Express API<br/>Node.js]
     B --> D[LangGraph Agent]
-    D --> E[OpenRouter API<br/>GPT-4o-mini, Claude, etc.]
+    B --> G[Image Generation<br/>Service]
+    D --> E[OpenRouter API<br/>Text: GPT-4o-mini]
     D --> F[Tavily Search<br/>Web search tool]
-    E -->|Response| D
+    G --> H[OpenRouter API<br/>Images: Gemini-Flash-Image]
+    E -->|AI Response| D
     F -->|Search Results| D
-    D -->|AI Response| B
-    B -->|JSON/Text| A
+    D -->|Products JSON| B
+    H -->|Generated Image| G
+    G -->|Image URL| B
+    B -->|JSON/Images| A
 
     style A fill:#e1f5ff
     style B fill:#fff4e1
     style D fill:#f0e1ff
     style E fill:#ffe1e1
     style F fill:#e1ffe1
+    style G fill:#ffe8f0
+    style H fill:#ffe1e1
 ```
 
 ---
@@ -46,14 +52,18 @@ graph TD
 
 ### AI & Orchestration
 
-| Technology           | Version | Purpose                       |
-| -------------------- | ------- | ----------------------------- |
-| **LangChain Core**   | 1.0.4   | Message handling & primitives |
-| **LangGraph**        | 1.0.2   | Agent workflow orchestration  |
-| **LangChain OpenAI** | 1.1.0   | OpenRouter/OpenAI integration |
-| **LangChain Tavily** | 1.0.0   | Web search capabilities       |
-| **OpenRouter API**   | -       | Multi-model LLM access        |
-| **Tavily API**       | -       | Web search service            |
+| Technology           | Version | Purpose                          |
+| -------------------- | ------- | -------------------------------- |
+| **LangChain Core**   | 1.0.4   | Message handling & primitives    |
+| **LangGraph**        | 1.0.2   | Agent workflow orchestration     |
+| **LangChain OpenAI** | 1.1.0   | OpenRouter/OpenAI integration    |
+| **LangChain Tavily** | 1.0.0   | Web search tool integration      |
+| **OpenRouter API**   | -       | Multi-model LLM & image access   |
+| **Tavily API**       | -       | Web search service               |
+
+**OpenRouter Models Used:**
+- Text: `openai/gpt-4o-mini` (product recommendations)
+- Images: `google/gemini-2.5-flash-image` (product visuals)
 
 ---
 
@@ -67,12 +77,13 @@ sequenceDiagram
     participant Frontend
     participant Express
     participant Agent
+    participant ImageGen
     participant OpenRouter
     participant Tavily
 
     User->>Frontend: Enter vibe (e.g., "villain era")
     Frontend->>Frontend: Validate input
-    Frontend->>Express: GET /agent?query=villain+era
+    Frontend->>Express: GET /api/vibe?vibe=villain+era
     Express->>Express: Validate query parameter
     Express->>Agent: webSearchAgent({description})
 
@@ -81,13 +92,24 @@ sequenceDiagram
     else Production Mode
         Agent->>Tavily: Search web for context
         Tavily-->>Agent: Search results
-        Agent->>OpenRouter: Generate recommendations
-        OpenRouter-->>Agent: AI response
-        Agent->>Express: Return AI response
+        Agent->>OpenRouter: Generate recommendations (gpt-4o-mini)
+        OpenRouter-->>Agent: Products JSON
+        Agent->>Express: Return products array
     end
 
-    Express->>Frontend: JSON/Text response
-    Frontend->>User: Display product cards
+    Express->>Frontend: Products JSON response
+    
+    loop For each product
+        Frontend->>Express: GET /api/product-image?name=<product>
+        Express->>ImageGen: generateProductImage({productName})
+        ImageGen->>OpenRouter: Generate image (gemini-flash-image)
+        OpenRouter-->>ImageGen: PNG image data
+        ImageGen->>ImageGen: Cache image to disk
+        ImageGen->>Express: Return image URL
+        Express->>Frontend: Image URL
+    end
+
+    Frontend->>User: Display product cards with images
 ```
 
 **Detailed Steps:**
@@ -292,9 +314,71 @@ src/api/
 - Easy to test in isolation
 - Clear dependencies and interfaces
 
+### Image Generation Pipeline
+
+**Service:** `services/imageGeneration.js`
+
+The app generates unique product images for each AI-recommended product using OpenRouter's image generation API.
+
+**Flow:**
+
+```mermaid
+flowchart TD
+    A[Product Name] --> B{Check Image Cache}
+    B -->|Cached| C[Return Cached Image URL]
+    B -->|Not Cached| D[Create Prompt]
+    D --> E[Clean Prompt Text]
+    E --> F[POST to OpenRouter<br/>gemini-2.5-flash-image]
+    F --> G[Receive Base64 PNG]
+    G --> H[Decode to Buffer]
+    H --> I[Generate MD5 Hash]
+    I --> J[Save to public/images/]
+    J --> K[Return Image URL]
+    
+    style C fill:#e1ffe1
+    style K fill:#e1ffe1
+    style F fill:#ffe1e1
+```
+
+**Key Features:**
+
+1. **Prompt Cleaning**: Strips emojis and special characters for better image results
+2. **Caching**: Images are cached by MD5 hash to avoid regenerating identical products
+3. **Mock Mode Support**: Returns placeholder image URL when `MOCK_MODE=true`
+4. **Error Resilience**: Falls back gracefully if image generation fails
+
+**OpenRouter Image API Call:**
+
+```javascript
+const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+    "Content-Type": "application/json",
+    "HTTP-Referer": "https://github.com/...",
+    "X-Title": "Vibe to Cart",
+  },
+  body: JSON.stringify({
+    model: "google/gemini-2.5-flash-image",
+    messages: [
+      {
+        role: "user",
+        content: `Generate a product image for: ${cleanPrompt}`,
+      },
+    ],
+  }),
+});
+```
+
+**Caching Strategy:**
+
+- **Vibe Cache** (`services/vibeService.js`): Caches AI-generated product recommendations
+- **Image Cache** (`services/imageService.js`): Caches product images by filename hash
+- Both use JSON files in `.cache/` directory for persistence
+
 ---
 
-## �🔐 Security & Configuration
+## � Security & Configuration
 
 ### Environment Variables
 
@@ -432,6 +516,21 @@ codetv-openrouter-vibe-to-cart/
 - ✅ Single API for model switching
 - ✅ Competitive pricing
 - ✅ No vendor lock-in
+- ✅ Supports both text and image generation
+
+**OpenRouter Usage in This Project:**
+
+1. **Text Generation (Product Recommendations)**
+   - Service: `services/aiAgent.js`
+   - Model: `openai/gpt-4o-mini`
+   - Purpose: Generate funny product recommendations from user vibes
+   - Integration: Via LangChain's ChatOpenAI adapter
+
+2. **Image Generation (Product Images)**
+   - Service: `services/imageGeneration.js`
+   - Model: `google/gemini-2.5-flash-image`
+   - Purpose: Generate unique product images for each recommendation
+   - Integration: Direct HTTP POST to OpenRouter
 
 **Configuration:**
 
@@ -445,14 +544,20 @@ configuration: {
 }
 ```
 
-**Current Model:** `openai/gpt-4o-mini`
+**Text Models Available:**
 
-**Alternative Models:**
-
+- `openai/gpt-4o-mini` ✅ (currently used)
 - `anthropic/claude-3.5-sonnet`
 - `meta-llama/llama-3.1-70b-instruct`
 - `google/gemini-pro`
 - `mistralai/mistral-large`
+
+**Image Models Available:**
+
+- `google/gemini-2.5-flash-image` ✅ (currently used)
+- `black-forest-labs/flux-1.1-pro`
+- `openai/dall-e-3`
+- `stability-ai/stable-diffusion-xl`
 
 ### Tavily Search Integration
 
