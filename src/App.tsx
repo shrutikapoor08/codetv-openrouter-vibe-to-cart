@@ -1,150 +1,165 @@
-import { useState } from 'react'
-import './App.css'
-
-interface ImageResult {
-  imageUrl: string
-  prompt: string
-  originalVibe: string
-  aspectRatio: string
-  message?: string
-}
+import { useState } from "react";
+import ReactCanvasConfetti from "react-canvas-confetti";
+import {
+  LOADING_MESSAGES,
+  SURPRISE_VIBES,
+  getEasterEggMessage,
+} from "./constants";
+import { useConfetti } from "./hooks/useConfetti";
+import { useVibeApi } from "./hooks/useVibeApi";
+import { useCart } from "./hooks/useCart";
+import type { Product } from "./types";
+import CartDrawer from "./components/CartDrawer";
+import RoastToggle from "./components/RoastToggle";
+import VibeForm from "./components/VibeForm";
+import VibeHistory from "./components/VibeHistory";
+import ProductGrid from "./components/ProductGrid";
+import "./App.css";
 
 function App() {
-  const [vibe, setVibe] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [imageResult, setImageResult] = useState<ImageResult | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [aspectRatio, setAspectRatio] = useState('1:1')
+  const [vibe, setVibe] = useState("");
+  const [loadingMessage, setLoadingMessage] = useState("");
+  const [roastMode, setRoastMode] = useState(false);
+  const [vibeHistory, setVibeHistory] = useState<string[]>([]);
+  const [easterEggMessage, setEasterEggMessage] = useState("");
 
-  const loadingMessages = [
-    "Channeling your vibe...",
-    "Consulting the vibe oracle...",
-    "Mixing colors and emotions...",
-    "Creating art from feels...",
-    "Translating vibes to pixels...",
-    "Summoning the aesthetic gods...",
-  ]
+  const { getInstance, fireConfetti } = useConfetti();
+  const { products, loading, error, fetchVibeProducts } = useVibeApi();
+  const { cartItems, cartCount, showCartDrawer, addToCart, closeDrawer } = useCart({
+    onAddToCart: () => fireConfetti(),
+  });
 
-  const [loadingMessage, setLoadingMessage] = useState(loadingMessages[0])
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!vibe.trim()) return;
 
-  const handleGenerateImage = async () => {
-    if (!vibe.trim()) {
-      setError("Please enter a vibe first!")
-      return
+    // Check for easter eggs
+    const easterEgg = getEasterEggMessage(vibe);
+    setEasterEggMessage(easterEgg);
+
+    // Add to vibe history
+    if (!vibeHistory.includes(vibe)) {
+      setVibeHistory((prev) => [vibe, ...prev].slice(0, 5));
     }
-
-    setLoading(true)
-    setError(null)
-    setImageResult(null)
 
     // Rotate loading messages
-    const interval = setInterval(() => {
-      setLoadingMessage(loadingMessages[Math.floor(Math.random() * loadingMessages.length)])
-    }, 2000)
+    const messageInterval = setInterval(() => {
+      setLoadingMessage(
+        LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)]
+      );
+    }, 1500);
 
-    try {
-      const response = await fetch('http://localhost:3001/vibe-to-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ vibe, aspectRatio }),
-      })
+    await fetchVibeProducts(vibe, roastMode);
 
-      const data = await response.json()
+    clearInterval(messageInterval);
+    setLoadingMessage("");
+  };
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate image')
-      }
+  const handleSurpriseMe = () => {
+    const randomVibe =
+      SURPRISE_VIBES[Math.floor(Math.random() * SURPRISE_VIBES.length)];
+    setVibe(randomVibe);
+    // Trigger form submission after a brief delay to show the vibe
+    setTimeout(() => {
+      const form = document.querySelector("form");
+      form?.requestSubmit();
+    }, 100);
+  };
 
-      setImageResult(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
-    } finally {
-      clearInterval(interval)
-      setLoading(false)
-    }
-  }
+  const handleAddToCart = (product: Product) => {
+    addToCart(product);
+  };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !loading) {
-      handleGenerateImage()
-    }
-  }
+  const handleVibeHistoryClick = (pastVibe: string) => {
+    setVibe(pastVibe);
+    setTimeout(() => {
+      const form = document.querySelector("form");
+      form?.requestSubmit();
+    }, 100);
+  };
 
   return (
-    <div className="app-container">
-      <div className="content">
-        <h1 className="title">Vibe to Image</h1>
-        <p className="subtitle">Transform your vibes into visual art with AI</p>
+    <div className="app" style={{
+      background: roastMode 
+        ? 'linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%)' 
+        : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      transition: 'background 0.5s ease-out'
+    }}>
+      {/* Confetti Canvas */}
+      <ReactCanvasConfetti
+        onInit={getInstance}
+        style={{
+          position: "fixed",
+          pointerEvents: "none",
+          width: "100%",
+          height: "100%",
+          top: 0,
+          left: 0,
+          zIndex: 9999,
+        }}
+      />
 
-        <div className="input-section">
-          <textarea
-            className="vibe-input"
-            placeholder="Tell us your vibe... (e.g., 'villain era', 'hot mess express', 'midnight chaos energy')"
-            value={vibe}
-            onChange={(e) => setVibe(e.target.value)}
-            onKeyPress={handleKeyPress}
-            rows={3}
-            disabled={loading}
-          />
+      {/* Cart Drawer */}
+      <CartDrawer
+        show={showCartDrawer}
+        cartCount={cartCount}
+        cartItems={cartItems}
+        onClose={closeDrawer}
+      />
 
-          <div className="aspect-ratio-selector">
-            <label>Aspect Ratio:</label>
-            <select
-              value={aspectRatio}
-              onChange={(e) => setAspectRatio(e.target.value)}
-              disabled={loading}
-            >
-              <option value="1:1">Square (1:1)</option>
-              <option value="16:9">Landscape (16:9)</option>
-              <option value="9:16">Portrait (9:16)</option>
-              <option value="4:3">Classic (4:3)</option>
-              <option value="3:4">Tall (3:4)</option>
-            </select>
+      <div className="container">
+        {/* Roast Mode Toggle - Top Right */}
+        <RoastToggle roastMode={roastMode} onToggle={setRoastMode} />
+
+        <header className="header">
+          <h1 className="title">
+            <span className="emoji">🛍️</span>
+            Vibe to Cart
+          </h1>
+          <p className="tagline">
+            Tell us your vibe. We'll tell you what to buy.
+          </p>
+        </header>
+
+        {/* Vibe Form */}
+        <VibeForm
+          vibe={vibe}
+          loading={loading}
+          easterEggMessage={easterEggMessage}
+          onVibeChange={setVibe}
+          onSubmit={handleSubmit}
+          onSurpriseMe={handleSurpriseMe}
+        />
+
+        {/* Vibe History */}
+        <VibeHistory
+          vibeHistory={vibeHistory}
+          loading={loading}
+          onSelectVibe={handleVibeHistoryClick}
+        />
+
+        {loadingMessage && (
+          <div className="loading">
+            <div className="loading-spinner"></div>
+            <p className="loading-text">{loadingMessage}</p>
           </div>
-
-          <button
-            className="generate-button"
-            onClick={handleGenerateImage}
-            disabled={loading || !vibe.trim()}
-          >
-            {loading ? loadingMessage : 'Generate My Vibe'}
-          </button>
-        </div>
+        )}
 
         {error && (
-          <div className="error-message">
-            <p>{error}</p>
+          <div className="error">
+            <p>❌ {error}</p>
           </div>
         )}
 
-        {imageResult && (
-          <div className="image-result">
-            <h2>Your Vibe, Visualized</h2>
-            <div className="image-container">
-              <img
-                src={imageResult.imageUrl}
-                alt={`Generated image for: ${imageResult.originalVibe}`}
-                className="generated-image"
-              />
-            </div>
-            <div className="image-info">
-              <p className="vibe-text">
-                <strong>Original Vibe:</strong> {imageResult.originalVibe}
-              </p>
-              <p className="aspect-text">
-                <strong>Aspect Ratio:</strong> {imageResult.aspectRatio}
-              </p>
-              {imageResult.message && (
-                <p className="message-text">{imageResult.message}</p>
-              )}
-            </div>
-          </div>
-        )}
+        {/* Product Grid */}
+        <ProductGrid
+          products={products}
+          loading={loading}
+          onAddToCart={handleAddToCart}
+        />
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

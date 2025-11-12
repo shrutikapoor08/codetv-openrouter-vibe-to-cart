@@ -36,8 +36,22 @@ export const generateVibeImage = async (vibeDescription, options = {}) => {
   try {
     const { aspectRatio = "1:1" } = options;
 
-    // Create an enhanced prompt that incorporates the vibe
-    const enhancedPrompt = `Create a vibrant, visually striking image that captures the essence of this vibe: "${vibeDescription}". Make it bold, creative, and fun with saturated colors and dynamic composition.`;
+    // Create a clean, product-focused prompt
+    const enhancedPrompt = `Create a clean product photo for: "${vibeDescription}". 
+
+Style: Simple, clean product photography with a plain neutral background (white, light gray, or soft pastel).
+The product should be the ONLY focus - centered, well-lit, professional product shot.
+Think: Clean e-commerce product photos, minimalist catalog images, simple Amazon/Etsy product listings.
+
+The image can be humorous or quirky in WHAT the product is, but the photo style should be clean and professional.
+Simple background, good lighting, product-focused composition.
+
+CRITICAL: 
+- Plain, simple background (solid color or minimal gradient)
+- Product is the main subject, centered and in focus
+- No busy scenes, no complex backgrounds, no clutter
+- Clean, professional product photography aesthetic
+- NO text, labels, words, signs, or captions in the image`;
 
     console.log("🎨 Generating image with Nano Banana...");
     console.log("Prompt:", enhancedPrompt);
