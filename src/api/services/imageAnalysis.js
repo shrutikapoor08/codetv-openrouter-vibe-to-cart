@@ -1,4 +1,30 @@
 import { MOCK_MODE, OPENROUTER_API_KEY } from "../config/env.js";
+import { generateVibeImage } from "./imageGeneration.js";
+
+/**
+ * Generate an image for a specific clothing item
+ * @param {Object} item - The clothing item to generate image for
+ * @returns {Promise<string>} - Image URL
+ */
+const generateItemImage = async (item) => {
+  if (MOCK_MODE) {
+    return "https://via.placeholder.com/300x400?text=" + encodeURIComponent(item.type);
+  }
+
+  try {
+    const prompt = `A professional product photo of a ${item.color} ${item.style} ${item.type}, clean white background, high quality, fashion photography, well-lit, centered`;
+
+    console.log(`📸 Generating image for: ${item.color} ${item.style} ${item.type}`);
+
+    const result = await generateVibeImage(prompt, { aspectRatio: "3:4" });
+
+    console.log(`✅ Generated image for ${item.type}`);
+    return result.imageUrl;
+  } catch (error) {
+    console.error(`❌ Failed to generate image for ${item.type}:`, error.message);
+    return null;
+  }
+};
 
 /**
  * Search for shopping links for a clothing item using OpenRouter web search
@@ -220,23 +246,29 @@ Return ONLY raw JSON (no markdown, no code blocks):
         console.log(`   ${i + 1}. ${item.type} - ${item.color} - ${item.style}`);
       });
 
-      // Search for shopping links for each item
-      console.log("🛍️  Searching for shopping links for each item...");
-      const itemsWithLinks = await Promise.all(
+      // Generate images and search for shopping links for each item (in parallel)
+      console.log("🛍️  Generating images and searching for shopping links...");
+      const itemsWithExtras = await Promise.all(
         analysis.items.map(async (item) => {
-          const shoppingLinks = await searchClothingItem(item);
+          // Run image generation and shopping search in parallel for each item
+          const [imageUrl, shoppingLinks] = await Promise.all([
+            generateItemImage(item),
+            searchClothingItem(item),
+          ]);
+
           return {
             ...item,
+            imageUrl,
             shoppingLinks,
           };
         })
       );
 
-      console.log("✅ Added shopping links to all items");
+      console.log("✅ Added images and shopping links to all items");
 
       return {
         ...analysis,
-        items: itemsWithLinks,
+        items: itemsWithExtras,
       };
     }
 

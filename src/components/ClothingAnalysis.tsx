@@ -51,6 +51,15 @@ export default function ClothingAnalysis({
             <div className="clothing-items-grid">
               {analysis.items.map((item, index) => (
                 <div key={index} className="clothing-item-card">
+                  {item.imageUrl && (
+                    <div className="item-image-container">
+                      <img
+                        src={item.imageUrl}
+                        alt={`${item.color} ${item.style} ${item.type}`}
+                        className="item-image"
+                      />
+                    </div>
+                  )}
                   <div className="item-header">
                     <span className="item-number">#{index + 1}</span>
                     <span className="item-type">{item.type}</span>

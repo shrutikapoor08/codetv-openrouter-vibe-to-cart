@@ -15,6 +15,7 @@ export interface ClothingItem {
   type: string;
   color: string;
   style: string;
+  imageUrl?: string;
   shoppingLinks?: {
     title: string;
     url: string;
