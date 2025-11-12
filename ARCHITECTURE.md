@@ -9,14 +9,18 @@
 ```mermaid
 graph TD
     A[React UI<br/>Vite + TypeScript] -->|HTTP Request| B[Express API<br/>Node.js]
-    B --> D[AI Agent Service]
+    B --> D[Recommendations<br/>Service]
+    B --> R[Roast Me<br/>Service]
     B --> G[Image Generation<br/>Service]
     B --> I[Image Analysis<br/>Service]
     D --> E[OpenRouter API<br/>Text: GPT-4o-mini]
+    R --> F[OpenRouter API<br/>Text: GPT-4o-mini]
     G --> H[OpenRouter API<br/>Images: Gemini-2.5-Flash-Image]
     I --> J[OpenRouter API<br/>Vision: Gemini-2.5-Flash-Image]
     E -->|AI Response| D
     D -->|Products JSON| B
+    F -->|Roast Text| R
+    R -->|Roast JSON| B
     H -->|Generated Image| G
     G -->|Image URL| B
     J -->|Clothing Analysis| I
@@ -26,7 +30,9 @@ graph TD
     style A fill:#e1f5ff
     style B fill:#fff4e1
     style D fill:#f0e1ff
+    style R fill:#ffe1f0
     style E fill:#ffe1e1
+    style F fill:#ffe1e1
     style G fill:#ffe8f0
     style H fill:#ffe1e1
     style I fill:#e8f5e8
@@ -99,14 +105,14 @@ sequenceDiagram
     Frontend->>Frontend: Validate input
     Frontend->>Express: GET /api/vibe?vibe=villain+era
     Express->>Express: Validate query parameter
-    Express->>Agent: webSearchAgent({description})
+    Express->>Recommendations: webSearchAgent({description})
 
     alt Mock Mode Enabled
-        Agent->>Express: Return mock response
+        Recommendations->>Express: Return mock response
     else Production Mode
-        Agent->>OpenRouter: Generate recommendations (gpt-4o-mini)
-        OpenRouter-->>Agent: Products JSON
-        Agent->>Express: Return products array
+        Recommendations->>OpenRouter: Generate recommendations (gpt-4o-mini)
+        OpenRouter-->>Recommendations: Products JSON
+        Recommendations->>Express: Return products array
     end
 
     Express->>Frontend: Products JSON response
@@ -172,15 +178,15 @@ sequenceDiagram
     participant User
     participant Frontend
     participant Express
-    participant Agent
+    participant RoastMe
     participant OpenRouter
 
     User->>Frontend: Add items to cart (Roast Mode ON)
     Frontend->>Express: POST /api/roast-cart {cartItems[]}
-    Express->>Agent: roastCart({cartItems})
-    Agent->>OpenRouter: Generate roast (gpt-4o-mini)
-    OpenRouter-->>Agent: Roast message
-    Agent->>Express: Return roast text
+    Express->>RoastMe: roastCart({cartItems})
+    RoastMe->>OpenRouter: Generate roast (gpt-4o-mini)
+    OpenRouter-->>RoastMe: Roast message
+    RoastMe->>Express: Return roast text
     Express->>Frontend: Roast message
     Frontend->>User: Display roast in modal
 ```
@@ -320,22 +326,22 @@ GET /api/vibe?vibe=villain+era&roastMode=false HTTP/1.1
 
 ---
 
-## 🤖 AI Agent Architecture
+## 🤖 AI Services Architecture
 
-### Agent Components
+### Recommendations Service
 
-The `webSearchAgent` (located in `src/api/services/aiAgent.js`) uses **direct OpenRouter model invocation** (no web search tools in current version):
+The **Recommendations Service** (located in `src/api/services/aiAgent.js`) generates product recommendations based on user vibes using **direct OpenRouter model invocation**:
 
 ```mermaid
 flowchart TD
-    Start([User Query + Roast Mode]) --> MockCheck{MOCK_MODE?}
+    Start([User Vibe Query]) --> MockCheck{MOCK_MODE?}
 
     MockCheck -->|Yes| MockResponse[Return Mock Response<br/>500ms delay]
     MockCheck -->|No| CreatePrompt[Create Vibe Prompt]
 
     CreatePrompt --> RoastCheck{Roast Mode?}
-    RoastCheck -->|Yes| RoastPrompt[Add Roast Instructions]
-    RoastCheck -->|No| NicePrompt[Add Recommendation Instructions]
+    RoastCheck -->|Yes| RoastPrompt[Add Snarky Tone]
+    RoastCheck -->|No| NicePrompt[Add Helpful Tone]
 
     RoastPrompt --> ModelInit[OpenRouter Model<br/>gpt-4o-mini]
     NicePrompt --> ModelInit
@@ -350,14 +356,41 @@ flowchart TD
     Response --> End
 
     style MockResponse fill:#ffe1e1
-    style CreateAgent fill:#e1f5ff
-    style ReAct fill:#f0e1ff
+    style CreatePrompt fill:#e1f5ff
+    style ModelInit fill:#f0e1ff
     style Response fill:#e1ffe1
 ```
 
-### Agent Configuration
+### Roast Me Service
 
-**File:** `src/api/agent.js`
+The **Roast Me Service** (also in `src/api/services/aiAgent.js`) analyzes user's cart and generates humorous roasts:
+
+```mermaid
+flowchart TD
+    Start([Cart Items]) --> MockCheck{MOCK_MODE?}
+
+    MockCheck -->|Yes| MockRoast[Return Mock Roast<br/>500ms delay]
+    MockCheck -->|No| CreateRoastPrompt[Create Roast Prompt<br/>with cart items]
+
+    CreateRoastPrompt --> ModelInit[OpenRouter Model<br/>gpt-4o-mini]
+
+    ModelInit --> Invoke[model.invoke]
+
+    Invoke --> ParseResponse[Extract Roast Text]
+    ParseResponse --> Response[Roast Message]
+
+    MockRoast --> End([Return to Frontend])
+    Response --> End
+
+    style MockRoast fill:#ffe1e1
+    style CreateRoastPrompt fill:#ffe1f0
+    style ModelInit fill:#f0e1ff
+    style Response fill:#ffe8f0
+```
+
+### Service Configuration
+
+**File:** `src/api/services/aiAgent.js`
 
 **Key Components:**
 
@@ -389,23 +422,24 @@ flowchart TD
 3. **Response Parsing**
    ```javascript
    const products = JSON.parse(response.content);
-     llm: agentModel,
-     tools: [webTool],
-     checkpointSaver: agentCheckpointer,
-   });
    ```
 
-### ReAct Agent Pattern
+### Service Functions
 
-**Direct AI Processing**
+**Recommendations Service:**
 
-The agent uses a straightforward approach:
-
-1. **Receive:** Get user's vibe/query
+1. **Receive:** User's vibe/query and roast mode flag
 2. **Process:** Send to GPT-4o-mini with structured prompt
 3. **Parse:** Extract JSON product recommendations
 4. **Enhance:** Generate images for each product
-5. **Return:** Send complete response to frontend
+5. **Return:** Complete product list with images
+
+**Roast Me Service:**
+
+1. **Receive:** Array of cart items
+2. **Process:** Create prompt analyzing cart choices
+3. **Generate:** Send to GPT-4o-mini for humorous roast
+4. **Return:** Roast message for modal display
 
 ---
 
@@ -422,9 +456,11 @@ src/api/
 │   └── apiKeyValidation.js       # API key validation logic
 │
 ├── services/                      # Core business logic
-│   ├── aiAgent.js                # LangChain ReAct agent (product generation)
+│   ├── aiAgent.js                # Recommendations + Roast Me services
 │   ├── imageGeneration.js        # OpenRouter image generation
+│   ├── imageAnalysis.js          # Clothing analysis with vision AI
 │   ├── vibeService.js            # Vibe caching service
+│   ├── vibeImageCache.js         # Vibe image caching service
 │   └── imageService.js           # Product image caching service
 │
 ├── middleware/                    # Express middleware
@@ -435,6 +471,7 @@ src/api/
 ├── routes/                        # Route handlers
 │   ├── vibeRoutes.js             # /api/vibe endpoints
 │   ├── imageRoutes.js            # /api/product-image endpoints
+│   ├── imageAnalysisRoutes.js    # /api/analyze-image endpoints
 │   └── cacheRoutes.js            # Cache management endpoints
 │
 └── utils/                         # Shared utilities
@@ -674,12 +711,19 @@ codetv-openrouter-vibe-to-cart/
 
 1. **Text Generation (Product Recommendations)**
 
-   - Service: `services/aiAgent.js`
+   - Service: `services/aiAgent.js` (Recommendations Service)
    - Model: `openai/gpt-4o-mini`
    - Purpose: Generate funny product recommendations from user vibes
    - Integration: Via LangChain's ChatOpenAI adapter
 
-2. **Image Generation (Product Images)**
+2. **Text Generation (Cart Roasting)**
+
+   - Service: `services/aiAgent.js` (Roast Me Service)
+   - Model: `openai/gpt-4o-mini`
+   - Purpose: Generate humorous roasts of user's cart choices
+   - Integration: Via LangChain's ChatOpenAI adapter
+
+3. **Image Generation (Product Images)**
    - Service: `services/imageGeneration.js`
    - Model: `google/gemini-2.5-flash-image`
    - Purpose: Generate unique product images for each recommendation
