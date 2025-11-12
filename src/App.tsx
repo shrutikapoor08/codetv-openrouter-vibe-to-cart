@@ -274,6 +274,7 @@ function App() {
         <ClothingAnalysis
           analysis={clothingAnalysis}
           loading={analysisLoading}
+          imageUrl={backgroundImage}
           onClose={handleCloseAnalysis}
         />
       </div>

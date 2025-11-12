@@ -3,12 +3,14 @@ import type { ImageAnalysis } from "../types";
 interface ClothingAnalysisProps {
   analysis: ImageAnalysis | null;
   loading: boolean;
+  imageUrl: string | null;
   onClose: () => void;
 }
 
 export default function ClothingAnalysis({
   analysis,
   loading,
+  imageUrl,
   onClose,
 }: ClothingAnalysisProps) {
   if (!analysis && !loading) return null;
@@ -34,6 +36,16 @@ export default function ClothingAnalysis({
 
       {analysis && !loading && (
         <div className="clothing-analysis-content">
+          {imageUrl && (
+            <div className="analyzed-image-container">
+              <img
+                src={imageUrl}
+                alt="Analyzed outfit"
+                className="analyzed-image"
+              />
+            </div>
+          )}
+
           <div className="clothing-items">
             <h3>🎨 Outfit Breakdown ({analysis.items.length} items)</h3>
             <div className="clothing-items-grid">
