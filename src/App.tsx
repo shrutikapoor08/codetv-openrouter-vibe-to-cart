@@ -26,10 +26,16 @@ function App() {
 
   const { getInstance, fireConfetti } = useConfetti();
   const { products, loading, error, fetchVibeProducts } = useVibeApi();
-  const { cartItems, cartCount, showCartDrawer, addToCart, closeDrawer } =
-    useCart({
-      onAddToCart: () => fireConfetti(),
-    });
+  const {
+    cartItems,
+    cartCount,
+    showCartDrawer,
+    addToCart,
+    removeFromCart,
+    closeDrawer,
+  } = useCart({
+    onAddToCart: () => fireConfetti(),
+  });
 
   const { loadingMessage, vibeHistory, easterEggMessage, handleSubmit } =
     useVibeSubmit({
@@ -147,6 +153,7 @@ function App() {
         cartCount={cartCount}
         cartItems={cartItems}
         onClose={closeDrawer}
+        onRemoveItem={removeFromCart}
       />
 
       <div className="container">

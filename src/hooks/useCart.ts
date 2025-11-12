@@ -18,12 +18,11 @@ export function useCart(options: UseCartOptions = {}) {
 
     // Callback for side effects (e.g., confetti)
     options.onAddToCart?.(product);
+  };
 
-    // Auto-hide drawer after delay
-    const delay = options.autoHideDelay ?? 3000;
-    setTimeout(() => {
-      setShowCartDrawer(false);
-    }, delay);
+  const removeFromCart = (index: number) => {
+    setCartItems((prev) => prev.filter((_, i) => i !== index));
+    setCartCount((prev) => prev - 1);
   };
 
   const closeDrawer = () => {
@@ -35,6 +34,7 @@ export function useCart(options: UseCartOptions = {}) {
     cartCount,
     showCartDrawer,
     addToCart,
+    removeFromCart,
     closeDrawer,
   };
 }
