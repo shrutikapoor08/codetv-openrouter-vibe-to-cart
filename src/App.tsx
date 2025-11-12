@@ -54,8 +54,18 @@ function App() {
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Clear previous results
+    // Clear previous results and clothing analysis
     clearProducts();
+    setBackgroundImage(null);
+    setClothingAnalysis(null);
+    setAnalysisLoading(false);
+
+    // Scroll to top for new search
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
     await handleSubmit(vibe, roastMode, false);
   };
 
@@ -274,6 +284,7 @@ function App() {
         <ProductGrid
           products={products}
           loading={productsLoading}
+          onAddToCart={handleAddToCart}
           onImageClick={handleImageClick}
         />
 
