@@ -3,7 +3,7 @@
 > **For AI coding agents (Claude, GPT-4, etc.) working on this codebase**
 
 This document provides context and guidance for AI assistants helping to develop, debug, or extend this project.
-
+ 
 ---
 
 ## 🎯 Project Context
